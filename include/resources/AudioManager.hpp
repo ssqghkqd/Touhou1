@@ -1,59 +1,40 @@
 #pragma once
 
-#include "stdafx.hpp"
-#include "SFML/Audio.hpp"
-#include <mutex>
-#include <filesystem>
+#include <memory>
+#include <string>
+#include <miniaudio.h>
+#include <unordered_map>
 
-namespace fs = std::filesystem;
+#include "utils/FileManager.hpp"
 
 namespace th
 {
-    class AudioManager
-    {
-    public:
-        static AudioManager &getInstance();
 
-        // 初始化音频系统
-        void init();
+class AudioManager
+{
+  private:
+    ma_engine engine{};
+    std::unordered_map<std::string, std::unique_ptr<ma_sound>> sounds;
+    float masterVolume = 1.0f;
+    bool inited = false;
 
-        // 加载音效
-        bool loadSound(const std::string &name, const fs::path &path);
+    AudioManager() = default;
 
-        // 播放音效
-        void playSound(const std::string &name, float volume = 100.0f,
-                       const glm::vec2 &position = {0, 0}, bool loop = false);
 
-        // 设置全局音量
-        void setMasterVolume(float volume);
+  public:
+    bool init();
+    ~AudioManager();
 
-        // 暂停所有音效
-        void pauseAll();
 
-        // 恢复所有音效
-        void resumeAll();
+    static AudioManager& getInstance();
 
-        // 停止所有音效
-        void stopAll();
+    bool loadSound(const std::string& name, const fs::path& path);
 
-        // 更新 清理已经播放完的声音
-        void update();
 
-    private:
-        AudioManager() = default;
-        ~AudioManager();
+    void playSound(const std::string& name, float volume = 1.0f, const glm::vec2& position = glm::vec2(0.0f), bool loop = false);
 
-        struct SoundInstance
-        {
-            std::unique_ptr<sf::Sound> sound;
-            sf::SoundBuffer buffer;
-        };
+    void setMasterVolume(float volume);
 
-        std::unordered_map<std::string, SoundInstance> sounds;
-        std::vector<std::shared_ptr<sf::Sound>> activeSounds;
+};
 
-        float masterVolume = 100.0f;
-        std::mutex audioMutex;
-        bool inited = false;
-    };
 } // namespace th

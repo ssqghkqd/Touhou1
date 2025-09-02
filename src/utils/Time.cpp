@@ -41,7 +41,7 @@ namespace th
         auto now = std::chrono::floor<std::chrono::seconds>( // 关键：截断到秒级
             std::chrono::system_clock::now());
         timeStamp = std::chrono::system_clock::to_time_t(now);
-        auto localTime = std::chrono::zoned_time{"Asia/Shanghai", now};
+        auto localTime = now + std::chrono::hours(8);  // 假设 Asia/Shanghai (UTC+8)
         timestr = std::format("{:%H:%M:%S}", localTime);
     }
 

@@ -6,7 +6,6 @@
 #include "entity/BulletSystem.hpp"
 #include "entity/component/PlayerComponent.hpp"
 #include "entity/component/SpriteComponent.hpp"
-#include "thirdparty/glm/trigonometric.hpp"
 
 namespace th
 {

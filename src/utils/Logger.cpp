@@ -3,6 +3,7 @@
 #include <iomanip>
 #include "core/Context.hpp"
 #include <format>
+#include <iostream>
 
 namespace thLogger
 {

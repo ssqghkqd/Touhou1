@@ -11,6 +11,7 @@
 #include "entity/BulletSystem.hpp"
 #include "entity/CollisionSystem.hpp"
 #include "resources/AudioManager.hpp"
+#include <GLFW/glfw3.h>
 
 namespace th
 {
@@ -37,15 +38,15 @@ namespace th
         auto &cs = CollisionSystem::getInstance();
         auto &am = AudioManager::getInstance();
 
-        double lastPrintTime = glfwGetTime();
+        double lastFrameTime = glfwGetTime();
 
         while (!window.shouldClose())
         {
+            Time::update();
             window.pollEvents();
 
-            Time::update();
             // 更新FPS
-            update(lastPrintTime);
+            update(lastFrameTime);
             // 处理输入
             inputSystem.processInput(registry);
             // 更新玩家移动
@@ -57,8 +58,6 @@ namespace th
 
             renderSystem.update(registry);
 
-            // 更新声音系统
-            am.update();
 
             window.swapBuffers();
         }
@@ -71,7 +70,7 @@ namespace th
         ctx.init();
     }
 
-    void App::update(double &lastPrintTime)
+    void App::update(double lastPrintTime)
     {
         auto &window = Window::getInstance();
         // 输出FPS

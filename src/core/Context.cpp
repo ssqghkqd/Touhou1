@@ -1,7 +1,6 @@
 #include <core/Context.hpp>
 #include <core/App.hpp>
 #include <utils/Logger.hpp>
-#include <stdafx.hpp>
 #include "core/Window.hpp"
 #include "core/InputSystem.hpp"
 #include "graphics/MeshManager.hpp"
@@ -53,8 +52,8 @@ namespace th
 
         // BulletSystem::getInstance().createStaticBullet(registry);
         CollisionSystem::getInstance().init(registry);
-        audio.loadSound("miss", "miss.ogg");
-        audio.setMasterVolume(30.0f); 
+        audio.loadSound("miss", "miss.wav");
+        audio.setMasterVolume(0.3f);
 
         contextInitialized = true;
     }

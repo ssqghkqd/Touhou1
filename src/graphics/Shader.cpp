@@ -86,9 +86,6 @@ namespace th
         case GL_GEOMETRY_SHADER:
             typeName = "几何";
             break;
-        case GL_COMPUTE_SHADER:
-            typeName = "计算";
-            break;
         default:
             typeName = "未知";
         }

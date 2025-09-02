@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stdafx.hpp>
 #include "entt/entt.hpp"
 namespace th
 {

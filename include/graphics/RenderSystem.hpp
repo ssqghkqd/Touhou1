@@ -1,7 +1,6 @@
 #pragma once
 
 #include <entt/entt.hpp>
-#include "stdafx.hpp"
 #include "graphics/Shader.hpp"
 #include "graphics/MeshManager.hpp"
 #include "entity/component/PlayerComponent.hpp"

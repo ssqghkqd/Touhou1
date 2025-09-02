@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.hpp"
 
 namespace th
 {
@@ -17,7 +16,7 @@ namespace th
     // 弹幕碰撞组件（为未来碰撞系统预留）
     struct BulletCollider
     {
-        float radius = 32.0f; // 碰撞半径
+        float radius = 20.0f; // 碰撞半径
     };
 
     // 自机狙类型组件
