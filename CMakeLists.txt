@@ -1,67 +1,84 @@
-cmake_minimum_required(VERSION 3.25)
-project(YourProject VERSION 0.1.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.28)
+project(Touhou1 LANGUAGES CXX)
 
-# 设置 C++ 标准为 23
+# 修复缺失的变量
+set(CMAKE_C_COMPILE_OBJECT "<CMAKE_C_COMPILER> <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -c <SOURCE>")
+set(CMAKE_C_CREATE_STATIC_LIBRARY "<CMAKE_AR> qc <TARGET> <OBJECTS>")
+set(CMAKE_CXX_COMPILE_OBJECT "<CMAKE_CXX_COMPILER> <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -c <SOURCE>")
+set(CMAKE_CXX_CREATE_STATIC_LIBRARY "<CMAKE_AR> qc <TARGET> <OBJECTS>")
+
+# 基础配置
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# 建议也设置扩展模式为 OFF，确保使用标准语法
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# 处理 Conan 依赖
-# 首先检查是否在 build 目录下运行，通常是这样
-if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-  message(STATUS "Downloading conan.cmake from github")
-  file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.16.1/conan.cmake"
-                "${CMAKE_BINARY_DIR}/conan.cmake")
-endif()
 
-include(${CMAKE_BINARY_DIR}/conan.cmake)
+# 第三方库路径
+set(THIRDPARTY_DIR ${CMAKE_SOURCE_DIR}/thirdparty)
 
-# 执行 Conan 安装，根据 conanfile.txt 配置依赖
-conan_cmake_autodetect(settings)
-conan_cmake_install(
-    PATH "${CMAKE_SOURCE_DIR}"
-    BUILD missing
-    SETTINGS ${settings}
+# 包含目录（完全还原你的原始配置）
+include_directories(
+        ${CMAKE_SOURCE_DIR}/include
+        ${THIRDPARTY_DIR}/glm
+        ${THIRDPARTY_DIR}/entt/src
+        ${THIRDPARTY_DIR}/stb
+        ${THIRDPARTY_DIR}/glad
+        ${THIRDPARTY_DIR}/soloud/include
+        ${THIRDPARTY_DIR}/glfw/include  # Windows 下需要显式包含 GLFW 头文件
+        ${THIRDPARTY_DIR}/miniaudio
 )
 
-# 导入 Conan 生成的文件
-# CMakeDeps 生成的文件
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
-# CMakeToolchain 生成的文件
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+# 编译 GLFW（静态库）
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "Disable docs" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "Disable tests" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Disable examples" FORCE)
+add_subdirectory(${THIRDPARTY_DIR}/glfw)
 
-# --- 配置本地依赖 (Header-only 库) ---
-# glm (Header-only)
-add_library(glm INTERFACE)
-target_include_directories(glm INTERFACE "${CMAKE_SOURCE_DIR}/external/glm")
+# 编译 GLAD
+file(GLOB GLAD_SOURCES ${THIRDPARTY_DIR}/glad/glad.c)
+add_library(glad STATIC ${GLAD_SOURCES})
 
-# entt (Header-only)
-add_library(entt INTERFACE)
-target_include_directories(entt INTERFACE "${CMAKE_SOURCE_DIR}/external/entt")
 
-# stb (Header-only, 但通常需要定义一个宏来启用实现)
-add_library(stb INTERFACE)
-target_include_directories(stb INTERFACE "${CMAKE_SOURCE_DIR}/external/stb")
-# 如果你的代码需要包含 stb_image.c 等实现文件，需要单独编译，这里按头文件库处理
 
-# --- 配置本地依赖 (需要编译的库) ---
-# GLFW
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
-# 这要求 external/glfw 目录下有自己的 CMakeLists.txt
+# 项目源文件
+file(GLOB_RECURSE SOURCES src/*.cpp src/*.c)
 
-# Glad
-# 假设你的 glad 在 external/glad 下，包含 glad.c 和 glad.h
-add_library(glad ${CMAKE_SOURCE_DIR}/external/glad/glad.c)
-target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/external/glad/include)
-# 根据你的 glad 文件实际位置调整路径
+# 添加可执行文件
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-# SFML
-# SFML 比较大，通常推荐用 Conan 管理。本地管理需确保已编译好或包含其 CMake项目
-option(SFML_BUILD_AUDIO FALSE) # 根据你的需要关闭某些模块
-option(SFML_BUILD_NETWORK FALSE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/sfml)
-# 同样，这要求 external/sfml 是一个完整的 SFML 源码仓库并有 CMakeLists.txt
+# Windows 下必需的链接库（精简版）
+target_link_libraries(${PROJECT_NAME}
+        -stdlib=libc++
+        glfw           # GLFW 静态库
+        glad           # GLAD
+        #soloud         # SoLoud
+        opengl32.lib   # OpenGL
+        gdi32.lib      # 图形设备接口
+        user32.lib     # 窗口管理
+        #stb_vorbis
+)
 
-# 添加你的源代码目录
-add_subdirectory(src)
+# 预编译头（完全还原你的原始配置，不做任何修改！）
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+        <vector>
+        <memory>
+        <glad.h>
+        <ext.hpp>
+        <entt/entt.hpp>
+        <stb_image.h>
+        <GLFW/glfw3.h>
+        <utils/Logger.hpp>
+)
+
+# 全局宏定义（保留原始配置）
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        GLFW_INCLUDE_NONE
+        _GLFW_WIN32            # 将 _GLFW_X11 改为 Win32 后端
+)
+
+# SoLoud 静态库定义（保留原始配置）
+
+# GLAD 的 OpenGL 版本（保留原始配置）
+target_compile_definitions(glad PRIVATE
+        GLAD_GL_VERSION=3_3
+)
