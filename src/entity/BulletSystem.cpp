@@ -44,7 +44,10 @@ void BulletSystem::update(entt::registry& registry, float deltaTime)
     {
         spawnTimer = 0.0f;
         hmbs.createHoming(registry, 10, 120.0f);
-        spawnRandomBullet(registry);
+        for (int i = 0; i < 5; i++)
+        {
+            spawnRandomBullet(registry);
+        }
     }
 
     // 这里是测试的随机弹幕

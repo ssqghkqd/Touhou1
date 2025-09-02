@@ -77,7 +77,8 @@ void CollisionSystem::update(entt::registry& registry)
             thLogger::info("玩家碰撞弹幕！");
             // 播放被弹音效
             auto& audio = AudioManager::getInstance();
-            audio.playSound("miss", 60.0f, m_playerPosition);
+            audio.playSound("miss", 0.6f, m_playerPosition);
+            thLogger::info("播放音效");
             registry.destroy(bullet);
         }
     });
@@ -85,7 +86,13 @@ void CollisionSystem::update(entt::registry& registry)
 
 bool CollisionSystem::checkCollision(const glm::vec2& posA, float radiusA, const glm::vec2& posB, float radiusB)
 {
-    float distance = glm::distance(posA, posB);
-    return distance < (radiusA + radiusB) * 0.5f;
+    // 正交圆判定 当距离的平方小于二者半价平方之和的时候判定 即两条半径 和圆心连线构成直角三角形的时候判定
+    const float dx = posB.x - posA.x;
+    const float dy = posB.y - posA.y;
+
+    const float distanceSquared = dx * dx + dy * dy;
+    const float radiiSquared = radiusA * radiusA + radiusB * radiusB;
+
+    return distanceSquared < radiiSquared;
 }
 } // namespace th

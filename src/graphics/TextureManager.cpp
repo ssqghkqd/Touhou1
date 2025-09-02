@@ -1,9 +1,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <graphics/TextureManager.hpp>
-#include <thirdparty/stb/stb_image.h>
-#include <stdafx.hpp>
 #include <filesystem>
+#include <stb_image.h>
 #include <utils/FileManager.hpp>
+#include <iostream>
 
 namespace th
 {

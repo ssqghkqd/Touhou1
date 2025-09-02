@@ -2,6 +2,7 @@
 #include <utils/Logger.hpp>
 #include "core/App.hpp"
 #include <fstream>
+#include <iostream>
 
 namespace th
 {
@@ -21,17 +22,32 @@ namespace th
             thLogger::warning("window已初始化");
             return;
         }
+        App::scale = 2;
         std::ofstream log("debug.log");
-        log << "启动程序...\n";
+        log << "=== 程序启动详细日志 ===\n";
+        log << "时间: " << __TIME__ << "\n";
+        log << "DISPLAY: " << (getenv("DISPLAY") ? getenv("DISPLAY") : "null") << "\n";
+
+        glfwSetErrorCallback([](int error, const char* description) {
+        std::ofstream errLog("glfw_errors.log", std::ios::app);
+        errLog << "GLFW Error " << error << ": " << description << "\n";
+        std::cerr << "GLFW Error " << error << ": " << description << std::endl;
+    });
 
         if (!glfwInitialized)
         {
+            log << "尝试初始化 GLFW...\n";
             if (!glfwInit())
             {
                 log << "GLFW初始化失败\n";
-                char buf[1024];
-                glfwGetError((const char **)&buf); // 获取GLFW错误
-                log << "GLFW ERROR: " << buf << "\n";
+                const char* description;
+                int code = glfwGetError(&description);
+                log << "GLFW错误代码: " << code << "\n";
+                log << "GLFW错误描述: " << (description ? description : "null") << "\n";
+
+                // 输出更多系统信息
+                log << "用户: " << getenv("USER") << "\n";
+
                 thLogger::Log(thLogger::Critical, "GLFW初始化失败！");
             }
             glfwInitialized = true;
@@ -46,8 +62,7 @@ namespace th
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_RESIZABLE, 0);
-        m_window = glfwCreateWindow(width, height, title, NULL, NULL);
-        glfwSwapInterval(1); // 启用垂直同步（锁定显示器刷新率）
+        m_window = glfwCreateWindow(width * App::scale, height * App::scale, title, NULL, NULL);
 
         // 检查是否成功创建窗口
         if (!m_window)
@@ -58,12 +73,14 @@ namespace th
 
         glfwMakeContextCurrent(m_window);
 
+
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             thLogger::Log(thLogger::Critical, "GLAD初始化失败！");
         }
         thLogger::Log(thLogger::Info, "GLAD初始化成功");
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, width * App::scale, height * App::scale);
+        glfwSwapInterval(1); // 启用垂直同步（锁定显示器刷新率）
         thLogger::info("window初始化成功");
         inited = true;
     }

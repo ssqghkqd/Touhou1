@@ -1,5 +1,4 @@
 #pragma once
-#include <stdafx.hpp>
 #include <filesystem>
 
 namespace fs = std::filesystem;

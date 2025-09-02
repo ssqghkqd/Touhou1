@@ -1,6 +1,5 @@
 #include <core/App.hpp>
-#include <stdlib.h>
-#include <string>
+#include <iostream>
 
 int main()
 {

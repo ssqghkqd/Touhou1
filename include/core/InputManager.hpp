@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.hpp"
 #include <unordered_map>
 
 namespace th

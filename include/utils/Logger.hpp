@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdafx.hpp>
+#include <string>
 #include <source_location>
 
 namespace thLogger
