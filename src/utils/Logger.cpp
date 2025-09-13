@@ -3,7 +3,7 @@
 #include <iomanip>
 #include "core/Context.hpp"
 #include <format>
-#include <iostream>
+#include <print>
 
 namespace thLogger
 {
@@ -34,7 +34,7 @@ namespace thLogger
             break;
         }
         std::string timeStr = th::Time::getTimeStr();
-        std::cout << std::format("[{}] [{}] {}:{} - {}\n",
+        std::print("[{}] [{}] {}:{} - {}\n",
                                  timeStr, lv, loc.file_name(), loc.line(), msg);
         if (level == Critical)
             throw std::runtime_error("Critical error: " + msg);

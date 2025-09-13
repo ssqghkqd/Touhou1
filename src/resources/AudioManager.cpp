@@ -52,12 +52,11 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
     if (!inited)
     {
         thLogger::error("音频引擎未初始化");
-        return;
-    }
+        return;}
 
     auto it = sounds.find(name);
     if (it == sounds.end())
-    {
+{
         thLogger::error("音效未找到: " + name);
         return;
     }
@@ -83,7 +82,6 @@ AudioManager& AudioManager::getInstance()
 }
 AudioManager::~AudioManager()
 {
-    thLogger::info("开始析构 AudioManager");
     // 先停止所有声音
     ma_engine_stop(&engine);  // 核心API：停止引擎所有声音
     for (auto& [name, sound] : sounds) {
@@ -91,7 +89,7 @@ AudioManager::~AudioManager()
     }
     sounds.clear(); // 自动释放所有 ma_sound 对象
     ma_engine_uninit(&engine);
-    thLogger::info("AudioManager 析构完成");
+    thLogger::info("析构 AudioManager");
 }
 
 } // namespace th

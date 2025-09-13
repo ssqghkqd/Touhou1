@@ -53,7 +53,7 @@ namespace th
         // BulletSystem::getInstance().createStaticBullet(registry);
         CollisionSystem::getInstance().init(registry);
         audio.loadSound("miss", "miss.wav");
-        audio.setMasterVolume(0.3f);
+        audio.setMasterVolume(1.0f);
 
         contextInitialized = true;
     }

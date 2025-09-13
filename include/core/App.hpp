@@ -11,7 +11,7 @@ namespace th
         void run();
         void mainLoop();
         void init();
-        void update(double lastPrintTime);
+        void update(double& lastPrintTime);
 
         inline static const int width = 1280;
         inline static const int height = 960;
