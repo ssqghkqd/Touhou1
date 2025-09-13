@@ -11,7 +11,7 @@ int main()
     }
     catch (std::exception &e)
     {
-        std::cout << "未捕获异常:" << e.what() << '\n';
+        std::cout << "未捕获异常:1" << e.what() << '\n';
         return 1;
     }
 }
