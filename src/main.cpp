@@ -3,7 +3,6 @@
 
 int main()
 {
-    system("chcp 65001");
     try
     {
         th::App app;

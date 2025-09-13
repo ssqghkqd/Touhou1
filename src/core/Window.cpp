@@ -22,7 +22,7 @@ namespace th
             thLogger::warning("window已初始化");
             return;
         }
-        App::scale = 2;
+        App::scale = 1;
         std::ofstream log("debug.log");
         log << "=== 程序启动详细日志 ===\n";
         log << "时间: " << __TIME__ << "\n";
@@ -58,6 +58,8 @@ namespace th
         {
             thLogger::Log(thLogger::Warning, "窗口已经创建！");
         }
+        glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);  // 禁用系统缩放
+        glfwWindowHint(GLFW_SCALE_FRAMEBUFFER, GLFW_FALSE); // 禁用帧缓冲缩放
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

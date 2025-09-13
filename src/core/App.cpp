@@ -70,7 +70,7 @@ namespace th
         ctx.init();
     }
 
-    void App::update(double lastPrintTime)
+    void App::update(double& lastPrintTime)
     {
         auto &window = Window::getInstance();
         // 输出FPS
