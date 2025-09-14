@@ -1,17 +1,18 @@
+#include <GLFW/glfw3.h>
+
 #include <core/App.hpp>
-#include <core/Context.hpp>
 #include <core/Window.hpp>
 #include <utils/Logger.hpp>
 #include <utils/Time.hpp>
-#include "entt/entt.hpp"
-#include "entity/component/PlayerComponent.hpp"
-#include "entity/component/SpriteComponent.hpp"
-#include "graphics/RenderSystem.hpp"
+
 #include "core/InputSystem.hpp"
-#include "entity/BulletSystem.hpp"
-#include "entity/CollisionSystem.hpp"
+#include "ecs/BulletSystem.hpp"
+#include "ecs/CollisionSystem.hpp"
+#include "ecs/EntityManager.hpp"
+#include "graphics/RenderSystem.hpp"
+#include "graphics/ShaderManager.hpp"
+#include "graphics/TextureManager.hpp"
 #include "resources/AudioManager.hpp"
-#include <GLFW/glfw3.h>
 
 namespace th
 {
@@ -28,9 +29,7 @@ namespace th
 
     void App::mainLoop()
     {
-        auto &ctx = Context::getInstance();
         auto &window = Window::getInstance();
-        auto &registry = ctx.getRegistry();
         auto &inputSystem = InputSystem::getInstance();
         auto &renderSystem = RenderSystem::getInstance();
         auto &ps = PlayerSystem::getInstance();
@@ -66,8 +65,21 @@ namespace th
     void App::init()
     {
         Time::update();
-        auto &ctx = Context::getInstance(); // 此时创建单例并初始化
-        ctx.init();
+        Window::getInstance();
+        InputSystem::getInstance();
+        MeshManager::getInstance();
+        RenderSystem::getInstance();
+        ShaderManager::getInstance();
+        TextureManager::getInstance();
+        EntityManager::getInstance().init(registry);
+
+        auto &audio = AudioManager::getInstance();
+        audio.init();
+
+        // BulletSystem::getInstance().createStaticBullet(registry);
+        CollisionSystem::getInstance().init(registry);
+        audio.loadSound("miss", "miss.wav");
+        audio.setMasterVolume(1.0f);
     }
 
     void App::update(double& lastPrintTime)

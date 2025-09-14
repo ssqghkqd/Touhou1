@@ -1,9 +1,9 @@
-#include "entity/CollisionSystem.hpp"
-#include "entity/component/BulletComponent.hpp"
-#include "entity/component/PlayerComponent.hpp"
-#include "entity/component/SpriteComponent.hpp"
-#include "resources/AudioManager.hpp"
+#include "ecs/CollisionSystem.hpp"
 
+#include "ecs/component/BulletComponent.hpp"
+#include "ecs/component/PlayerComponent.hpp"
+#include "ecs/component/SpriteComponent.hpp"
+#include "resources/AudioManager.hpp"
 
 namespace th
 {

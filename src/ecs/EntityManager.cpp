@@ -1,8 +1,8 @@
-#include "entity/EntityManager.hpp"
-#include "entity/BulletSystem.hpp"
-#include "entity/PlayerSystem.hpp"
-#include "utils/Logger.hpp"
+#include "ecs/EntityManager.hpp"
 
+#include "ecs/BulletSystem.hpp"
+#include "ecs/PlayerSystem.hpp"
+#include "utils/Logger.hpp"
 
 namespace th
 {

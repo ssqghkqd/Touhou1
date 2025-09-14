@@ -1,19 +1,20 @@
 #include <utils/Logger.hpp>
 #include <utils/Time.hpp>
 #include <iomanip>
-#include "core/Context.hpp"
+#include "core/App.hpp"
 #include <format>
 #include <print>
 
 namespace thLogger
 {
+    bool is_debug = false;
     void Log(const Level level, const std::string &msg, const std::source_location &loc)
     {
         std::string lv;
         switch (level)
         {
-        case Debug:
-            if (!th::Context::getInstance().getDebug())
+            case Debug:
+            if (!is_debug)
                 return;
             lv = "Debug";
             break;
@@ -63,6 +64,11 @@ namespace thLogger
     void critical(const std::string &msg, const std::source_location &loc)
     {
         Log(Critical, msg, loc);
+    }
+
+    void toggleDebug()
+    {
+        is_debug = !is_debug;
     }
 
 } // namespace thLogger

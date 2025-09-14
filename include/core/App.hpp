@@ -1,4 +1,7 @@
 #pragma once
+#include <../../thirdparty/entt/src/entt/entt.hpp>
+
+#include "entt/entity/registry.hpp"
 
 namespace th
 {
@@ -13,6 +16,7 @@ namespace th
         void init();
         void update(double& lastPrintTime);
 
+
         inline static const int width = 1280;
         inline static const int height = 960;
         inline static const char *title = "Touhou 1 ~ religious war";
@@ -23,5 +27,6 @@ namespace th
         inline static int scale = 1;
 
     private:
+        entt::registry registry;
     };
 } // namespace th

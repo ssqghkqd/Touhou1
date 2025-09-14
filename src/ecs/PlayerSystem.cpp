@@ -1,12 +1,12 @@
-#include "entity/PlayerSystem.hpp"
-#include "core/Context.hpp"
-#include "utils/Time.hpp"
-#include "core/Window.hpp"
-#include "entity/component/PlayerComponent.hpp"
-#include "entity/component/SpriteComponent.hpp"
-#include "entt/entt.hpp"
+#include "ecs/PlayerSystem.hpp"
+
+#include "../../thirdparty/entt/src/entt/entt.hpp"
 #include "core/App.hpp"
-#include "entity/component/RenderComponent.hpp"
+#include "core/Window.hpp"
+#include "ecs/component/PlayerComponent.hpp"
+#include "ecs/component/RenderComponent.hpp"
+#include "ecs/component/SpriteComponent.hpp"
+#include "utils/Time.hpp"
 
 namespace th
 {

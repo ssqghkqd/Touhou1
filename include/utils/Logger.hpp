@@ -26,5 +26,6 @@ namespace thLogger
                const std::source_location &loc = std::source_location::current());
     void critical(const std::string &msg,
                   const std::source_location &loc = std::source_location::current());
+    void toggleDebug();
 
 } // namespace th

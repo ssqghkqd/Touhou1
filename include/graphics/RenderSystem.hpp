@@ -1,12 +1,13 @@
 #pragma once
 
 #include <entt/entt.hpp>
-#include "graphics/Shader.hpp"
+
+#include "ecs/component/BulletComponent.hpp"
+#include "ecs/component/PlayerComponent.hpp"
+#include "ecs/component/RenderComponent.hpp"
+#include "ecs/component/SpriteComponent.hpp"
 #include "graphics/MeshManager.hpp"
-#include "entity/component/PlayerComponent.hpp"
-#include "entity/component/SpriteComponent.hpp"
-#include "entity/component/BulletComponent.hpp"
-#include "entity/component/RenderComponent.hpp"
+#include "graphics/Shader.hpp"
 
 namespace th
 {

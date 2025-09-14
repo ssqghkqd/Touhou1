@@ -1,10 +1,10 @@
-#include "entity/BulletSystem.hpp"
+#include "ecs/BulletSystem.hpp"
 
 #include "core/App.hpp"
-#include "entity/bullet/HomingBulletSystem.hpp"
-#include "entity/component/BulletComponent.hpp"
-#include "entity/component/RenderComponent.hpp"
-#include "entity/component/SpriteComponent.hpp"
+#include "ecs/bullet/HomingBulletSystem.hpp"
+#include "ecs/component/BulletComponent.hpp"
+#include "ecs/component/RenderComponent.hpp"
+#include "ecs/component/SpriteComponent.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Random.hpp"
 

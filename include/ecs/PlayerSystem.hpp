@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entt/entt.hpp"
+#include "../../thirdparty/entt/src/entt/entt.hpp"
 
 namespace th
 {

@@ -1,12 +1,12 @@
 #include "core/InputSystem.hpp"
+
 #include "core/App.hpp"
-#include "entity/PlayerSystem.hpp"
 #include "core/Window.hpp"
-#include "entity/component/PlayerComponent.hpp"
-#include "entity/component/SpriteComponent.hpp"
-#include "entt/entt.hpp"
-#include "core/Context.hpp"
+#include "ecs/PlayerSystem.hpp"
+#include "ecs/component/PlayerComponent.hpp"
+#include "ecs/component/SpriteComponent.hpp"
 #include "resources/AudioManager.hpp"
+#include "utils/Logger.hpp"
 
 namespace th
 {
@@ -22,7 +22,6 @@ namespace th
         checkExit();
         toggleDebug();
         updatePlayerMovement(registry);
-        test();
         toggleHitbox(registry);
         im.update();
     }
@@ -69,18 +68,7 @@ namespace th
     {
         if (im.isKeyJustPressed(GLFW_KEY_GRAVE_ACCENT))
         {
-            Context::getInstance().toggleDebug();
-        }
-    }
-
-    void InputSystem::test()
-    {
-        if (im.isKeyJustPressed(GLFW_KEY_0))
-        {
-            // 播放被弹音效
-            auto &audio = AudioManager::getInstance();
-            audio.playSound("miss", 80.0f);
-            thLogger::info("播放");
+            thLogger::toggleDebug();
         }
     }
 

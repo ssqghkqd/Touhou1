@@ -1,10 +1,10 @@
 #pragma once
 
-#include "entt/entt.hpp"
-#include "entity/PlayerSystem.hpp"
-#include "core/Window.hpp"
+#include "../../thirdparty/entt/src/entt/entt.hpp"
 #include "core/App.hpp"
 #include "core/InputManager.hpp"
+#include "core/Window.hpp"
+#include "ecs/PlayerSystem.hpp"
 
 namespace th
 {
