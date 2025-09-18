@@ -4,7 +4,7 @@
 #include "core/App.hpp"
 #include "core/InputManager.hpp"
 #include "core/Window.hpp"
-#include "ecs/PlayerSystem.hpp"
+#include "../ecs/system/PlayerSystem.hpp"
 
 namespace th
 {
@@ -35,7 +35,6 @@ namespace th
         int height = App::height;
 
         Window &window = Window::getInstance();
-        PlayerSystem &ps = PlayerSystem::getInstance();
         InputManager &im = InputManager::getInstance();
     };
 }

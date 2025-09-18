@@ -14,7 +14,7 @@ namespace th
         void run();
         void mainLoop();
         void init();
-        void update(double& lastPrintTime);
+        static void update(double& lastPrintTime);
 
 
         inline static const int width = 1280;

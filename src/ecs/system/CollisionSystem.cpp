@@ -1,19 +1,14 @@
-#include "ecs/CollisionSystem.hpp"
+#include "../../../include/ecs/system/CollisionSystem.hpp"
 
 #include "ecs/component/BulletComponent.hpp"
 #include "ecs/component/PlayerComponent.hpp"
 #include "ecs/component/SpriteComponent.hpp"
 #include "resources/AudioManager.hpp"
 
-namespace th
+namespace th::CollisionSystem
 {
-CollisionSystem& CollisionSystem::getInstance()
-{
-    static CollisionSystem instance;
-    return instance;
-}
 
-void CollisionSystem::init(entt::registry& registry)
+void init(entt::registry& registry)
 {
     if (inited)
     {
@@ -26,13 +21,16 @@ void CollisionSystem::init(entt::registry& registry)
     {
         m_player = playerView.front();
     }
+    else
+    {
+        thLogger::error("玩家不存在");
+    }
     thLogger::info("碰撞系统初始化完成");
     inited = true;
 }
 
-void CollisionSystem::update(entt::registry& registry)
+void update(entt::registry& registry)
 {
-
     // 如果没有玩家，直接返回
     if (m_player == entt::null || !registry.valid(m_player))
     {
@@ -64,27 +62,28 @@ void CollisionSystem::update(entt::registry& registry)
     // 1.检测弹幕碰撞
     auto bulletView = registry.view<BulletComponent, TransformComponent, BulletCollider>();
 
-    bulletView.each([&](entt::entity bullet, BulletComponent& bulletComp, TransformComponent& tf, BulletCollider& bc) {
-        if (bulletComp.isPlayerBullet)
-        {
-            thLogger::debug("跳过玩家弹幕");
-            return; // 忽略玩家弹幕
-        }
+    bulletView.each([&](entt::entity bullet, BulletComponent& bulletComp, TransformComponent& tf, BulletCollider& bc)
+                    {
+                        if (bulletComp.isPlayerBullet)
+                        {
+                            thLogger::debug("跳过玩家弹幕");
+                            return; // 忽略玩家弹幕
+                        }
 
-        // 弹幕使用点碰撞
-        if (checkCollision(m_playerPosition, m_playerRadius, tf.position, bc.radius))
-        {
-            thLogger::info("玩家碰撞弹幕！");
-            // 播放被弹音效
-            auto& audio = AudioManager::getInstance();
-            audio.playSound("miss", 0.6f, m_playerPosition);
-            thLogger::info("播放音效");
-            registry.destroy(bullet);
-        }
-    });
+                        // 弹幕使用点碰撞
+                        if (checkCollision(m_playerPosition, m_playerRadius, tf.position, bc.radius))
+                        {
+                            thLogger::info("玩家碰撞弹幕！");
+                            // 播放被弹音效
+                            auto& audio = AudioManager::getInstance();
+                            audio.playSound("miss", 0.6f, m_playerPosition);
+                            thLogger::info("播放音效");
+                            registry.destroy(bullet);
+                        }
+                    });
 }
 
-bool CollisionSystem::checkCollision(const glm::vec2& posA, float radiusA, const glm::vec2& posB, float radiusB)
+bool checkCollision(const glm::vec2& posA, float radiusA, const glm::vec2& posB, float radiusB)
 {
     // 正交圆判定 当距离的平方小于二者半价平方之和的时候判定 即两条半径 和圆心连线构成直角三角形的时候判定
     const float dx = posB.x - posA.x;
@@ -95,4 +94,4 @@ bool CollisionSystem::checkCollision(const glm::vec2& posA, float radiusA, const
 
     return distanceSquared < radiiSquared;
 }
-} // namespace th
+} // namespace th::CollisionSystem

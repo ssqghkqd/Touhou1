@@ -34,7 +34,7 @@ namespace th
         MeshManager() = default;
         ~MeshManager();
 
-        const Mesh &GetOrCreateMesh(const std::string &key, std::function<Mesh()> createFunc);
+        const Mesh &GetOrCreateMesh(const std::string &key, const std::function<Mesh()>& createFunc);
         Mesh CreateQuadMesh();
         Mesh CreateCircleMesh(int segments);
 

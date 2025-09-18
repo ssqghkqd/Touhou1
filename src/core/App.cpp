@@ -6,9 +6,8 @@
 #include <utils/Time.hpp>
 
 #include "core/InputSystem.hpp"
-#include "ecs/BulletSystem.hpp"
-#include "ecs/CollisionSystem.hpp"
-#include "ecs/EntityManager.hpp"
+#include "../../include/ecs/system/BulletSystem.hpp"
+#include "ecs/system/CollisionSystem.hpp"
 #include "graphics/RenderSystem.hpp"
 #include "graphics/ShaderManager.hpp"
 #include "graphics/TextureManager.hpp"
@@ -32,10 +31,7 @@ namespace th
         auto &window = Window::getInstance();
         auto &inputSystem = InputSystem::getInstance();
         auto &renderSystem = RenderSystem::getInstance();
-        auto &ps = PlayerSystem::getInstance();
-        auto &bs = BulletSystem::getInstance();
-        auto &cs = CollisionSystem::getInstance();
-        auto &am = AudioManager::getInstance();
+        // auto &am = AudioManager::getInstance();
 
         double lastFrameTime = glfwGetTime();
 
@@ -49,11 +45,11 @@ namespace th
             // 处理输入
             inputSystem.processInput(registry);
             // 更新玩家移动
-            ps.updateMove(registry);
+            PlayerSystem::updateMove(registry);
             // 更新弹幕移动
-            bs.update(registry, Time::getDeltaTime());
+            BulletSystem::update(registry, Time::getDeltaTime());
             // 处理碰撞
-            cs.update(registry);
+            CollisionSystem::update(registry);
 
             renderSystem.update(registry);
 
@@ -71,13 +67,15 @@ namespace th
         RenderSystem::getInstance();
         ShaderManager::getInstance();
         TextureManager::getInstance();
-        EntityManager::getInstance().init(registry);
+        PlayerSystem::init();
+        PlayerSystem::createPlayer(registry);
+
+        thLogger::info("玩家已创建");
+        BulletSystem::init(registry);
+        CollisionSystem::init(registry);
 
         auto &audio = AudioManager::getInstance();
         audio.init();
-
-        // BulletSystem::getInstance().createStaticBullet(registry);
-        CollisionSystem::getInstance().init(registry);
         audio.loadSound("miss", "miss.wav");
         audio.setMasterVolume(1.0f);
     }
@@ -86,8 +84,8 @@ namespace th
     {
         auto &window = Window::getInstance();
         // 输出FPS
-        int fps = window.getFPS();
-        double currentTime = glfwGetTime();
+        const int fps = window.getFPS();
+        const double currentTime = glfwGetTime();
         if (currentTime - lastPrintTime >= 1.0)
         {
             thLogger::Log(thLogger::Info, "FPS:" + std::to_string(fps));

@@ -1,8 +1,7 @@
 #include "core/InputSystem.hpp"
 
-#include "core/App.hpp"
 #include "core/Window.hpp"
-#include "ecs/PlayerSystem.hpp"
+#include "../../include/ecs/system/PlayerSystem.hpp"
 #include "ecs/component/PlayerComponent.hpp"
 #include "ecs/component/SpriteComponent.hpp"
 #include "resources/AudioManager.hpp"
@@ -76,7 +75,7 @@ namespace th
     {
         if (im.isKeyJustPressed(GLFW_KEY_P))
         {
-            ps.toggleNoHitbox(registry);
+            PlayerSystem::toggleNoHitbox(registry);
             thLogger::info("游戏已暂停/恢复(切换玩家碰撞)");
         }
     }

@@ -26,7 +26,7 @@ namespace th
 
     const MeshManager::Mesh &MeshManager::GetOrCreateMesh(
         const std::string &key,
-        std::function<Mesh()> createFunc)
+        const std::function<Mesh()>& createFunc)
     {
         auto it = m_meshes.find(key);
         if (it != m_meshes.end())

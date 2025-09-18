@@ -1,23 +1,17 @@
-#include "ecs/BulletSystem.hpp"
+#include "ecs/system/BulletSystem.hpp"
 
 #include "core/App.hpp"
-#include "ecs/bullet/HomingBulletSystem.hpp"
+#include "../../../include/ecs/system/HomingBulletSystem.hpp"
 #include "ecs/component/BulletComponent.hpp"
 #include "ecs/component/RenderComponent.hpp"
 #include "ecs/component/SpriteComponent.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Random.hpp"
 
-namespace th
+namespace th::BulletSystem
 {
 
-BulletSystem& BulletSystem::getInstance()
-{
-    static BulletSystem instance;
-    return instance;
-}
-
-void BulletSystem::init(entt::registry& registry)
+void init(entt::registry& registry)
 {
     if (inited)
     {
@@ -26,16 +20,14 @@ void BulletSystem::init(entt::registry& registry)
     }
 
     // 这里添加初始化过程
-    HomingBulletSystem::getInstance().init(registry);
 
     thLogger::info("bulletsystem初始化");
     inited = true;
 }
 
-void BulletSystem::update(entt::registry& registry, float deltaTime)
+void update(entt::registry& registry, float deltaTime)
 {
     // 这里是测试的随机弹幕
-    static auto& hmbs = HomingBulletSystem::getInstance();
     // 更新计时器
     spawnTimer += deltaTime;
 
@@ -43,7 +35,7 @@ void BulletSystem::update(entt::registry& registry, float deltaTime)
     if (spawnTimer >= spawnInterval)
     {
         spawnTimer = 0.0f;
-        hmbs.createHoming(registry, 10, 120.0f);
+        HomingBulletSystem::createHoming(registry, 10, 120.0f);
         for (int i = 0; i < 5; i++)
         {
             spawnRandomBullet(registry);
@@ -85,7 +77,7 @@ void BulletSystem::update(entt::registry& registry, float deltaTime)
 }
 
 // 测试函数
-void BulletSystem::spawnRandomBullet(entt::registry& registry)
+void spawnRandomBullet(entt::registry& registry)
 {
     // 随机生成位置（屏幕上方）
     float x = Random::range(App::bgoffsetX, App::bgoffsetX + App::bgwidth);
@@ -97,7 +89,7 @@ void BulletSystem::spawnRandomBullet(entt::registry& registry)
     createBullet(registry, {x, y}, velocity);
 }
 
-entt::entity BulletSystem::createBullet(entt::registry& registry, const glm::vec2& position, const glm::vec2& velocity, bool isPlayerBullet, bool isExistForever)
+entt::entity createBullet(entt::registry& registry, const glm::vec2& position, const glm::vec2& velocity, bool isPlayerBullet, bool isExistForever)
 {
     auto bullet = registry.create();
 
@@ -118,7 +110,7 @@ entt::entity BulletSystem::createBullet(entt::registry& registry, const glm::vec
     render.meshType = MeshType::Circle;
     render.size = glm::vec2(32.0f);
 
-    // 碰撞组件（未来启用）
+    // 碰撞组件
     registry.emplace<BulletCollider>(bullet);
 
     // 标签
@@ -126,5 +118,4 @@ entt::entity BulletSystem::createBullet(entt::registry& registry, const glm::vec
 
     return bullet;
 }
-
-} // namespace th
+} // namespace th::BulletSystem
