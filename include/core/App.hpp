@@ -6,27 +6,27 @@
 namespace th
 {
 
-    class App
-    {
-    public:
-        App();
-        ~App() = default;
-        void run();
-        void mainLoop();
-        void init();
-        static void update(double& lastPrintTime);
+class App
+{
+  public:
+    App();
+    ~App() = default;
+    void run();
+    void mainLoop();
+    void init();
+    static void update(double& lastPrintTime);
 
+    static constexpr int width = 1280;
+    static constexpr int height = 960;
+    inline static const char* title = "Touhou 1 ~ religious war";
+    static constexpr int bgwidth = 768;
+    static constexpr int bgheight = 896;
+    static constexpr int bgoffsetX = 64;
+    static constexpr int bgoffsetY = 32;
+    static constexpr glm::vec2 bgCenter = {bgoffsetX + 0.5 * bgwidth, bgoffsetY + 0.5 * bgheight};
+    inline static int scale = 1;
 
-        inline static const int width = 1280;
-        inline static const int height = 960;
-        inline static const char *title = "Touhou 1 ~ religious war";
-        inline static const int bgwidth = 768;
-        inline static const int bgheight = 896;
-        inline static const int bgoffsetX = 64;
-        inline static const int bgoffsetY = 32;
-        inline static int scale = 1;
-
-    private:
-        entt::registry registry;
-    };
+  private:
+    entt::registry registry;
+};
 } // namespace th

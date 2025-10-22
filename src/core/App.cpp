@@ -78,6 +78,7 @@ namespace th
         audio.init();
         audio.loadSound("miss", "miss.wav");
         audio.setMasterVolume(1.0f);
+        // audio.playMusic("th11_09.wav");
     }
 
     void App::update(double& lastPrintTime)

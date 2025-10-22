@@ -142,9 +142,9 @@ void RenderSystem::renderHitbox(const TransformComponent& playerTF, const Hitbox
 
     // 创建临时渲染组件
     RenderComponent rc;
-    rc.meshType = MeshType::Circle;
+    rc.meshType = MeshType::Rect;
     rc.textureName = hitbox.textureName;
-    rc.size = glm::vec2(hitbox.radius * 2);
+    rc.size = glm::vec2(hitbox.renderRadius * 2);
 
     // 创建临时变换组件
     TransformComponent tf;

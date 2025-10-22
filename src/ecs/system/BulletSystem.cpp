@@ -1,10 +1,11 @@
 #include "ecs/system/BulletSystem.hpp"
 
-#include "core/App.hpp"
 #include "../../../include/ecs/system/HomingBulletSystem.hpp"
+#include "core/App.hpp"
 #include "ecs/component/BulletComponent.hpp"
 #include "ecs/component/RenderComponent.hpp"
 #include "ecs/component/SpriteComponent.hpp"
+#include "ecs/system/BulletLoader.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Random.hpp"
 
@@ -40,6 +41,7 @@ void update(entt::registry& registry, float deltaTime)
         {
             spawnRandomBullet(registry);
         }
+        BulletLoader::testSpawnRing(registry, {400, 200}, 100.0f, 200.0f, 30);
     }
 
     // 这里是测试的随机弹幕
@@ -107,8 +109,8 @@ entt::entity createBullet(entt::registry& registry, const glm::vec2& position, c
     // 渲染组件
     auto& render = registry.emplace<RenderComponent>(bullet);
     render.textureName = "xiaoyu";
-    render.meshType = MeshType::Circle;
-    render.size = glm::vec2(32.0f);
+    render.meshType = MeshType::Rect;
+    render.size = {64.0f, 64.0f};
 
     // 碰撞组件
     registry.emplace<BulletCollider>(bullet);

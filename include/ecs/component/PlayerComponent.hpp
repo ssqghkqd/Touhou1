@@ -21,6 +21,7 @@ namespace th
     {
         glm::vec2 offset = {0.0f, 3.0f}; // 相对实体位置的偏移
         float radius = 2.0f;
+        float renderRadius = 10.0f;
         bool isActive = true; // 是否启用碰撞(debug)
 
         std::string textureName = "hitbox";

@@ -7,7 +7,7 @@ namespace th::BulletSystem
 
 inline bool inited = false;
 inline float spawnTimer = 0.0f;
-inline float spawnInterval = 0.5f; // 每0.5秒生成一个
+inline float spawnInterval = 1.0f; // 每0.5秒生成一个
 
 void init(entt::registry& registry);
 

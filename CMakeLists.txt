@@ -12,6 +12,12 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    message(${CCACHE_PROGRAM})
+endif()
+
 
 # 第三方库路径
 set(THIRDPARTY_DIR ${CMAKE_SOURCE_DIR}/thirdparty)
@@ -24,9 +30,10 @@ include_directories(
         ${THIRDPARTY_DIR}/stb
         ${THIRDPARTY_DIR}/glad
         ${THIRDPARTY_DIR}/soloud/include
-        ${THIRDPARTY_DIR}/GLFW/include  # Windows 下需要显式包含 GLFW 头文件
+        ${THIRDPARTY_DIR}/GLFW/include
         ${THIRDPARTY_DIR}/miniaudio
         ${THIRDPARTY_DIR}
+        ${THIRDPARTY_DIR}/nlohmann_json
         /usr/lib/llvm-21/include/c++/v1
 )
 

@@ -96,7 +96,14 @@ entt::entity createPlayer(entt::registry& registry)
     render.meshType = MeshType::Rect;
     render.textureName = "player";
     hitbox.textureName = "hitbox";
+    hitbox.renderRadius = 10.0f;
 
+    m_player = player;
     return player;
+}
+
+entt::entity& getPlayer()
+{
+    return m_player;
 }
 } // namespace th::PlayerSystem

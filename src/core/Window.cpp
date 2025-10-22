@@ -140,7 +140,7 @@ namespace th
 
     int Window::getFPS()
     {
-        double currentTime = glfwGetTime();
+        const double currentTime = glfwGetTime();
         m_frameCount++;
 
         // 每1秒更新一次FPS
