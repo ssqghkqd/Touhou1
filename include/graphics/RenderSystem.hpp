@@ -23,14 +23,14 @@ namespace th
         void setProjection(int width, int height);
 
         /* void renderPlayer(const TransformComponent &sprite); */
-        void renderHitbox(const TransformComponent &playerTF,
+        void renderHitbox(const SpriteComponent &playerTF,
                           const HitboxComponent &hitbox,
                           bool isSlowMode);
         /*void renderBullet(const TransformComponent &sc,
                           const BulletRenderComponent &render); */
         void renderBackground();
 
-        void renderEntity(const TransformComponent &tf, const RenderComponent &rc);
+        void renderEntity(const SpriteComponent &tf, const RenderComponent &rc);
 
         // 删除拷贝构造和赋值操作符
         RenderSystem(const RenderSystem &) = delete;

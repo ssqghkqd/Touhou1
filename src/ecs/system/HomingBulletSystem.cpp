@@ -3,9 +3,9 @@
 #include <cmath>
 
 #include "core/App.hpp"
-#include "ecs/system/BulletSystem.hpp"
 #include "ecs/component/PlayerComponent.hpp"
 #include "ecs/component/SpriteComponent.hpp"
+#include "ecs/system/BulletSystem.hpp"
 
 namespace th::HomingBulletSystem
 {
@@ -48,7 +48,7 @@ void createHoming(entt::registry& registry, int way, float angle)
     constexpr float speed = 300.0f;
     // 速度指向玩家
     // 获取玩家碰撞数据
-    const auto& tf = registry.get<TransformComponent>(m_player);
+    const auto& tf = registry.get<SpriteComponent>(m_player);
     const auto& hb = registry.get<HitboxComponent>(m_player);
 
     m_playerPosition = tf.position + hb.offset;

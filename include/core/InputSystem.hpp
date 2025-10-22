@@ -16,7 +16,7 @@ namespace th
         void checkExit();
         void updatePlayerMovement(entt::registry &registry);
         void toggleDebug();
-        void test();
+        void shot(entt::registry &registry);
         void toggleHitbox(entt::registry &registry);
 
         // 删除拷贝构造和赋值操作符
@@ -33,6 +33,7 @@ namespace th
 
         int width = App::width;
         int height = App::height;
+        float m_lastTime = 0.0f;
 
         Window &window = Window::getInstance();
         InputManager &im = InputManager::getInstance();

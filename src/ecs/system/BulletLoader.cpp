@@ -12,7 +12,7 @@ namespace th::BulletLoader
 void testSpawnRing(entt::registry& registry, const glm::vec2& centerPos, float radius, float speed, const int count)
 {
     auto& player = PlayerSystem::getPlayer();
-    const auto& tf = registry.get<TransformComponent>(player);
+    const auto& tf = registry.get<SpriteComponent>(player);
     const auto& hb = registry.get<HitboxComponent>(player);
     const glm::vec2 m_playerPosition = tf.position + hb.offset;
 

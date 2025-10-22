@@ -35,8 +35,8 @@ namespace th
         ~MeshManager();
 
         const Mesh &GetOrCreateMesh(const std::string &key, const std::function<Mesh()>& createFunc);
-        Mesh CreateQuadMesh();
-        Mesh CreateCircleMesh(int segments);
+        static Mesh CreateQuadMesh();
+        static Mesh CreateCircleMesh(int segments);
 
         std::unordered_map<std::string, std::unique_ptr<Mesh>> m_meshes;
     };

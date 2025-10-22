@@ -69,7 +69,7 @@ void RenderSystem::setProjection(int width, int height)
     m_shader->set("projection", m_projection);
 }
 
-void RenderSystem::renderEntity(const TransformComponent& tf, const RenderComponent& rc)
+void RenderSystem::renderEntity(const SpriteComponent& tf, const RenderComponent& rc)
 {
     // 不可见的直接返回
     if (!rc.isVisible)
@@ -133,7 +133,7 @@ void RenderSystem::renderEntity(const TransformComponent& tf, const RenderCompon
     glDrawElements(GL_TRIANGLES, m_quadMesh->indexCount, GL_UNSIGNED_INT, 0);
 } */
 
-void RenderSystem::renderHitbox(const TransformComponent& playerTF, const HitboxComponent& hitbox, bool isSlowMode)
+void RenderSystem::renderHitbox(const SpriteComponent& playerTF, const HitboxComponent& hitbox, bool isSlowMode)
 {
     if (!isSlowMode)
         return; // 只在低速模式显示
@@ -147,7 +147,7 @@ void RenderSystem::renderHitbox(const TransformComponent& playerTF, const Hitbox
     rc.size = glm::vec2(hitbox.renderRadius * 2);
 
     // 创建临时变换组件
-    TransformComponent tf;
+    SpriteComponent tf;
     tf.position = hitboxPos;
 
     // std::cout << std::format("纹理:{}, 位置:{} {}\n", rc.textureName,
@@ -184,7 +184,7 @@ void RenderSystem::renderBullet(const TransformComponent &sc,
 void RenderSystem::renderBackground()
 {
     // 创建背景实体（不注册到ECS）
-    static TransformComponent bgtf;
+    static SpriteComponent bgtf;
     static RenderComponent bgRender;
 
     bgtf.position = glm::vec2(App::width / 2, App::height / 2);
@@ -224,22 +224,22 @@ void RenderSystem::update(entt::registry& registry)
     BulletRenderComponent &render) { renderBullet(sc, render); }); */
 
     // 2. 弹幕（应该在玩家前面）
-    auto bulletView = registry.view<TransformComponent, RenderComponent, BulletTag>();
-    bulletView.each([&](auto entity, TransformComponent& tf, RenderComponent& rc)
+    auto bulletView = registry.view<SpriteComponent, RenderComponent, BulletTag>();
+    bulletView.each([&](auto entity, SpriteComponent& tf, RenderComponent& rc)
                     {
                         renderEntity(tf, rc);
                     });
 
     // 3. 玩家
-    auto playerView = registry.view<TransformComponent, RenderComponent, PlayerTag>();
-    playerView.each([&](auto entity, TransformComponent& tf, RenderComponent& rc)
+    auto playerView = registry.view<SpriteComponent, RenderComponent, PlayerTag>();
+    playerView.each([&](auto entity, SpriteComponent& tf, RenderComponent& rc)
                     {
                         renderEntity(tf, rc);
                     });
 
     // 4. 判定点（最上层）
-    auto hitboxView = registry.view<TransformComponent, HitboxComponent, PlayerControl>();
-    hitboxView.each([&](auto entity, TransformComponent& tf, HitboxComponent& hitbox, PlayerControl& pc)
+    auto hitboxView = registry.view<SpriteComponent, HitboxComponent, PlayerControl>();
+    hitboxView.each([&](auto entity, SpriteComponent& tf, HitboxComponent& hitbox, PlayerControl& pc)
                     {
                         renderHitbox(tf, hitbox, pc.slowMode);
                     });

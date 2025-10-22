@@ -47,9 +47,9 @@ void update(entt::registry& registry, float deltaTime)
     // 这里是测试的随机弹幕
 
     // 获取所有弹幕实体
-    static auto view = registry.view<BulletComponent, TransformComponent>();
+    static auto view = registry.view<BulletComponent, SpriteComponent>();
 
-    view.each([&](entt::entity entity, BulletComponent& bullet, TransformComponent& tf)
+    view.each([&](entt::entity entity, BulletComponent& bullet, SpriteComponent& tf)
               {
                   // 应用运动
                   tf.position += bullet.velocity * deltaTime;
@@ -96,7 +96,7 @@ entt::entity createBullet(entt::registry& registry, const glm::vec2& position, c
     auto bullet = registry.create();
 
     // 变换组件
-    auto& tf = registry.emplace<TransformComponent>(bullet);
+    auto& tf = registry.emplace<SpriteComponent>(bullet);
     tf.position = position;
 
     // 弹幕组件

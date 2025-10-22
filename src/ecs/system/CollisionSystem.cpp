@@ -39,14 +39,14 @@ void update(entt::registry& registry)
     }
 
     // 确保玩家有必要的组件
-    if (!registry.all_of<TransformComponent, HitboxComponent>(m_player))
+    if (!registry.all_of<SpriteComponent, HitboxComponent>(m_player))
     {
         thLogger::error("玩家缺少必要组件");
         return;
     }
 
     // 获取玩家碰撞数据
-    auto& tf = registry.get<TransformComponent>(m_player);
+    auto& tf = registry.get<SpriteComponent>(m_player);
     auto& hb = registry.get<HitboxComponent>(m_player);
 
     // 检查碰撞盒是否激活
@@ -60,9 +60,9 @@ void update(entt::registry& registry)
     m_playerRadius = hb.radius;
 
     // 1.检测弹幕碰撞
-    auto bulletView = registry.view<BulletComponent, TransformComponent, BulletCollider>();
+    auto bulletView = registry.view<BulletComponent, SpriteComponent, BulletCollider>();
 
-    bulletView.each([&](entt::entity bullet, BulletComponent& bulletComp, TransformComponent& tf, BulletCollider& bc)
+    bulletView.each([&](entt::entity bullet, BulletComponent& bulletComp, SpriteComponent& tf, BulletCollider& bc)
                     {
                         if (bulletComp.isPlayerBullet)
                         {

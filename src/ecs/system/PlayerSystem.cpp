@@ -4,6 +4,7 @@
 #include "ecs/component/PlayerComponent.hpp"
 #include "ecs/component/RenderComponent.hpp"
 #include "ecs/component/SpriteComponent.hpp"
+#include "ecs/system/BulletSystem.hpp"
 #include "utils/Time.hpp"
 
 namespace th::PlayerSystem
@@ -25,9 +26,9 @@ void updateMove(entt::registry& registry)
     constexpr int width = App::bgoffsetX + App::bgwidth;
     constexpr int height = App::bgoffsetY + App::bgheight;
 
-    static auto view = registry.view<PlayerControl, TransformComponent>();
+    static auto view = registry.view<PlayerControl, SpriteComponent>();
 
-    view.each([&](entt::entity entity, PlayerControl& control, TransformComponent& tf)
+    view.each([&](entt::entity entity, PlayerControl& control, SpriteComponent& tf)
               {
                   (void)entity;
                   // 1. 计算目标速度
@@ -79,7 +80,7 @@ entt::entity createPlayer(entt::registry& registry)
     const auto player = registry.create();
 
     // 精灵组件
-    auto& sprite = registry.emplace<TransformComponent>(player);
+    auto& sprite = registry.emplace<SpriteComponent>(player);
 
     // 玩家控制组件
     auto& playerCtrl = registry.emplace<PlayerControl>(player);
@@ -100,6 +101,13 @@ entt::entity createPlayer(entt::registry& registry)
 
     m_player = player;
     return player;
+}
+
+void shot(entt::registry& registry)
+{
+    auto& sprite = registry.get<SpriteComponent>(m_player);
+    BulletSystem::createBullet(registry, sprite.position, {0.0f, -200.0f}, true);
+
 }
 
 entt::entity& getPlayer()
