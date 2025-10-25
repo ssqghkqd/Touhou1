@@ -1,9 +1,9 @@
 #include "core/InputSystem.hpp"
 
-#include "../../include/ecs/system/PlayerSystem.hpp"
+#include "../../include/ecs/system_old/PlayerSystem.hpp"
 #include "core/Window.hpp"
-#include "ecs/component/PlayerComponent.hpp"
-#include "ecs/component/SpriteComponent.hpp"
+#include "ecs/component_old/PlayerComponent.hpp"
+#include "ecs/component_old/SpriteComponent.hpp"
 #include "resources/AudioManager.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Time.hpp"

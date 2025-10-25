@@ -1,10 +1,10 @@
-#include "ecs/system/PlayerSystem.hpp"
+#include "ecs/system_old/PlayerSystem.hpp"
 
 #include "core/App.hpp"
-#include "ecs/component/PlayerComponent.hpp"
-#include "ecs/component/RenderComponent.hpp"
-#include "ecs/component/SpriteComponent.hpp"
-#include "ecs/system/BulletSystem.hpp"
+#include "ecs/component_old/PlayerComponent.hpp"
+#include "ecs/component_old/RenderComponent.hpp"
+#include "ecs/component_old/SpriteComponent.hpp"
+#include "ecs/system_old/BulletSystem.hpp"
 #include "utils/Time.hpp"
 
 namespace th::PlayerSystem

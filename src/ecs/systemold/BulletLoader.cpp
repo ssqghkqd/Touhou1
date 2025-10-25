@@ -1,9 +1,9 @@
-#include "../../../include/ecs/system/BulletLoader.hpp"
+#include "../../../include/ecs/system_old/BulletLoader.hpp"
 
-#include "ecs/component/PlayerComponent.hpp"
-#include "ecs/component/SpriteComponent.hpp"
-#include "ecs/system/BulletSystem.hpp"
-#include "ecs/system/PlayerSystem.hpp"
+#include "ecs/component_old/PlayerComponent.hpp"
+#include "ecs/component_old/SpriteComponent.hpp"
+#include "ecs/system_old/BulletSystem.hpp"
+#include "ecs/system_old/PlayerSystem.hpp"
 #include "entt/entity/registry.hpp"
 #include "vec2.hpp"
 

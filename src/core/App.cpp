@@ -5,9 +5,9 @@
 #include <utils/Logger.hpp>
 #include <utils/Time.hpp>
 
+#include "../../include/ecs/system_old/BulletSystem.hpp"
 #include "core/InputSystem.hpp"
-#include "../../include/ecs/system/BulletSystem.hpp"
-#include "ecs/system/CollisionSystem.hpp"
+#include "ecs/system_old/CollisionSystem.hpp"
 #include "graphics/RenderSystem.hpp"
 #include "graphics/ShaderManager.hpp"
 #include "graphics/TextureManager.hpp"

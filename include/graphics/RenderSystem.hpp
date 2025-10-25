@@ -2,10 +2,10 @@
 
 #include <entt/entt.hpp>
 
-#include "ecs/component/BulletComponent.hpp"
-#include "ecs/component/PlayerComponent.hpp"
-#include "ecs/component/RenderComponent.hpp"
-#include "ecs/component/SpriteComponent.hpp"
+#include "ecs/component_old/BulletComponent.hpp"
+#include "ecs/component_old/PlayerComponent.hpp"
+#include "ecs/component_old/RenderComponent.hpp"
+#include "ecs/component_old/SpriteComponent.hpp"
 #include "graphics/MeshManager.hpp"
 #include "graphics/Shader.hpp"
 

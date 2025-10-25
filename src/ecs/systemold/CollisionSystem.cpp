@@ -1,8 +1,8 @@
-#include "../../../include/ecs/system/CollisionSystem.hpp"
+#include "../../../include/ecs/system_old/CollisionSystem.hpp"
 
-#include "ecs/component/BulletComponent.hpp"
-#include "ecs/component/PlayerComponent.hpp"
-#include "ecs/component/SpriteComponent.hpp"
+#include "ecs/component_old/BulletComponent.hpp"
+#include "ecs/component_old/PlayerComponent.hpp"
+#include "ecs/component_old/SpriteComponent.hpp"
 #include "resources/AudioManager.hpp"
 
 namespace th::CollisionSystem

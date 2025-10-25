@@ -1,11 +1,11 @@
-#include "ecs/system/BulletSystem.hpp"
+#include "ecs/system_old/BulletSystem.hpp"
 
-#include "../../../include/ecs/system/HomingBulletSystem.hpp"
+#include "../../../include/ecs/system_old/HomingBulletSystem.hpp"
 #include "core/App.hpp"
-#include "ecs/component/BulletComponent.hpp"
-#include "ecs/component/RenderComponent.hpp"
-#include "ecs/component/SpriteComponent.hpp"
-#include "ecs/system/BulletLoader.hpp"
+#include "ecs/component_old/BulletComponent.hpp"
+#include "ecs/component_old/RenderComponent.hpp"
+#include "ecs/component_old/SpriteComponent.hpp"
+#include "ecs/system_old/BulletLoader.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Random.hpp"
 

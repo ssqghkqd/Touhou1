@@ -1,11 +1,11 @@
-#include "../../../include/ecs/system/HomingBulletSystem.hpp"
+#include "../../../include/ecs/system_old/HomingBulletSystem.hpp"
 
 #include <cmath>
 
 #include "core/App.hpp"
-#include "ecs/component/PlayerComponent.hpp"
-#include "ecs/component/SpriteComponent.hpp"
-#include "ecs/system/BulletSystem.hpp"
+#include "ecs/component_old/PlayerComponent.hpp"
+#include "ecs/component_old/SpriteComponent.hpp"
+#include "ecs/system_old/BulletSystem.hpp"
 
 namespace th::HomingBulletSystem
 {
