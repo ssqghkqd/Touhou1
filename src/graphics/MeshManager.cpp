@@ -1,5 +1,14 @@
 #include "graphics/MeshManager.hpp"
 
+#include <functional>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+#include "glad.h"
+#include "utils/Logger.hpp"
+#include "ext.hpp"
+
 namespace th
 {
     MeshManager &MeshManager::getInstance()

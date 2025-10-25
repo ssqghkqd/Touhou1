@@ -1,5 +1,8 @@
 #pragma once
 
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 namespace th
 {
 
@@ -17,8 +20,8 @@ namespace th
         Window &operator=(Window &&) = delete;
 
         bool shouldClose() const;
-        void swapBuffers();
-        void pollEvents();
+        void swapBuffers() const;
+        void pollEvents() const;
         void close();
 
         // 判断一个键是否按下

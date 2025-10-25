@@ -1,4 +1,6 @@
 #include "graphics/Shader.hpp"
+
+#include "ext.hpp"
 #include "utils/FileManager.hpp"
 #include "utils/Logger.hpp"
 

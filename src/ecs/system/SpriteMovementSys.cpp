@@ -1,0 +1,33 @@
+// ecs/system/SpriteMovementSys.cpp
+
+#include <entt/entt.hpp>
+
+#include "core/App.hpp"
+#include "ecs/comp/RenderComp.hpp"
+#include "ecs/comp/SpriteComp.hpp"
+#include "ecs/comp/TagComp.hpp"
+#include "ecs/comp/TransformComp.hpp"
+
+namespace th::SpriteMovementSys
+{
+
+void update(entt::registry& registry, float dt)
+{
+    static auto view = registry.view<TransformComp, SpriteComp, RenderComp>(entt::exclude<PlayerTag>);
+
+    view.each([&](auto entity, auto& tf, auto& sprite, auto& render)
+              {
+                  tf.position += sprite.velocity * dt;
+
+                  float halfWidth = render.size.x * 0.5f;
+                  float halfHeight = render.size.y * 0.5f;
+
+                  // 超出边界的删除
+                  if (tf.position.x + halfWidth > App::bgoffsetX + App::bgwidth || tf.position.x - halfWidth < App::bgoffsetX ||
+                      tf.position.y + halfHeight > App::bgoffsetY + App::bgheight || tf.position.y - halfHeight < App::bgoffsetY)
+                  {
+                      registry.destroy(entity);
+                  }
+              });
+}
+} // namespace th

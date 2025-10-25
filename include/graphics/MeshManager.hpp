@@ -1,5 +1,7 @@
 #pragma once
-
+#include "vec2.hpp"
+#include <string>
+#include <functional>
 
 namespace th
 {
@@ -13,9 +15,9 @@ namespace th
         };
         struct Mesh
         {
-            GLuint vao = 0;
-            GLuint vbo = 0;
-            GLuint ebo = 0;
+            unsigned int vao = 0;
+            unsigned int vbo = 0;
+            unsigned int ebo = 0;
             int indexCount = 0;
         };
 

@@ -2,51 +2,49 @@
 
 #include <entt/entt.hpp>
 
-#include "ecs/component_old/BulletComponent.hpp"
-#include "ecs/component_old/PlayerComponent.hpp"
-#include "ecs/component_old/RenderComponent.hpp"
-#include "ecs/component_old/SpriteComponent.hpp"
+#include "glm.hpp"
 #include "graphics/MeshManager.hpp"
 #include "graphics/Shader.hpp"
 
 namespace th
 {
-    class RenderSystem
-    {
-    public:
-        ~RenderSystem() = default;
-        static RenderSystem &getInstance();
+struct PlayerComp;
+struct RenderComp;
+struct TransformComp;
 
-        void init(int screenWidth, int screenHeight);
-        void update(entt::registry &registry);
-        void shutdown();
-        void setProjection(int width, int height);
+class RenderSystem
+{
+  public:
+    ~RenderSystem() = default;
+    static RenderSystem& getInstance();
 
-        /* void renderPlayer(const TransformComponent &sprite); */
-        void renderHitbox(const SpriteComponent &playerTF,
-                          const HitboxComponent &hitbox,
-                          bool isSlowMode);
-        /*void renderBullet(const TransformComponent &sc,
-                          const BulletRenderComponent &render); */
-        void renderBackground();
+    void init(int screenWidth, int screenHeight);
+    void update(entt::registry& registry);
+    void setProjection(int width, int height);
 
-        void renderEntity(const SpriteComponent &tf, const RenderComponent &rc);
+    /* void renderPlayer(const TransformComponent &sprite); */
+    void renderHitbox(const TransformComp& playerTF, bool isSlowMode, const PlayerComp& pc) const;
+    /*void renderBullet(const TransformComponent &sc,
+                      const BulletRenderComponent &render); */
+    void renderBackground() const;
 
-        // 删除拷贝构造和赋值操作符
-        RenderSystem(const RenderSystem &) = delete;
-        RenderSystem &operator=(const RenderSystem &) = delete;
+    void renderEntity(TransformComp& tf, RenderComp& rc) const;
 
-        // 移动语义也删除（单例不需要）
-        RenderSystem(RenderSystem &&) = delete;
-        RenderSystem &operator=(RenderSystem &&) = delete;
+    // 删除拷贝构造和赋值操作符
+    RenderSystem(const RenderSystem&) = delete;
+    RenderSystem& operator=(const RenderSystem&) = delete;
 
-    private:
-        RenderSystem() = default;
-        glm::mat4 m_projection;
-        bool inited = false;
+    // 移动语义也删除（单例不需要）
+    RenderSystem(RenderSystem&&) = delete;
+    RenderSystem& operator=(RenderSystem&&) = delete;
 
-        const Shader *m_shader = nullptr;
-        const MeshManager::Mesh *m_quadMesh = nullptr;
-        const MeshManager::Mesh *m_circleMesh = nullptr;
-    };
+  private:
+    RenderSystem() = default;
+    glm::mat4 m_projection{};
+    bool inited = false;
+
+    const Shader* m_shader = nullptr;
+    const MeshManager::Mesh* m_quadMesh = nullptr;
+    const MeshManager::Mesh* m_circleMesh = nullptr;
+};
 } // namespace th

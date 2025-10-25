@@ -5,6 +5,9 @@
 
 #include <miniaudio.h>
 
+#include "utils/Logger.hpp"
+#include "ext.hpp"
+
 namespace th
 {
 bool AudioManager::init()

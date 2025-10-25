@@ -1,3 +1,4 @@
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <core/App.hpp>
@@ -5,9 +6,9 @@
 #include <utils/Logger.hpp>
 #include <utils/Time.hpp>
 
-#include "../../include/ecs/system_old/BulletSystem.hpp"
 #include "core/InputSystem.hpp"
-#include "ecs/system_old/CollisionSystem.hpp"
+#include "ecs/system/CollisionSystem.hpp"
+#include "ecs/system/PlayerSystem.hpp"
 #include "graphics/RenderSystem.hpp"
 #include "graphics/ShaderManager.hpp"
 #include "graphics/TextureManager.hpp"
@@ -45,9 +46,9 @@ namespace th
             // 处理输入
             inputSystem.processInput(registry);
             // 更新玩家移动
-            PlayerSystem::updateMove(registry);
+            PlayerSystem::update(registry, Time::getDeltaTime());
             // 更新弹幕移动
-            BulletSystem::update(registry, Time::getDeltaTime());
+            //BulletSystem::update(registry, Time::getDeltaTime());
             // 处理碰撞
             CollisionSystem::update(registry);
 
@@ -67,13 +68,10 @@ namespace th
         RenderSystem::getInstance();
         ShaderManager::getInstance();
         TextureManager::getInstance();
-        PlayerSystem::init();
         PlayerSystem::createPlayer(registry);
 
         thLogger::info("玩家已创建");
-        BulletSystem::init(registry);
-        CollisionSystem::init(registry);
-
+        //BulletSystem::init(registry);
         auto &audio = AudioManager::getInstance();
         audio.init();
         audio.loadSound("miss", "miss.wav");

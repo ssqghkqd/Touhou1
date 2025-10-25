@@ -1,4 +1,6 @@
 #pragma once
+#include <ctime>
+#include <string>
 
 namespace th
 {

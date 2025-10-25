@@ -1,6 +1,12 @@
 #pragma once
 
 
+#include <string>
+#include <vector>
+
+#include "fwd.hpp"
+#include "glad.h"
+
 namespace th
 {
     class Shader

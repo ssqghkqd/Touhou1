@@ -1,8 +1,10 @@
 #include <core/Window.hpp>
-#include <utils/Logger.hpp>
-#include "core/App.hpp"
 #include <fstream>
 #include <iostream>
+#include <utils/Logger.hpp>
+
+#include "core/App.hpp"
+#include "glad.h"
 
 namespace th
 {
@@ -111,14 +113,14 @@ namespace th
         return glfwWindowShouldClose(m_window);
     }
     // 交换缓冲区
-    void Window::swapBuffers()
+    void Window::swapBuffers() const
     {
         if (!m_window)
             thLogger::Log(thLogger::Critical, "m_window是空指针！");
         glfwSwapBuffers(m_window);
     }
     // 轮询事件
-    void Window::pollEvents()
+    void Window::pollEvents() const
     {
         if (!m_window)
             thLogger::Log(thLogger::Critical, "m_window是空指针！");

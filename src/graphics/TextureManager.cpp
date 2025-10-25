@@ -1,9 +1,13 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include <graphics/TextureManager.hpp>
-#include <filesystem>
 #include <stb_image.h>
-#include <utils/FileManager.hpp>
+
+#include <filesystem>
+#include <graphics/TextureManager.hpp>
 #include <iostream>
+#include <utils/FileManager.hpp>
+
+#include "glad.h"
+#include "utils/Logger.hpp"
 
 namespace th
 {

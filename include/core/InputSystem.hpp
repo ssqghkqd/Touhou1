@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../thirdparty/entt/src/entt/entt.hpp"
-#include "../ecs/system_old/PlayerSystem.hpp"
 #include "core/App.hpp"
 #include "core/InputManager.hpp"
 #include "core/Window.hpp"
@@ -13,11 +12,9 @@ namespace th
     public:
         void processInput(entt::registry &registry);
         static InputSystem &getInstance();
-        void checkExit();
-        void updatePlayerMovement(entt::registry &registry);
+        void checkExit() const;
         void toggleDebug();
         void shot(entt::registry &registry);
-        void toggleHitbox(entt::registry &registry);
 
         // 删除拷贝构造和赋值操作符
         InputSystem(const InputSystem &) = delete;

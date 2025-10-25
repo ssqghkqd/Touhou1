@@ -66,18 +66,6 @@ target_link_libraries(${PROJECT_NAME}
         glad           # GLAD
 )
 
-# 预编译头（完全还原你的原始配置，不做任何修改！）
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-        <vector>
-        <memory>
-        <glad.h>
-        <ext.hpp>
-        <entt/entt.hpp>
-        <stb_image.h>
-        <GLFW/glfw3.h>
-        <utils/Logger.hpp>
-)
-
 # 全局宏定义（保留原始配置）
 target_compile_definitions(${PROJECT_NAME} PRIVATE
 )

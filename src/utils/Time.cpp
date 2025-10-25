@@ -1,5 +1,8 @@
-#include <utils/Time.hpp>
 #include <chrono>
+#include <utils/Time.hpp>
+
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
 
 namespace th
 {

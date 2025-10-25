@@ -1,11 +1,18 @@
 #include "graphics/RenderSystem.hpp"
 
-#include <format>
-
 #include "core/App.hpp"
+#include "ecs/comp/PlayerComp.hpp"
+#include "ecs/comp/RenderComp.hpp"
+#include "ecs/comp/SpriteComp.hpp"
+#include "ecs/comp/TagComp.hpp"
+#include "ecs/comp/TransformComp.hpp"
+#include "ecs/system/PlayerSystem.hpp"
+#include "ext.hpp"
+#include "glad.h"
 #include "graphics/MeshManager.hpp"
 #include "graphics/ShaderManager.hpp"
 #include "graphics/TextureManager.hpp"
+#include "utils/Logger.hpp"
 
 namespace th
 {
@@ -18,7 +25,7 @@ RenderSystem& RenderSystem::getInstance()
     return instance;
 }
 
-void RenderSystem::init(int screenWidth, int screenHeight)
+void RenderSystem::init(const int screenWidth, const int screenHeight)
 {
     if (inited)
     {
@@ -42,7 +49,7 @@ void RenderSystem::init(int screenWidth, int screenHeight)
     // 初始化网格管理器
     auto& meshManager = MeshManager::getInstance();
     m_quadMesh = &meshManager.GetQuadMesh();
-    m_circleMesh = &meshManager.GetCircleMesh(16); // 16分段圆形
+    // m_circleMesh = &meshManager.GetCircleMesh(16); // 16分段圆形
 
     // 设置OpenGL状态
     glEnable(GL_BLEND);
@@ -69,7 +76,7 @@ void RenderSystem::setProjection(int width, int height)
     m_shader->set("projection", m_projection);
 }
 
-void RenderSystem::renderEntity(const SpriteComponent& tf, const RenderComponent& rc)
+void RenderSystem::renderEntity(TransformComp& tf, RenderComp& rc) const
 {
     // 不可见的直接返回
     if (!rc.isVisible)
@@ -84,19 +91,10 @@ void RenderSystem::renderEntity(const SpriteComponent& tf, const RenderComponent
     m_shader->use();
     m_shader->set("model", model);
 
-    // 选择网格
-    const MeshManager::Mesh* mesh = nullptr;
-    switch (rc.meshType)
-    {
-        case MeshType::Circle:
-            mesh = m_circleMesh;
-            break;
-        case MeshType::Rect:
-        default:
-            mesh = m_quadMesh;
-    }
+    // 选择网格（现在不选了
+    const MeshManager::Mesh* mesh = m_quadMesh;
 
-        // 绑定纹理
+    // 绑定纹理 // TODO 优化批处理
     if (!rc.textureName.empty())
     {
         m_shader->set("thTexture", 0);
@@ -133,21 +131,20 @@ void RenderSystem::renderEntity(const SpriteComponent& tf, const RenderComponent
     glDrawElements(GL_TRIANGLES, m_quadMesh->indexCount, GL_UNSIGNED_INT, 0);
 } */
 
-void RenderSystem::renderHitbox(const SpriteComponent& playerTF, const HitboxComponent& hitbox, bool isSlowMode)
+void RenderSystem::renderHitbox(const TransformComp& playerTF, bool isSlowMode, const PlayerComp& pc) const
 {
     if (!isSlowMode)
         return; // 只在低速模式显示
     // 计算判定点位置
-    glm::vec2 hitboxPos = playerTF.position + hitbox.offset;
+    glm::vec2 hitboxPos = playerTF.position + pc.hitboxOffset;
 
     // 创建临时渲染组件
-    RenderComponent rc;
-    rc.meshType = MeshType::Rect;
-    rc.textureName = hitbox.textureName;
-    rc.size = glm::vec2(hitbox.renderRadius * 2);
+    RenderComp rc;
+    rc.textureName = "hitbox";
+    rc.size = pc.hitboxSize;
 
     // 创建临时变换组件
-    SpriteComponent tf;
+    TransformComp tf;
     tf.position = hitboxPos;
 
     // std::cout << std::format("纹理:{}, 位置:{} {}\n", rc.textureName,
@@ -181,11 +178,11 @@ void RenderSystem::renderBullet(const TransformComponent &sc,
     glDrawElements(GL_TRIANGLES, m_circleMesh->indexCount, GL_UNSIGNED_INT, 0);
 } */
 
-void RenderSystem::renderBackground()
+void RenderSystem::renderBackground() const
 {
     // 创建背景实体（不注册到ECS）
-    static SpriteComponent bgtf;
-    static RenderComponent bgRender;
+    static TransformComp bgtf;
+    static RenderComp bgRender;
 
     bgtf.position = glm::vec2(App::width / 2, App::height / 2);
     bgRender.textureName = "bg1";
@@ -224,24 +221,18 @@ void RenderSystem::update(entt::registry& registry)
     BulletRenderComponent &render) { renderBullet(sc, render); }); */
 
     // 2. 弹幕（应该在玩家前面）
-    auto bulletView = registry.view<SpriteComponent, RenderComponent, BulletTag>();
-    bulletView.each([&](auto entity, SpriteComponent& tf, RenderComponent& rc)
+    auto bulletView = registry.view<TransformComp, RenderComp, BulletTag>();
+    bulletView.each([&](auto entity, auto& tf, auto& rc)
                     {
                         renderEntity(tf, rc);
                     });
 
     // 3. 玩家
-    auto playerView = registry.view<SpriteComponent, RenderComponent, PlayerTag>();
-    playerView.each([&](auto entity, SpriteComponent& tf, RenderComponent& rc)
-                    {
-                        renderEntity(tf, rc);
-                    });
-
-    // 4. 判定点（最上层）
-    auto hitboxView = registry.view<SpriteComponent, HitboxComponent, PlayerControl>();
-    hitboxView.each([&](auto entity, SpriteComponent& tf, HitboxComponent& hitbox, PlayerControl& pc)
-                    {
-                        renderHitbox(tf, hitbox, pc.slowMode);
-                    });
+    static auto& m_player = PlayerSystem::getPlayer();
+    auto& tf = registry.get<TransformComp>(m_player);
+    auto& rc = registry.get<RenderComp>(m_player);
+    auto& pc = registry.get<PlayerComp>(m_player);
+    renderEntity(tf, rc);
+    renderHitbox(tf, pc.isSlow, pc);
 }
 } // namespace th

@@ -4,3 +4,4 @@ gfg_temp/
 .idea
 project-backup.zip
 thirdparty/
+.gitignore

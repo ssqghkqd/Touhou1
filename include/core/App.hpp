@@ -2,6 +2,7 @@
 #include <../../thirdparty/entt/src/entt/entt.hpp>
 
 #include "entt/entity/registry.hpp"
+#include "vec2.hpp"
 
 namespace th
 {
