@@ -90,6 +90,7 @@ void RenderSystem::renderEntity(TransformComp& tf, RenderComp& rc) const
     // 设置着色器参数
     m_shader->use();
     m_shader->set("model", model);
+    m_shader->set("entityColor", rc.color);
 
     // 选择网格（现在不选了
     const MeshManager::Mesh* mesh = m_quadMesh;

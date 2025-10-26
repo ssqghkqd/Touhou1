@@ -2,7 +2,8 @@
 
 int main()
 {
-        th::App app;
-        app.run();
-        return 0;
+    th::App app;
+    app.run();
+
+    return 0;
 }

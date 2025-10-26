@@ -43,7 +43,7 @@ namespace th
         if (!data)
         {
             thLogger::error("Failed to load texture: " + fullPath.string());
-            std::string r = stbi_failure_reason();
+            const std::string r = stbi_failure_reason();
             thLogger::error("Reason: " + r);
             return 0; // 返回无效纹理
         }

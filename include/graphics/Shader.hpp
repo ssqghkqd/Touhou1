@@ -28,6 +28,7 @@ namespace th
         // 设置uniform
         bool set(const std::string &name, const glm::mat4 &mat) const;
         bool set(const std::string &name, const int num) const;
+        bool set(const std::string &name, const glm::vec4& vec4) const;
 
     private:
         // 着色器程序ID

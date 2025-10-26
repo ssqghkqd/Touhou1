@@ -13,24 +13,14 @@ void load(const fs::path& path, const std::string& name)
     files[name] = json_data;
 }
 
-json get(const std::string& name, const std::string& key)
+json& get(const std::string& name)
 {
-    const json data = files[name];
-    if (data.find(key) != data.end())
+    if (!files.contains(name))
     {
-        return data;
+        thLogger::error("JSON未加载: " + name);
+        throw std::runtime_error("JSON未加载");
     }
-    thLogger::error("该json不存在");
-    return json(); // 返回空json
+    return files[name]; // 返回整个json对象
 }
 
-void save(const std::string& key, json data)
-{
-    if (data.find(key) != data.end())
-    {
-        files[key] = std::move(data);
-        return;
-    }
-    thLogger::error("该json不存在");
-}
 } // namespace th::JsonManager

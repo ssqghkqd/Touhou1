@@ -14,6 +14,5 @@ inline std::unordered_map<std::string, json> files;
 void load(const fs::path& path, const std::string& name);
 
 
-json get(const std::string& name, const std::string& key);
-void save(const std::string& key, json data);
+json& get(const std::string& name);
 } // namespace th::JsonManager

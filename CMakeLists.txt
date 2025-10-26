@@ -29,11 +29,10 @@ include_directories(
         ${THIRDPARTY_DIR}/entt/src
         ${THIRDPARTY_DIR}/stb
         ${THIRDPARTY_DIR}/glad
-        ${THIRDPARTY_DIR}/soloud/include
         ${THIRDPARTY_DIR}/GLFW/include
         ${THIRDPARTY_DIR}/miniaudio
-        ${THIRDPARTY_DIR}
         ${THIRDPARTY_DIR}/nlohmann_json
+        ${THIRDPARTY_DIR}/spdlog/include
         /usr/lib/llvm-21/include/c++/v1
 )
 
@@ -60,7 +59,6 @@ file(GLOB_RECURSE SOURCES src/*.cpp src/*.c)
 # 添加可执行文件
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Windows 下必需的链接库（精简版）
 target_link_libraries(${PROJECT_NAME}
         glfw           # GLFW 静态库
         glad           # GLAD

@@ -46,7 +46,7 @@ namespace th
     fs::path FileManager::getResourcePath(const fs::path &relativePath)
     {
         // 获取可执行文件路径
-        static fs::path basePath = "./assets";
+        static fs::path basePath = "../assets";
 
         return basePath / relativePath;
     }

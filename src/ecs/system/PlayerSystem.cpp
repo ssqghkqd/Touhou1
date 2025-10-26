@@ -14,6 +14,8 @@
 #include "ecs/comp/SpriteComp.hpp"
 #include "ecs/comp/TagComp.hpp"
 #include "ecs/comp/TransformComp.hpp"
+#include "utils/JsonManager.hpp"
+#include <nlohmann_json/json.hpp>
 
 namespace th::PlayerSystem
 {
@@ -22,8 +24,9 @@ void update(entt::registry& registry, float dt)
 {
     constexpr int width = App::bgoffsetX + App::bgwidth;
     constexpr int height = App::bgoffsetY + App::bgheight;
-    constexpr float slowMoveSpeed = 300.02f;
-    constexpr float moveSpeed = 548.57f;
+    static json& playerJ = th::JsonManager::get("game")["player"];
+    static float slowMoveSpeed = playerJ["slowspeed"];
+    static float moveSpeed = playerJ["speed"];
 
     static auto view = registry.view<PlayerComp, TransformComp, SpriteComp, RenderComp, DragComp>();
 
@@ -55,6 +58,8 @@ void update(entt::registry& registry, float dt)
 
 entt::entity createPlayer(entt::registry& registry)
 {
+    th::JsonManager::load("json/game.json", "game");
+    json& playerJ = th::JsonManager::get("game")["player"];
     const auto player = registry.create();
 
     auto& tf = registry.emplace<TransformComp>(player);
@@ -72,8 +77,11 @@ entt::entity createPlayer(entt::registry& registry)
     registry.emplace<PlayerTag>(player);
 
     tf.position = {App::bgwidth / 2.0f, App::bgheight / 2.0f}; // 屏幕中心
-    render.size = {48.0f, 48.0f};                              // 适当尺寸
-    render.textureName = "player";
+    float width = playerJ["width"];
+    float height = playerJ["height"];
+    auto textureName = playerJ["texturename"];
+    render.size = {width, height};                              // 适当尺寸
+    render.textureName = textureName;
     cs.radius = 2.0f;
 
     m_player = player;

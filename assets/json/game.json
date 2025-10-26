@@ -1,0 +1,10 @@
+{
+  "player": {
+    "slowspeed": 300.02,
+    "speed": 548.57,
+    "texturename": "player",
+    "width": 48,
+    "height": 48,
+    "collision_radius": 10
+  }
+}

@@ -3,16 +3,20 @@
 
 #include <core/App.hpp>
 #include <core/Window.hpp>
+#include <iostream>
 #include <utils/Logger.hpp>
 #include <utils/Time.hpp>
 
 #include "core/InputSystem.hpp"
+#include "ecs/system/BulletSystem.hpp"
 #include "ecs/system/CollisionSystem.hpp"
 #include "ecs/system/PlayerSystem.hpp"
+#include "ecs/system/SpriteMovementSys.hpp"
 #include "graphics/RenderSystem.hpp"
 #include "graphics/ShaderManager.hpp"
 #include "graphics/TextureManager.hpp"
 #include "resources/AudioManager.hpp"
+#include "spdlog/spdlog.h"
 
 namespace th
 {
@@ -47,8 +51,10 @@ namespace th
             inputSystem.processInput(registry);
             // 更新玩家移动
             PlayerSystem::update(registry, Time::getDeltaTime());
-            // 更新弹幕移动
-            //BulletSystem::update(registry, Time::getDeltaTime());
+            // 更新所有精灵移动
+            SpriteMovementSys::update(registry, Time::getDeltaTime());
+            // 生成弹幕
+            BulletSystem::update(registry, Time::getDeltaTime());
             // 处理碰撞
             CollisionSystem::update(registry);
 
@@ -56,11 +62,17 @@ namespace th
 
 
             window.swapBuffers();
+
+            GLenum err;
+            while ((err = glGetError()) != GL_NO_ERROR) {
+                std::cerr << "OpenGL 错误: " << err << std::endl;
+            }
         }
     }
 
     void App::init()
     {
+        spdlog::set_pattern("[%H:%M:%S] [%l] %g:%# - %v");
         Time::update();
         Window::getInstance();
         InputSystem::getInstance();
@@ -70,13 +82,12 @@ namespace th
         TextureManager::getInstance();
         PlayerSystem::createPlayer(registry);
 
-        thLogger::info("玩家已创建");
         //BulletSystem::init(registry);
         auto &audio = AudioManager::getInstance();
         audio.init();
         audio.loadSound("miss", "miss.wav");
         audio.setMasterVolume(1.0f);
-        audio.playMusic("th11_09.wav");
+        //audio.playMusic("th11_09.wav");
     }
 
     void App::update(double& lastPrintTime)
