@@ -16,19 +16,18 @@ class RenderSystem
 {
   public:
     ~RenderSystem() = default;
-    static RenderSystem& getInstance();
 
-    void init(int screenWidth, int screenHeight);
+    void init(entt::registry& registry, int screenWidth, int screenHeight);
     void update(entt::registry& registry);
     void setProjection(int width, int height);
 
     /* void renderPlayer(const TransformComponent &sprite); */
-    void renderHitbox(const TransformComp& playerTF, bool isSlowMode, const PlayerComp& pc) const;
+    void renderHitbox(entt::registry& registry, const TransformComp& playerTF, bool isSlowMode, const PlayerComp& pc) const;
     /*void renderBullet(const TransformComponent &sc,
                       const BulletRenderComponent &render); */
-    void renderBackground() const;
+    void renderBackground(entt::registry& registry) const;
 
-    void renderEntity(TransformComp& tf, RenderComp& rc) const;
+    void renderEntity(entt::registry& registry, TransformComp& tf, RenderComp& rc) const;
 
     // 删除拷贝构造和赋值操作符
     RenderSystem(const RenderSystem&) = delete;
@@ -38,8 +37,9 @@ class RenderSystem
     RenderSystem(RenderSystem&&) = delete;
     RenderSystem& operator=(RenderSystem&&) = delete;
 
+    RenderSystem(entt::registry& registry);
+
   private:
-    RenderSystem() = default;
     glm::mat4 m_projection{};
     bool inited = false;
 

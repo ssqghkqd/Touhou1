@@ -4,6 +4,8 @@
 #include <glm.hpp>
 
 #define GLFW_INCLUDE_NONE
+#include <nlohmann_json/json.hpp>
+
 #include "GLFW/glfw3.h"
 #include "core/App.hpp"
 #include "core/Window.hpp"
@@ -15,7 +17,7 @@
 #include "ecs/comp/TagComp.hpp"
 #include "ecs/comp/TransformComp.hpp"
 #include "utils/JsonManager.hpp"
-#include <nlohmann_json/json.hpp>
+#include "utils/Time.hpp"
 
 namespace th::PlayerSystem
 {
@@ -51,8 +53,7 @@ void update(entt::registry& registry, float dt)
                   tf.position.x = glm::clamp(tf.position.x, App::bgoffsetX + halfWidth, (float)width - halfWidth);
                   tf.position.y = glm::clamp(tf.position.y, App::bgoffsetY + halfHeight, (float)height - halfHeight);
 
-                  // 记录位置变化
-                  // thLogger::debug("玩家位置: (" + std::to_string(tf.position.x) + ", " + std::to_string(tf.position.y) + ")");
+
               });
 }
 
@@ -90,8 +91,14 @@ entt::entity createPlayer(entt::registry& registry)
 
 void shot(entt::registry& registry)
 {
-    auto& tf = registry.get<TransformComp>(m_player);
-    //BulletSystem::createBullet(registry, tf.position, {0.0f, -500.0f}, true);
+    const float currentTime = Time::getWindowTime();
+
+    if (currentTime - m_lastTime >= shotInterval)
+    {
+        m_lastTime = currentTime;
+        auto& tf = registry.get<TransformComp>(m_player);
+        //BulletSystem::createBullet(registry, tf.position, {0.0f, -500.0f}, true);
+    }
 }
 
 entt::entity& getPlayer()
@@ -105,7 +112,7 @@ void updatePlayerMovement(entt::registry& registry)
     auto& tf = registry.get<TransformComp>(m_player);
     auto& pc = registry.get<PlayerComp>(m_player);
     // 检测低速模式
-    static const auto& window = Window::getInstance();
+    static const auto& window = registry.ctx().get<Window>();
     pc.isSlow = window.isKeyPressed(GLFW_KEY_LEFT_SHIFT);
 
     pc.targetDir = glm::vec2(0.0f); // 重置为零向量

@@ -2,16 +2,18 @@
 
 #include <unordered_map>
 #include <string>
+#include <filesystem>
 #include "glad.h"
+
+namespace fs = std::filesystem;
 
 namespace th
 {
     class TextureManager
     {
     public:
-        static TextureManager &getInstance();
         ~TextureManager();
-        GLuint loadTexture(const std::string &textureName);
+        GLuint loadTexture(const std::string& textureName, const fs::path& path);
         GLuint getTexture(const std::string &name) const;
         void bind(const std::string &name) const;
         void clear();
@@ -25,8 +27,9 @@ namespace th
         TextureManager(TextureManager &&) = delete;
         TextureManager &operator=(TextureManager &&) = delete;
 
+        TextureManager();
+
     private:
-        TextureManager() = default;
         std::unordered_map<std::string, GLuint> textures; // 纹理缓存
         bool inited = false;
     };

@@ -26,15 +26,21 @@ class AudioManager
     float sfxVolume = 1.0f;
     bool inited = false;
 
-    AudioManager() = default;
 
 
   public:
     bool init();
     ~AudioManager();
+    AudioManager();
 
+    // 禁止拷贝
+    AudioManager(const AudioManager&) = delete;
+    AudioManager& operator=(const AudioManager&) = delete;
 
-    static AudioManager& getInstance();
+    // 允许移动
+    AudioManager(AudioManager&&) noexcept = default;
+    AudioManager& operator=(AudioManager&&) noexcept = default;
+
 
     bool loadSound(const std::string& name, const fs::path& path);
 

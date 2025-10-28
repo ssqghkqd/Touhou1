@@ -21,7 +21,6 @@ namespace th
             int indexCount = 0;
         };
 
-        static MeshManager &getInstance();
 
         const Mesh &GetQuadMesh();
         const Mesh &GetCircleMesh(int segments = 16);
@@ -32,9 +31,10 @@ namespace th
         MeshManager(MeshManager &&) = delete;
         MeshManager &operator=(MeshManager &&) = delete;
 
-    private:
         MeshManager() = default;
         ~MeshManager();
+
+    private:
 
         const Mesh &GetOrCreateMesh(const std::string &key, const std::function<Mesh()>& createFunc);
         static Mesh CreateQuadMesh();

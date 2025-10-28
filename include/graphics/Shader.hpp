@@ -21,7 +21,6 @@ namespace th
         void checkShaderProgram(GLuint shaderProgram);
 
         bool use() const;
-        void shutdown();
 
         inline GLuint getID() const { return m_id; }
 

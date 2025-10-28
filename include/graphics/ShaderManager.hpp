@@ -10,8 +10,6 @@ namespace th
     class ShaderManager
     {
     public:
-        // 获取实例
-        static ShaderManager &getInstance();
 
         // 加载 获取着色器
         const Shader &loadShader(const std::string &name,
@@ -28,9 +26,10 @@ namespace th
         ShaderManager(ShaderManager &&) = delete;
         ShaderManager &operator=(ShaderManager &&) = delete;
 
-    private:
         ShaderManager() = default;
         ~ShaderManager() = default;
+
+    private:
         std::unordered_map<std::string, std::unique_ptr<Shader>> m_shaders;
     };
 } // namespace th

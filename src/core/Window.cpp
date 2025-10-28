@@ -1,158 +1,130 @@
 #include <core/Window.hpp>
-#include <fstream>
-#include <iostream>
-#include <utils/Logger.hpp>
 
 #include "core/App.hpp"
 #include "glad.h"
+#include "spdlog/spdlog.h"
 
 namespace th
 {
 
-    Window &Window::getInstance()
-    {
-        static Window instance;
-        if (!instance.inited)
-            instance.init(App::width, App::height, App::title);
-        return instance;
-    }
+ Window::Window()
+{
+    init(App::width, App::height, App::title);
+}
 
-    void Window::init(int width, int height, const char *title)
+
+void Window::init(int width, int height, const char* title)
+{
+    if (inited)
     {
-        if (inited)
+        spdlog::warn("window已经初始化");
+        return;
+    }
+    App::scale = 1;
+
+    if (!glfwInitialized)
+    {
+        if (!glfwInit())
         {
-            thLogger::warning("window已初始化");
-            return;
+            spdlog::critical("GLFW初始化失败");
+            throw;
         }
-        App::scale = 1;
-        std::ofstream log("debug.log");
-        log << "=== 程序启动详细日志 ===\n";
-        log << "时间: " << __TIME__ << "\n";
-        log << "DISPLAY: " << (getenv("DISPLAY") ? getenv("DISPLAY") : "null") << "\n";
-
-        glfwSetErrorCallback([](int error, const char* description) {
-        std::ofstream errLog("glfw_errors.log", std::ios::app);
-        errLog << "GLFW Error " << error << ": " << description << "\n";
-        std::cerr << "GLFW Error " << error << ": " << description << std::endl;
-    });
-
-        if (!glfwInitialized)
-        {
-            log << "尝试初始化 GLFW...\n";
-            if (!glfwInit())
-            {
-                log << "GLFW初始化失败\n";
-                const char* description;
-                int code = glfwGetError(&description);
-                log << "GLFW错误代码: " << code << "\n";
-                log << "GLFW错误描述: " << (description ? description : "null") << "\n";
-
-                // 输出更多系统信息
-                log << "用户: " << getenv("USER") << "\n";
-
-                thLogger::Log(thLogger::Critical, "GLFW初始化失败！");
-            }
-            glfwInitialized = true;
-            thLogger::Log(thLogger::Info, "GLFW初始化成功");
-        }
-
-        if (m_window)
-        {
-            thLogger::Log(thLogger::Warning, "窗口已经创建！");
-        }
-        glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);  // 禁用系统缩放
-        glfwWindowHint(GLFW_SCALE_FRAMEBUFFER, GLFW_FALSE); // 禁用帧缓冲缩放
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_RESIZABLE, 0);
-        m_window = glfwCreateWindow(width * App::scale, height * App::scale, title, NULL, NULL);
-
-        // 检查是否成功创建窗口
-        if (!m_window)
-        {
-            thLogger::Log(thLogger::Critical, "窗口创建失败！");
-        }
-        thLogger::Log(thLogger::Info, "窗口创建成功");
-
-        glfwMakeContextCurrent(m_window);
-
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            thLogger::Log(thLogger::Critical, "GLAD初始化失败！");
-        }
-        thLogger::Log(thLogger::Info, "GLAD初始化成功");
-        glViewport(0, 0, width * App::scale, height * App::scale);
-        glfwSwapInterval(1); // 启用垂直同步（锁定显示器刷新率）
-        thLogger::info("window初始化成功");
-        inited = true;
+        glfwInitialized = true;
+        spdlog::info("GLFW 初始化成功");
     }
 
-    Window::~Window()
+    if (m_window)
     {
-        shutdown();
+        spdlog::warn("窗口已经创建");
+    }
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);  // 禁用系统缩放
+    glfwWindowHint(GLFW_SCALE_FRAMEBUFFER, GLFW_FALSE); // 禁用帧缓冲缩放
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, 0);
+    m_window = glfwCreateWindow(width * App::scale, height * App::scale, title, nullptr, nullptr);
+
+    // 检查是否成功创建窗口
+    if (!m_window)
+    {
+        spdlog::critical("窗口创建失败");
+        throw;
     }
 
-    void Window::shutdown()
-    {
-        if (m_window)
-        {
-            glfwDestroyWindow(m_window);
-            m_window = nullptr;
-        }
-    }
+    spdlog::info("窗口创建成功");
 
-    void Window::close()
-    {
-        glfwSetWindowShouldClose(m_window, true);
-    }
+    glfwMakeContextCurrent(m_window);
 
-    bool Window::shouldClose() const
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        return glfwWindowShouldClose(m_window);
+        spdlog::critical("GLAD初始化失败");
+        throw;
     }
-    // 交换缓冲区
-    void Window::swapBuffers() const
-    {
-        if (!m_window)
-            thLogger::Log(thLogger::Critical, "m_window是空指针！");
-        glfwSwapBuffers(m_window);
-    }
-    // 轮询事件
-    void Window::pollEvents() const
-    {
-        if (!m_window)
-            thLogger::Log(thLogger::Critical, "m_window是空指针！");
-        glfwPollEvents();
-    }
+    spdlog::info("GLAD初始化成功");
+    glViewport(0, 0, width * App::scale, height * App::scale);
+    glfwSwapInterval(1); // 启用垂直同步（锁定显示器刷新率）
+    spdlog::info("window初始化成功");
+    inited = true;
+}
 
-    // 判断按键函数
-    bool Window::isKeyPressed(int key) const
+Window::~Window()
+{
+    shutdown();
+}
+
+void Window::shutdown()
+{
+    if (m_window)
     {
-        if (!m_window)
-            thLogger::Log(thLogger::Critical, "m_window是空指针！");
-        return glfwGetKey(m_window, key) == GLFW_PRESS;
-    }
-
-    bool Window::isKeyRelease(int key) const
-    {
-        return glfwGetKey(m_window, key) == GLFW_RELEASE;
-    }
-
-    int Window::getFPS()
-    {
-        const double currentTime = glfwGetTime();
-        m_frameCount++;
-
-        // 每1秒更新一次FPS
-        if (currentTime - m_lastTime >= 1.0)
-        {
-            m_fps = m_frameCount;
-            m_frameCount = 0;
-            m_lastTime = currentTime;
-        }
-
-        return m_fps;
+        glfwDestroyWindow(m_window);
+        m_window = nullptr;
     }
 }
+
+void Window::close() const
+{
+    glfwSetWindowShouldClose(m_window, true);
+}
+
+bool Window::shouldClose() const
+{
+    return glfwWindowShouldClose(m_window);
+}
+// 交换缓冲区
+void Window::swapBuffers() const
+{
+    glfwSwapBuffers(m_window);
+}
+// 轮询事件
+void Window::pollEvents() const
+{
+    glfwPollEvents();
+}
+
+// 判断按键函数
+bool Window::isKeyPressed(int key) const
+{
+
+    return glfwGetKey(m_window, key) == GLFW_PRESS;
+}
+
+bool Window::isKeyRelease(int key) const
+{
+    return glfwGetKey(m_window, key) == GLFW_RELEASE;
+}
+
+void Window::updateFPS()
+{
+    const double currentTime = glfwGetTime();
+    m_frameCount++;
+
+    if (currentTime - m_lastTime >= 1.0)
+    {
+        m_fps = m_frameCount;
+        m_frameCount = 0;
+        m_lastTime = currentTime;
+        spdlog::info("fps:{}", m_fps);
+    }
+}
+} // namespace th

@@ -3,7 +3,7 @@
 #include <sstream>
 #include <utils/FileManager.hpp>
 
-#include "utils/Logger.hpp"
+#include "spdlog/spdlog.h"
 
 namespace fs = std::filesystem;
 
@@ -15,20 +15,17 @@ namespace th
         // 详细路径诊断
         fs::path nativePath = path;
         nativePath.make_preferred();
-        // 详细路径诊断
-        thLogger::debug("尝试读取文件: " + nativePath.string());
-        thLogger::debug("绝对路径: " + nativePath.string());
 
         // 检查文件是否存在
         if (!fileExists(nativePath.string()))
         {
-            thLogger::critical("File not found: " + nativePath.string());
+            spdlog::critical("文件不存在:{}", path.string());
         }
 
         std::ifstream file(nativePath);
         if (!file.is_open())
         {
-            thLogger::critical("Failed to open file: " + nativePath.string());
+            spdlog::critical("无法打开文件:{}", nativePath.string());
         }
 
         // 读取文件内容

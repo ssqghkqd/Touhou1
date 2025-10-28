@@ -1,3 +1,5 @@
+#include "ecs/system/CollisionSystem.hpp"
+
 #include <entt/entt.hpp>
 #include <glm.hpp>
 
@@ -8,9 +10,7 @@
 #include "ecs/comp/TransformComp.hpp"
 #include "ecs/system/PlayerSystem.hpp"
 #include "resources/AudioManager.hpp"
-#include "utils/Logger.hpp"
-
-#include "ecs/system/CollisionSystem.hpp"
+#include "spdlog/spdlog.h"
 
 namespace th::CollisionSystem
 {
@@ -25,7 +25,6 @@ void update(entt::registry& registry)
     auto& playerc = registry.get<PlayerComp>(m_player);
     auto& cs = registry.get<CollisionComp>(m_player);
 
-
     auto m_playerPosition = tf.position + playerc.hitboxOffset;
     auto m_playerRadius = cs.radius;
 
@@ -36,18 +35,18 @@ void update(entt::registry& registry)
                     {
                         if (bulletComp.isPlayer)
                         {
-                            thLogger::debug("跳过玩家弹幕");
+                            spdlog::debug("跳过玩家弹幕");
                             return; // 忽略玩家弹幕
                         }
 
                         // 弹幕使用点碰撞
                         if (checkCollision(m_playerPosition, m_playerRadius, transform.position, collision.radius))
                         {
-                            thLogger::info("玩家碰撞弹幕！");
+                            spdlog::info("玩家碰撞弹幕");
                             // 播放被弹音效
-                            auto& audio = AudioManager::getInstance();
+                            auto& audio = registry.ctx().get<AudioManager>();
                             audio.playSound("miss", 0.6f, m_playerPosition);
-                            thLogger::info("播放音效");
+                            spdlog::info("播放音效");
                             registry.destroy(bullet);
                         }
                     });
@@ -65,4 +64,4 @@ bool checkCollision(const glm::vec2& posA, const float radiusA, const glm::vec2&
     return distanceSquared < radiiSquared;
 }
 
-}
+} // namespace th::CollisionSystem

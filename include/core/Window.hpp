@@ -9,7 +9,6 @@ namespace th
     class Window
     {
     public:
-        static Window &getInstance();
         void init(int width, int height, const char *title);
         void shutdown();
         ~Window();
@@ -22,15 +21,16 @@ namespace th
         bool shouldClose() const;
         void swapBuffers() const;
         void pollEvents() const;
-        void close();
+        void close() const;
+
+        Window();
 
         // 判断一个键是否按下
         bool isKeyPressed(int key) const;
         bool isKeyRelease(int key) const;
-        int getFPS();
+        void updateFPS();
 
     private:
-        Window() = default;
         bool glfwInitialized = false;
         bool inited = false;
         GLFWwindow *m_window = nullptr;

@@ -31,6 +31,7 @@ include_directories(
         ${THIRDPARTY_DIR}/glad
         ${THIRDPARTY_DIR}/GLFW/include
         ${THIRDPARTY_DIR}/miniaudio
+        ${THIRDPARTY_DIR}
         ${THIRDPARTY_DIR}/nlohmann_json
         ${THIRDPARTY_DIR}/spdlog/include
         /usr/lib/llvm-21/include/c++/v1

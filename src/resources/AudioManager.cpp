@@ -5,8 +5,8 @@
 
 #include <miniaudio.h>
 
-#include "utils/Logger.hpp"
 #include "ext.hpp"
+#include "spdlog/spdlog.h"
 
 namespace th
 {
@@ -15,10 +15,10 @@ bool AudioManager::init()
     if (inited)
         return true;
 
-    ma_result result = ma_engine_init(NULL, &engine);
+    ma_result result = ma_engine_init(nullptr, &engine);
     if (result != MA_SUCCESS)
     {
-        thLogger::error("Audio engine init failed: " + std::string(ma_result_description(result)));
+        spdlog::error("ma_engine_init failed {}", std::string(ma_result_description(result)));
         return false;
     }
 
@@ -41,8 +41,8 @@ void AudioManager::playMusic(const std::string& path, float volume, bool loop)
             &engine,
             fullPath.c_str(),
             MA_SOUND_FLAG_DECODE| MA_SOUND_FLAG_NO_SPATIALIZATION,
-            NULL, // 音乐不使用音效组
-            NULL,
+            nullptr, // 音乐不使用音效组
+            nullptr,
             &music) == MA_SUCCESS)
     {
         ma_sound_set_volume(&music, volume * musicVolume * masterVolume);
@@ -52,7 +52,7 @@ void AudioManager::playMusic(const std::string& path, float volume, bool loop)
     }
     else
     {
-        thLogger::error("音乐播放失败");
+        spdlog::error("音乐播放失败");
     }
 }
 
@@ -60,7 +60,7 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
 {
     if (!inited)
     {
-        thLogger::error("音频引擎未初始化");
+        spdlog::error("音频系统未初始化");
         return false;
     }
 
@@ -77,7 +77,7 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
 
     if (result != MA_SUCCESS)
     {
-        thLogger::error("Failed to load sound: " + fullPath.string());
+        spdlog::error("加载失败:{}, 原因{}", fullPath.string(), std::string(ma_result_description(result)));
         return false;
     }
 
@@ -89,7 +89,7 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
 {
     if (!inited)
     {
-        thLogger::error("音频引擎未初始化");
+        spdlog::error("音频系统未初始化");
         return;
     }
 
@@ -107,7 +107,6 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
     }
 
     // 没有可用实例时创建新实例
-    thLogger::warning("Sound pool exhausted, creating new instance");
     auto newSound = std::make_unique<ma_sound>();
     ma_result result = ma_sound_init_copy(
         &engine,
@@ -126,8 +125,7 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
     }
     else
     {
-        thLogger::error("Failed to create sound instance: " +
-                        std::string(ma_result_description(result)));
+        spdlog::error("创建新实例失败{}", std::string(ma_result_description(result)));
     }
 }
 
@@ -135,11 +133,6 @@ void AudioManager::setMasterVolume(const float volume)
 {
     masterVolume = glm::clamp(volume, 0.0f, 1.0f);
     ma_engine_set_volume(&engine, masterVolume);
-}
-AudioManager& AudioManager::getInstance()
-{
-    static AudioManager instance;
-    return instance;
 }
 AudioManager::~AudioManager()
 {
@@ -149,8 +142,13 @@ AudioManager::~AudioManager()
         ma_sound_group_uninit(&group.second);
     }
     ma_engine_uninit(&engine);
-    thLogger::info("析构 AudioManager");
 }
+
+ AudioManager::AudioManager()
+{
+    init();
+}
+
 
 void AudioManager::configureSound(ma_sound* sound, float volume, bool loop) const
 {

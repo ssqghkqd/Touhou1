@@ -1,18 +1,13 @@
 #include "graphics/Shader.hpp"
 
 #include "ext.hpp"
+#include "spdlog/spdlog.h"
 #include "utils/FileManager.hpp"
-#include "utils/Logger.hpp"
-
-#define aboGetUniformLocation glGetUniformLocation
 
 namespace fs = std::filesystem;
 
 namespace th
 {
-void Shader::shutdown()
-{
-}
 
 bool Shader::use() const
 {
@@ -43,7 +38,8 @@ bool Shader::load(const std::string& vertPath, const std::string& fragPath)
     catch (const std::exception& e)
     {
         std::string s = e.what();
-        thLogger::critical("着色器代码读取失败" + s);
+        spdlog::critical("着色器代码编译错误:{}", s);
+        throw;
         return false;
     }
 
@@ -96,7 +92,7 @@ void Shader::checkCompileShader(GLuint shader, GLenum type)
     {
         glGetShaderInfoLog(shader, length, NULL, shaderLog.data());
         shaderLog.pop_back();
-        thLogger::error(typeName + "着色器编译失败:" + shaderLog);
+        spdlog::error("着色器编译失败:{}", shaderLog);
     }
 }
 
@@ -131,7 +127,8 @@ void Shader::checkShaderProgram(GLuint shaderProgram)
     {
         glGetProgramInfoLog(shaderProgram, length, NULL, programLog.data());
         programLog.pop_back(); // 移除末尾的null终止符
-        thLogger::critical("着色器程序链接失败：" + programLog);
+        spdlog::critical("着色器链接失败:{}", programLog);
+        throw;
     }
 }
 
@@ -139,16 +136,16 @@ bool Shader::set(const std::string& name, const glm::mat4& mat) const
 {
     if (m_id)
     {
-        GLint location = aboGetUniformLocation(m_id, name.c_str());
+        GLint location = glGetUniformLocation(m_id, name.c_str());
         if (location >= 0) // 如果找不到，返回-1
         {
             glUniformMatrix4fv(location, 1.0f, GL_FALSE, glm::value_ptr(mat));
             return true;
         }
-        thLogger::error("找不到" + name);
+        spdlog::error("找不到:{}", location);
         return false;
     }
-    thLogger::error("着色器程序未使用");
+    spdlog::error("着色器程序未使用:{}", name);
     return false;
 }
 
@@ -156,16 +153,16 @@ bool Shader::set(const std::string& name, const int num) const
 {
     if (m_id)
     {
-        GLint location = aboGetUniformLocation(m_id, name.c_str());
+        GLint location = glGetUniformLocation(m_id, name.c_str());
         if (location >= 0) // 如果找不到，返回-1
         {
             glUniform1i(location, num);
             return true;
         }
-        thLogger::error("找不到" + name);
+        spdlog::error("找不到:{}", location);
         return false;
     }
-    thLogger::error("着色器程序未使用");
+    spdlog::error("着色器程序未使用:{}", name);
     return false;
 }
 
@@ -173,16 +170,16 @@ bool Shader::set(const std::string& name, const glm::vec4& vec4) const
 {
     if (m_id)
     {
-        GLint location = aboGetUniformLocation(m_id, name.c_str());
+        GLint location = glGetUniformLocation(m_id, name.c_str());
         if (location >= 0) // 如果找不到，返回-1
         {
             glUniform4f(location,vec4.x,vec4.y,vec4.z,vec4.t);
             return true;
         }
-        thLogger::error("找不到" + name);
+        spdlog::error("找不到:{}", location);
         return false;
     }
-    thLogger::error("着色器程序未使用");
+    spdlog::error("着色器程序未使用:{}", name);
     return false;
 }
 } // namespace th

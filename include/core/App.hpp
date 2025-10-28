@@ -14,8 +14,6 @@ class App
     ~App() = default;
     void run();
     void mainLoop();
-    void init();
-    static void update(double& lastPrintTime);
 
     static constexpr int width = 1280;
     static constexpr int height = 960;

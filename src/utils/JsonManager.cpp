@@ -1,7 +1,7 @@
 #include <utils/FileManager.hpp>
 #include <utils/JsonManager.hpp>
 
-#include "utils/Logger.hpp"
+#include "spdlog/spdlog.h"
 
 namespace th::JsonManager
 {
@@ -17,8 +17,8 @@ json& get(const std::string& name)
 {
     if (!files.contains(name))
     {
-        thLogger::error("JSON未加载: " + name);
-        throw std::runtime_error("JSON未加载");
+        spdlog::critical("{} 未加载");
+        throw;
     }
     return files[name]; // 返回整个json对象
 }

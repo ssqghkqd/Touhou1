@@ -1,15 +1,11 @@
 #include "graphics/ShaderManager.hpp"
 
 #include "graphics/Shader.hpp"
-#include "utils/Logger.hpp"
+#include "spdlog/spdlog.h"
 
 namespace th
 {
-ShaderManager& ShaderManager::getInstance()
-{
-    static ShaderManager instance;
-    return instance;
-}
+
 
 const Shader& ShaderManager::loadShader(const std::string& name,
                                         const std::string& vertPath,
@@ -18,16 +14,14 @@ const Shader& ShaderManager::loadShader(const std::string& name,
     auto it = m_shaders.find(name);
     if (it != m_shaders.end())
     {
-        thLogger::warning(name + "已被加载");
+        spdlog::warn("{}已被加载");
         return *(it->second);
     }
 
     auto newShader = std::make_unique<Shader>();
     if (!newShader->load(vertPath, fragPath))
     {
-        thLogger::critical("着色器加载失败: " + name +
-                           "\n  顶点着色器: " + vertPath +
-                           "\n  片段着色器: " + fragPath);
+        spdlog::error("着色器加载失败：{}, 顶点着色器:{}, 片段着色器{}", name, vertPath, fragPath);
     }
 
     // 插入并获取引用
@@ -43,7 +37,7 @@ const Shader& ShaderManager::getShader(const std::string& name)
     {
         return *(it->second);
     }
-    thLogger::error("找不到:" + name);
+    spdlog::error("{}找不到", name);
     return defaultShader;
 }
 } // namespace th

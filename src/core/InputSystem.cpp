@@ -1,35 +1,29 @@
 #include "core/InputSystem.hpp"
 
 #define GLFW_INCLUDE_NONE
+#include <ext.hpp>
+
 #include "GLFW/glfw3.h"
 #include "core/Window.hpp"
-#include "resources/AudioManager.hpp"
-#include "utils/Logger.hpp"
-#include "utils/Time.hpp"
 #include "ecs/system/PlayerSystem.hpp"
-#include <ext.hpp>
+#include "resources/AudioManager.hpp"
+#include "utils/Time.hpp"
 
 namespace th
 {
-InputSystem& InputSystem::getInstance()
-{
-    static InputSystem instance;
-    return instance;
-}
 
 void InputSystem::processInput(entt::registry& registry)
 {
     // 检查是否退出
-    checkExit();
-    toggleDebug();
+    checkExit(registry);
     PlayerSystem::updatePlayerMovement(registry);
-    //toggleHitbox(registry);
     shot(registry);
-    im.update();
+    update(registry);
 }
 
-void InputSystem::checkExit() const
+void InputSystem::checkExit(entt::registry& reg) const
 {
+    auto& window = reg.ctx().get<Window>();
     if (window.isKeyPressed(GLFW_KEY_ESCAPE))
     {
         window.close();
@@ -38,24 +32,46 @@ void InputSystem::checkExit() const
 
 void InputSystem::shot(entt::registry& registry)
 {
+    auto& window = registry.ctx().get<Window>();
     if (window.isKeyPressed(GLFW_KEY_Z))
     {
-        const float currentTime = Time::getWindowTime();
-
-        // 每1秒更新一次FPS
-        if (currentTime - m_lastTime >= PlayerSystem::shotInterval)
-        {
-            m_lastTime = currentTime;
-            PlayerSystem::shot(registry);
-        }
+        PlayerSystem::shot(registry);
     }
 }
-void InputSystem::toggleDebug()
+
+void InputSystem::update(entt::registry& reg)
 {
-    if (im.isKeyJustPressed(GLFW_KEY_GRAVE_ACCENT))
+    auto& window = reg.ctx().get<Window>();
+    // 更新所有按键状态
+    for (auto& [key, state] : keyStates)
     {
-        thLogger::toggleDebug();
+        state.previous = state.current;
+        state.current = window.isKeyPressed(key);
     }
+}
+
+bool InputSystem::isKeyJustPressed(int key)
+{
+    // 确保按键已注册
+    if (keyStates.find(key) == keyStates.end())
+    {
+        keyStates[key] = {false, false};
+    }
+
+    auto& state = keyStates[key];
+    return state.current && !state.previous;
+}
+
+bool InputSystem::isKeyDown(int key) const
+{
+    auto it = keyStates.find(key);
+    return it != keyStates.end() && it->second.current;
+}
+
+bool InputSystem::isKeyReleased(int key) const
+{
+    auto it = keyStates.find(key);
+    return it != keyStates.end() && !it->second.current;
 }
 
 } // namespace th

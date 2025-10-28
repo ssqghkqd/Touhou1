@@ -60,4 +60,4 @@ entt::entity createBullet(entt::registry& registry, const glm::vec2& position, c
 
     return bullet;
 }
-}
+} // namespace th::BulletSystem

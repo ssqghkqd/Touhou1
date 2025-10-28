@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <nlohmann_json/json.hpp>
+#include <unordered_map>
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
