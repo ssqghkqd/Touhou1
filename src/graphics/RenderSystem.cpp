@@ -30,19 +30,14 @@ void RenderSystem::init(entt::registry& registry, const int screenWidth, const i
         return;
     }
 
-    // 初始化着色器管理器
+    // 获取纹理管理器
     auto& shaderManager = registry.ctx().get<ShaderManager>();
-    m_shader = &shaderManager.loadShader("default", "default.vs", "default.fs");
-    spdlog::info("加载着色器{}", m_shader->getID());
-
-    // 初始化纹理管理器
-    auto& textureManager = registry.ctx().get<TextureManager>();
+    m_shader = &shaderManager.getShader("default");
 
 
     // 初始化网格管理器
     auto& meshManager = registry.ctx().get<MeshManager>();
     m_quadMesh = &meshManager.GetQuadMesh();
-    // m_circleMesh = &meshManager.GetCircleMesh(16); // 16分段圆形
 
     // 设置OpenGL状态
     glEnable(GL_BLEND);
@@ -138,7 +133,7 @@ void RenderSystem::renderBackground(entt::registry& registry) const
     renderEntity(registry, bgtf, bgRender);
 }
 
-void RenderSystem::update(entt::registry& registry)
+void RenderSystem::update(entt::registry& registry) const
 {
     // 清除屏幕
     glClear(GL_COLOR_BUFFER_BIT);
@@ -159,7 +154,7 @@ void RenderSystem::update(entt::registry& registry)
     static auto& m_player = PlayerSystem::getPlayer();
     auto& tf = registry.get<TransformComp>(m_player);
     auto& rc = registry.get<RenderComp>(m_player);
-    auto& pc = registry.get<PlayerComp>(m_player);
+    const auto& pc = registry.get<PlayerComp>(m_player);
     renderEntity(registry, tf, rc);
     renderHitbox(registry, tf, pc.isSlow, pc);
 }

@@ -22,9 +22,6 @@ namespace th
         ShaderManager(const ShaderManager &) = delete;
         ShaderManager &operator=(const ShaderManager &) = delete;
 
-        // 移动语义也删除（单例不需要）
-        ShaderManager(ShaderManager &&) = delete;
-        ShaderManager &operator=(ShaderManager &&) = delete;
 
         ShaderManager() = default;
         ~ShaderManager() = default;

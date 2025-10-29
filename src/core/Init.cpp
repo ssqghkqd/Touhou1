@@ -2,12 +2,14 @@
 
 #include "core/InputSystem.hpp"
 #include "core/Window.hpp"
+#include "ecs/system/PlayerSystem.hpp"
 #include "graphics/MeshManager.hpp"
 #include "graphics/RenderSystem.hpp"
 #include "graphics/ShaderManager.hpp"
 #include "graphics/TextureManager.hpp"
 #include "resources/AudioManager.hpp"
 #include "spdlog/spdlog.h"
+#include "utils/JsonManager.hpp"
 #include "utils/Time.hpp"
 
 namespace th::Init
@@ -16,6 +18,7 @@ void init(entt::registry& reg)
 {
     setStatus(reg);
     loadResources(reg);
+    gameSetup(reg);
 }
 
 void loadResources(entt::registry& reg)
@@ -30,6 +33,8 @@ void loadResources(entt::registry& reg)
     auto& audio = reg.ctx().get<AudioManager>();
     audio.loadSound("miss", "miss.wav");
     audio.playMusic("th11_09.wav");
+
+    JsonManager::load("json/game.json", "game");
 }
 
 void setStatus(entt::registry& reg)
@@ -41,12 +46,15 @@ void setStatus(entt::registry& reg)
     reg.ctx().emplace<Window>();
     // 输入系统不初始化
     reg.ctx().emplace<InputSystem>();
-    // mesh不初始化
-    reg.ctx().emplace<MeshManager>();
+    // mesh初始化网格
+    auto& meshManager = reg.ctx().emplace<MeshManager>();
+    meshManager.GetQuadMesh();
+    // shader管理器
+    auto& shaderManager = reg.ctx().emplace<ShaderManager>();
+    auto& shader = shaderManager.loadShader("default", "default.vs", "default.fs");
+    spdlog::info("加载着色器{}", shader.getID());
     // 初始化渲染系统
     reg.ctx().emplace<RenderSystem>(reg);
-    // shader管理器
-    reg.ctx().emplace<ShaderManager>();
     // 纹理系统
     reg.ctx().emplace<TextureManager>();
     // 音频系统
@@ -54,4 +62,10 @@ void setStatus(entt::registry& reg)
     audio.setMasterVolume(1.0f);
 
 }
+
+void gameSetup(entt::registry& reg)
+{
+    PlayerSystem::createPlayer(reg);
+}
+
 }

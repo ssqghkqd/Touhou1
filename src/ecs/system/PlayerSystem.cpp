@@ -59,7 +59,6 @@ void update(entt::registry& registry, float dt)
 
 entt::entity createPlayer(entt::registry& registry)
 {
-    th::JsonManager::load("json/game.json", "game");
     json& playerJ = th::JsonManager::get("game")["player"];
     const auto player = registry.create();
 

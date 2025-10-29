@@ -18,7 +18,7 @@ class RenderSystem
     ~RenderSystem() = default;
 
     void init(entt::registry& registry, int screenWidth, int screenHeight);
-    void update(entt::registry& registry);
+    void update(entt::registry& registry) const;
     void setProjection(int width, int height);
 
     /* void renderPlayer(const TransformComponent &sprite); */
