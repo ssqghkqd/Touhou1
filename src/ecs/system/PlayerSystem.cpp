@@ -30,31 +30,29 @@ void update(entt::registry& registry, float dt)
     static float slowMoveSpeed = playerJ["slowspeed"];
     static float moveSpeed = playerJ["speed"];
 
-    static auto view = registry.view<PlayerComp, TransformComp, SpriteComp, RenderComp, DragComp>();
+    auto& player = registry.get<PlayerComp>(m_player);
+    auto& sprite = registry.get<SpriteComp>(m_player);
+    auto& drag = registry.get<DragComp>(m_player);
+    auto& render = registry.get<RenderComp>(m_player);
+    auto& tf = registry.get<TransformComp>(m_player);
 
-    view.each([&](entt::entity entity, auto& player, auto& tf, auto& sprite, auto& render, auto& drag)
-              {
-                  (void)entity;
-                  // 1. 计算目标速度
-                  float targetSpeed = player.isSlow ? slowMoveSpeed : moveSpeed;
-                  glm::vec2 targetVelocity = player.targetDir * targetSpeed;
+    // 1. 计算目标速度
+    float targetSpeed = player.isSlow ? slowMoveSpeed : moveSpeed;
+    glm::vec2 targetVelocity = player.targetDir * targetSpeed;
 
-                  // 使用线性插值平滑过渡速度
-                  sprite.velocity = glm::mix(sprite.velocity, targetVelocity, drag.smoothFactor);
+    // 使用线性插值平滑过渡速度
+    sprite.velocity = glm::mix(sprite.velocity, targetVelocity, drag.smoothFactor);
 
-                  // 应用速度到位置
-                  tf.position += sprite.velocity * dt;
+    // 应用速度到位置
+    tf.position += sprite.velocity * dt;
 
-                  // 边界检查（考虑精灵尺寸）
+    // 边界检查（考虑精灵尺寸）
 
-                  const float halfWidth = render.size.x / 2.0f;
-                  const float halfHeight = render.size.y / 2.0f;
+    const float halfWidth = render.size.x / 2.0f;
+    const float halfHeight = render.size.y / 2.0f;
 
-                  tf.position.x = glm::clamp(tf.position.x, App::bgoffsetX + halfWidth, (float)width - halfWidth);
-                  tf.position.y = glm::clamp(tf.position.y, App::bgoffsetY + halfHeight, (float)height - halfHeight);
-
-
-              });
+    tf.position.x = glm::clamp(tf.position.x, App::bgoffsetX + halfWidth, (float)width - halfWidth);
+    tf.position.y = glm::clamp(tf.position.y, App::bgoffsetY + halfHeight, (float)height - halfHeight);
 }
 
 entt::entity createPlayer(entt::registry& registry)
@@ -80,7 +78,7 @@ entt::entity createPlayer(entt::registry& registry)
     float width = playerJ["width"];
     float height = playerJ["height"];
     auto textureName = playerJ["texturename"];
-    render.size = {width, height};                              // 适当尺寸
+    render.size = {width, height}; // 适当尺寸
     render.textureName = textureName;
     cs.radius = 2.0f;
 
@@ -96,7 +94,7 @@ void shot(entt::registry& registry)
     {
         m_lastTime = currentTime;
         auto& tf = registry.get<TransformComp>(m_player);
-        //BulletSystem::createBullet(registry, tf.position, {0.0f, -500.0f}, true);
+        // BulletSystem::createBullet(registry, tf.position, {0.0f, -500.0f}, true);
     }
 }
 
@@ -107,7 +105,6 @@ entt::entity& getPlayer()
 
 void updatePlayerMovement(entt::registry& registry)
 {
-
     auto& tf = registry.get<TransformComp>(m_player);
     auto& pc = registry.get<PlayerComp>(m_player);
     // 检测低速模式

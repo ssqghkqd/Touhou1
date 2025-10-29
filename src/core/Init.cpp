@@ -2,6 +2,7 @@
 
 #include "core/InputSystem.hpp"
 #include "core/Window.hpp"
+#include "ecs/system/BulletInstructionPlayerSys.hpp"
 #include "ecs/system/PlayerSystem.hpp"
 #include "graphics/MeshManager.hpp"
 #include "graphics/RenderSystem.hpp"
@@ -35,6 +36,10 @@ void loadResources(entt::registry& reg)
     audio.playMusic("th11_09.wav");
 
     JsonManager::load("json/game.json", "game");
+    JsonManager::load("json/stage/stage1.json", "stage1");
+    auto& j = JsonManager::get("stage1");
+
+    BulletInstructionPlayerSys::load(j);
 }
 
 void setStatus(entt::registry& reg)

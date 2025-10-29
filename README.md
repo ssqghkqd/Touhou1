@@ -8,11 +8,15 @@
 类型 东方同人STG游戏
 ## 开发环境介绍
 C++23标准 OpenGL 3.3  
-构建工具Cmake ninja  
+## 构建方法
+cmake>=3.28 clang>=18/gcc>=14  
+cmake
   
-使用的库  
+## 使用的库  
 `glfw`
 `stb_image`
 `glm`
 `entt`
-`miniaudio` 
+`miniaudio`
+`spdlog`
+`nlohmann_json`

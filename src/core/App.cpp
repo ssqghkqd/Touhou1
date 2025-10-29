@@ -4,6 +4,7 @@
 
 #include "core/Init.hpp"
 #include "core/InputSystem.hpp"
+#include "ecs/system/BulletInstructionPlayerSys.hpp"
 #include "ecs/system/BulletSystem.hpp"
 #include "ecs/system/CollisionSystem.hpp"
 #include "ecs/system/PlayerSystem.hpp"
@@ -47,6 +48,7 @@ void App::mainLoop()
         SpriteMovementSys::update(registry, Time::getDeltaTime());
         // 生成弹幕
         BulletSystem::update(registry, Time::getDeltaTime());
+        BulletInstructionPlayerSys::update(registry, Time::getDeltaTime());
         // 处理碰撞
         CollisionSystem::update(registry);
 
