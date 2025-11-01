@@ -3,6 +3,7 @@
 #include "core/InputSystem.hpp"
 #include "core/Window.hpp"
 #include "ecs/system/BulletInstructionPlayerSys.hpp"
+#include "ecs/system/EnemySys.hpp"
 #include "ecs/system/PlayerSystem.hpp"
 #include "graphics/MeshManager.hpp"
 #include "graphics/RenderSystem.hpp"
@@ -30,13 +31,19 @@ void loadResources(entt::registry& reg)
     texture.loadTexture("hitbox", "textures/hitbox.png");
     texture.loadTexture("xiaoyu", "textures/xiaoyu.png");
     texture.loadTexture("bg1", "textures/bg1.png");
+    texture.loadTexture("enemy", "textures/enemy.png");
     // 音频
     auto& audio = reg.ctx().get<AudioManager>();
-    audio.loadSound("miss", "miss.wav");
-    audio.playMusic("th11_09.wav");
+    audio.loadSound("miss", "sounds/miss.wav");
+    audio.loadSound("enemy_shot", "sounds/enemy_shot.wav");
+    audio.loadSound("enemy_death", "sounds/enemy_death.wav");
+    audio.loadMusic("satori", "music/th11_09.wav");
 
-    JsonManager::load("json/game.json", "game");
+    audio.playMusic("satori");
+
+    JsonManager::load("json/config/player.json", "config.player");
     JsonManager::load("json/stage/stage1.json", "stage1");
+    JsonManager::load("json/config/bullet.json", "config.bullet");
     auto& j = JsonManager::get("stage1");
 
     BulletInstructionPlayerSys::load(j);
@@ -64,13 +71,12 @@ void setStatus(entt::registry& reg)
     reg.ctx().emplace<TextureManager>();
     // 音频系统
     auto& audio = reg.ctx().emplace<AudioManager>();
-    audio.setMasterVolume(1.0f);
 
 }
 
 void gameSetup(entt::registry& reg)
 {
     PlayerSystem::createPlayer(reg);
+    EnemySys::spawnEnemy(reg, {App::bgoffsetX + 300.0f, App::bgoffsetY + 100.0f});
 }
-
 }

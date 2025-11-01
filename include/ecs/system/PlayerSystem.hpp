@@ -10,6 +10,6 @@ entt::entity& getPlayer();
 void updatePlayerMovement(entt::registry& registry);
 
 inline entt::entity m_player;
-inline float shotInterval = 0.5f;
+inline float shotInterval = 0.1f;
 inline float m_lastTime = 0.0f;
 } // namespace PlayerSystem

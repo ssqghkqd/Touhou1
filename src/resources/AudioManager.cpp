@@ -1,5 +1,3 @@
-
-#define MA_ENABLE_VORBIS // 启用libvorbis解码
 #define MINIAUDIO_IMPLEMENTATION
 #include "resources/AudioManager.hpp"
 
@@ -15,45 +13,62 @@ bool AudioManager::init()
     if (inited)
         return true;
 
-    ma_result result = ma_engine_init(nullptr, &engine);
+    const ma_result result = ma_engine_init(nullptr, &engine);
     if (result != MA_SUCCESS)
     {
         spdlog::error("ma_engine_init failed {}", std::string(ma_result_description(result)));
         return false;
     }
 
-    // 创建默认音效组
-    ma_sound_group_init(&engine, 0, NULL, &groups["default"]);
     inited = true;
     return true;
 }
 
-// 播放音乐（单实例）
-void AudioManager::playMusic(const std::string& path, float volume, bool loop)
+void AudioManager::loadMusic(const std::string& name, const fs::path& path)
 {
     if (!inited)
+    {
+        spdlog::error("音频系统未初始化");
         return;
+    }
+    musicPaths[name] = path;
+    spdlog::info("存储音乐{}->{}", name, path.string());
+}
+
+// 播放音乐（单实例）
+void AudioManager::playMusic(const std::string& name, float volume, bool loop)
+{
+    if (!inited)
+    {
+        spdlog::warn("音频管理器未初始化");
+        return;
+    }
+    if (!musicPaths.contains(name))
+    {
+        spdlog::error("{} 未加载", name);
+        return;
+    }
 
     ma_sound_uninit(&music);
-    auto fullPath = FileManager::getResourcePath("music/" + path);
+    const auto fullPath = FileManager::getResourcePath(musicPaths[name]);
 
-    if (ma_sound_init_from_file(
-            &engine,
-            fullPath.c_str(),
-            MA_SOUND_FLAG_DECODE| MA_SOUND_FLAG_NO_SPATIALIZATION,
-            nullptr, // 音乐不使用音效组
-            nullptr,
-            &music) == MA_SUCCESS)
+    // 数星星
+    const auto result = ma_sound_init_from_file(
+        &engine,
+        fullPath.c_str(),
+        MA_SOUND_FLAG_DECODE,
+        nullptr,
+        nullptr,
+        &music);
+
+    if (result == MA_SUCCESS)
     {
         ma_sound_set_volume(&music, volume * musicVolume * masterVolume);
         ma_sound_set_looping(&music, loop);
         ma_sound_start(&music);
         return;
     }
-    else
-    {
-        spdlog::error("音乐播放失败");
-    }
+    spdlog::error("音乐播放失败 名称{}，原因:{}", name, ma_result_description(result));
 }
 
 bool AudioManager::loadSound(const std::string& name, const fs::path& path)
@@ -64,25 +79,25 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
         return false;
     }
 
-    const auto fullPath = FileManager::getResourcePath("sounds/" + path.string());
-    auto sound = std::make_unique<ma_sound>();
+    const auto fullPath = FileManager::getResourcePath(path.string());
 
+    auto* templateSound = new ma_sound();
     const ma_result result = ma_sound_init_from_file(
         &engine,
         fullPath.c_str(),
-        MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC,
-        &groups["default"], // 绑定到默认音效组
-        NULL,
-        sound.get());
+        MA_SOUND_FLAG_DECODE,
+        nullptr,
+        nullptr,
+        templateSound);
 
-    if (result != MA_SUCCESS)
+    if (result == MA_SUCCESS)
     {
-        spdlog::error("加载失败:{}, 原因{}", fullPath.string(), std::string(ma_result_description(result)));
-        return false;
+        sounds[name] = templateSound; // 存储模板
+        return true;
     }
-
-    soundPool.push_back(std::move(sound));
-    return true;
+    spdlog::error("加载{} ,失败: {}", path.string(), ma_result_description(result));
+    delete templateSound;
+    return false;
 }
 
 void AudioManager::playSound(const std::string& name, const float volume, const glm::vec2& position, bool loop)
@@ -92,68 +107,65 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
         spdlog::error("音频系统未初始化");
         return;
     }
-
-    for (auto& sound : soundPool)
+    if (!sounds.contains(name))
     {
-        if (!ma_sound_is_playing(sound.get()))
-        {
-            ma_sound_set_volume(sound.get(), volume * sfxVolume * masterVolume);
-            ma_sound_set_looping(sound.get(), loop);
-            //const float pan = glm::clamp(position.x / 10.0f, -1.0f, 1.0f); // 调整除数以控制声像范围
-            //ma_sound_set_pan(sound.get(), pan);
-            ma_sound_start(sound.get());
-            return;
-        }
+        spdlog::error("{} 未加载", name);
+        return;
     }
 
-    // 没有可用实例时创建新实例
-    auto newSound = std::make_unique<ma_sound>();
-    ma_result result = ma_sound_init_copy(
+    // 复制一个实例
+    auto* sound = new ma_sound();
+    const ma_result result = ma_sound_init_copy(
         &engine,
-        soundPool.front().get(), // 复制第一个实例的配置
-        MA_SOUND_FLAG_DECODE,    // 保持解码标志
-        &groups["default"],      // 使用默认音效组
-        newSound.get());
+        sounds[name],
+        MA_SOUND_FLAG_DECODE,
+        nullptr,
+        sound);
 
     if (result == MA_SUCCESS)
     {
-        configureSound(newSound.get(), volume, loop);
-        //const float pan = glm::clamp(position.x / 10.0f, -1.0f, 1.0f); // 调整除数以控制声像范围
-        //ma_sound_set_pan(newSound.get(), pan);
-        ma_sound_start(newSound.get());
-        soundPool.push_back(std::move(newSound));
+        ma_sound_set_volume(sound, volume);
+        ma_sound_set_looping(sound, loop);
+        ma_sound_start(sound);
+        activeSounds.push_back(sound);
+        return;
     }
-    else
-    {
-        spdlog::error("创建新实例失败{}", std::string(ma_result_description(result)));
-    }
+    delete sound;
+    spdlog::error("播放失败 {}: {}", name, ma_result_description(result));
 }
 
-void AudioManager::setMasterVolume(const float volume)
-{
-    masterVolume = glm::clamp(volume, 0.0f, 1.0f);
-    ma_engine_set_volume(&engine, masterVolume);
-}
 AudioManager::~AudioManager()
 {
     ma_sound_uninit(&music);
-    for (auto& group : groups)
+    for (auto& [name, sound] : sounds)
     {
-        ma_sound_group_uninit(&group.second);
+        ma_sound_uninit(sound);
     }
     ma_engine_uninit(&engine);
 }
 
- AudioManager::AudioManager()
+AudioManager::AudioManager()
 {
     init();
 }
 
-
-void AudioManager::configureSound(ma_sound* sound, float volume, bool loop) const
+void AudioManager::cleanSound()
 {
-    ma_sound_set_volume(sound, volume * sfxVolume * masterVolume);
-    ma_sound_set_looping(sound, loop);
+    for (auto it = activeSounds.begin(); it != activeSounds.end();)
+    {
+        if (!ma_sound_is_playing(*it))
+        {
+            // 1. 先释放miniaudio资源
+            ma_sound_uninit(*it);
+            // 2. 再释放内存
+            delete *it;
+            // 3. 从vector中移除
+            it = activeSounds.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }
-
 } // namespace th

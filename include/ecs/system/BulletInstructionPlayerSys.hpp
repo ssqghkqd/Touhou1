@@ -8,8 +8,8 @@ namespace th::BulletInstructionPlayerSys
 {
 struct Instruction
 {
-    std::string cmd;
     float time;
+    std::string cmd;
     std::vector<float> params;
 };
 

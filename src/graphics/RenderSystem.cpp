@@ -143,9 +143,9 @@ void RenderSystem::update(entt::registry& registry) const
 
     renderBackground(registry);
 
-    // 2. 弹幕（应该在玩家前面）
-    auto bulletView = registry.view<TransformComp, RenderComp, BulletTag>();
-    bulletView.each([&](auto entity, auto& tf, auto& rc)
+    // 2. 弹幕 敌人（应该在玩家前面）
+    auto view = registry.view<TransformComp, RenderComp>();
+    view.each([&](auto entity, auto& tf, auto& rc)
                     {
                         renderEntity(registry, tf, rc);
                     });

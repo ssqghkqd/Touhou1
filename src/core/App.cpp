@@ -7,6 +7,7 @@
 #include "ecs/system/BulletInstructionPlayerSys.hpp"
 #include "ecs/system/BulletSystem.hpp"
 #include "ecs/system/CollisionSystem.hpp"
+#include "ecs/system/EnemySys.hpp"
 #include "ecs/system/PlayerSystem.hpp"
 #include "ecs/system/SpriteMovementSys.hpp"
 #include "graphics/RenderSystem.hpp"
@@ -32,6 +33,7 @@ void App::mainLoop()
     auto& window = registry.ctx().get<Window>();
     auto& inputSystem = registry.ctx().get<InputSystem>();
     auto& renderSystem = registry.ctx().get<RenderSystem>();
+    auto& audio = registry.ctx().get<AudioManager>();
 
     while (!window.shouldClose())
     {
@@ -48,11 +50,14 @@ void App::mainLoop()
         SpriteMovementSys::update(registry, Time::getDeltaTime());
         // 生成弹幕
         BulletSystem::update(registry, Time::getDeltaTime());
-        BulletInstructionPlayerSys::update(registry, Time::getDeltaTime());
+        EnemySys::update(registry, Time::getDeltaTime());
+        // BulletInstructionPlayerSys::update(registry, Time::getDeltaTime());
         // 处理碰撞
         CollisionSystem::update(registry);
 
         renderSystem.update(registry);
+
+        audio.cleanSound();
 
         window.swapBuffers();
     }

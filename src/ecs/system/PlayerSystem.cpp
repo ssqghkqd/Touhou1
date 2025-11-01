@@ -16,6 +16,7 @@
 #include "ecs/comp/SpriteComp.hpp"
 #include "ecs/comp/TagComp.hpp"
 #include "ecs/comp/TransformComp.hpp"
+#include "ecs/system/BulletSystem.hpp"
 #include "utils/JsonManager.hpp"
 #include "utils/Time.hpp"
 
@@ -24,10 +25,10 @@ namespace th::PlayerSystem
 
 void update(entt::registry& registry, float dt)
 {
+    static json& playerJ = JsonManager::get("config.player");
     constexpr int width = App::bgoffsetX + App::bgwidth;
     constexpr int height = App::bgoffsetY + App::bgheight;
-    static json& playerJ = th::JsonManager::get("game")["player"];
-    static float slowMoveSpeed = playerJ["slowspeed"];
+    static float slowMoveSpeed = playerJ["slow_speed"];
     static float moveSpeed = playerJ["speed"];
 
     auto& player = registry.get<PlayerComp>(m_player);
@@ -57,7 +58,7 @@ void update(entt::registry& registry, float dt)
 
 entt::entity createPlayer(entt::registry& registry)
 {
-    json& playerJ = th::JsonManager::get("game")["player"];
+    static json& playerJ = JsonManager::get("config.player");
     const auto player = registry.create();
 
     auto& tf = registry.emplace<TransformComp>(player);
@@ -77,10 +78,10 @@ entt::entity createPlayer(entt::registry& registry)
     tf.position = {App::bgwidth / 2.0f, App::bgheight / 2.0f}; // 屏幕中心
     float width = playerJ["width"];
     float height = playerJ["height"];
-    auto textureName = playerJ["texturename"];
+    auto textureName = playerJ["texture_name"];
     render.size = {width, height}; // 适当尺寸
     render.textureName = textureName;
-    cs.radius = 2.0f;
+    cs.radius = playerJ["collision_radius"];
 
     m_player = player;
     return player;
@@ -94,7 +95,7 @@ void shot(entt::registry& registry)
     {
         m_lastTime = currentTime;
         auto& tf = registry.get<TransformComp>(m_player);
-        // BulletSystem::createBullet(registry, tf.position, {0.0f, -500.0f}, true);
+        BulletSystem::createBullet(registry, tf.position, {0.0f, -1000.0f}, true);
     }
 }
 

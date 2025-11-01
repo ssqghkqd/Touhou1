@@ -15,7 +15,6 @@ static std::vector<Instruction> instructions = {};
 static float m_time = 0.0f; // 当前时间
 static int next_index = 0;
 static entt::entity bullet = entt::null; // 当前正在操作的子弹s
-static bool inited = false;
 
 /*切换正在使用的json文件*/
 void load(const json& j)
@@ -42,22 +41,17 @@ void load(const json& j)
 
 void update(entt::registry& reg, const float dt)
 {
-    if (!inited)
-    {
-        m_time = 0.0f;
-        inited = true;
-    }
     m_time += dt;
 
     while (next_index < instructions.size())
     {
         const auto& inst = instructions[next_index];
-        if (m_time >= inst.time)
+        if (m_time < inst.time)
         {
-            executeInstr(reg, inst);
-            next_index++;
+            break;
         }
-        break;
+        executeInstr(reg, inst);
+        next_index++;
     }
 }
 
@@ -68,12 +62,16 @@ void executeInstr(entt::registry& reg, const Instruction& inst)
     if (inst.cmd == "shot")
     {
         bullet = BulletSystem::createBullet(reg,
-                                   {inst.params[0], inst.params[1]},
-                                   {inst.params[2], inst.params[3]});
+                                            {inst.params[0], inst.params[1]},
+                                            {inst.params[2], inst.params[3]});
         spdlog::info("发射子弹，位置({},{}),速度({},{})", inst.params[0], inst.params[1], inst.params[2], inst.params[3]);
     }
     else if (inst.cmd == "v")
     {
+        if (!reg.valid(bullet))
+        {
+            return;
+        }
         auto& sc = reg.get<SpriteComp>(bullet);
         sc.velocity = {inst.params[0], inst.params[1]};
         spdlog::info("设置速度({},{})", inst.params[0], inst.params[1]);

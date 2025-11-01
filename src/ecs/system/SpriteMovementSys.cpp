@@ -7,6 +7,7 @@
 #include "ecs/comp/SpriteComp.hpp"
 #include "ecs/comp/TagComp.hpp"
 #include "ecs/comp/TransformComp.hpp"
+#include "spdlog/spdlog.h"
 
 namespace th::SpriteMovementSys
 {
@@ -26,6 +27,7 @@ void update(entt::registry& registry, float dt)
                   if (tf.position.x + halfWidth > App::bgoffsetX + App::bgwidth || tf.position.x - halfWidth < App::bgoffsetX ||
                       tf.position.y + halfHeight > App::bgoffsetY + App::bgheight || tf.position.y - halfHeight < App::bgoffsetY)
                   {
+                      spdlog::debug("删除实体在({},{})", tf.position.x, tf.position.y);
                       registry.destroy(entity);
                   }
               });
