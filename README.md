@@ -20,3 +20,5 @@ cmake
 `miniaudio`
 `spdlog`
 `nlohmann_json`
+
+美术资源等不提供
