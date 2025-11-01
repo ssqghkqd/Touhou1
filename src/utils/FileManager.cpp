@@ -40,10 +40,16 @@ namespace th
         return fs::exists(path);
     }
 
-    fs::path FileManager::getResourcePath(const fs::path &relativePath)
+    fs::path FileManager::getResourcePath(const fs::path &relativePath, bool isAssets)
     {
+        static fs::path basePath;
+        if (isAssets)
+        {
+            basePath = "../../Touhou1-assets/assets";
+            return basePath / relativePath;
+        }
         // 获取可执行文件路径
-        static fs::path basePath = "../assets";
+        basePath = "../resources";
 
         return basePath / relativePath;
     }

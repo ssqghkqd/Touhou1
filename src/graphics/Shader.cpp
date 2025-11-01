@@ -25,8 +25,8 @@ bool Shader::load(const std::string& vertPath, const std::string& fragPath)
     m_vertPath = vertPath;
     m_fragPath = fragPath;
     // 获取完整路径
-    fs::path vertFullPath = FileManager::getResourcePath("shaders") / vertPath;
-    fs::path fragFullPath = FileManager::getResourcePath("shaders") / fragPath;
+    fs::path vertFullPath = FileManager::getResourcePath("shaders", false) / vertPath;
+    fs::path fragFullPath = FileManager::getResourcePath("shaders", false) / fragPath;
 
     // 读取着色器源代码
     std::string vertexShaderSource, fragmentShaderSource;

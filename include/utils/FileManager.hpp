@@ -10,6 +10,6 @@ namespace th
     public:
         static std::string readFile(const fs::path &path);
         static bool fileExists(const fs::path &path);
-        static fs::path getResourcePath(const fs::path &relativePath);
+        static fs::path getResourcePath(const fs::path& relativePath, bool isAssets = false);
     };
 }

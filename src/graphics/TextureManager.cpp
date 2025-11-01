@@ -30,7 +30,7 @@ GLuint TextureManager::loadTexture(const std::string& textureName, const fs::pat
     }
 
     // 获取完整路径
-    const std::filesystem::path fullPath = FileManager::getResourcePath(path);
+    const std::filesystem::path fullPath = FileManager::getResourcePath(path, true);
 
     // 加载图像
     int width, height, nrChannels;

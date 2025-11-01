@@ -50,7 +50,7 @@ void AudioManager::playMusic(const std::string& name, float volume, bool loop)
     }
 
     ma_sound_uninit(&music);
-    const auto fullPath = FileManager::getResourcePath(musicPaths[name]);
+    const auto fullPath = FileManager::getResourcePath(musicPaths[name], true);
 
     // 数星星
     const auto result = ma_sound_init_from_file(
@@ -79,7 +79,7 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
         return false;
     }
 
-    const auto fullPath = FileManager::getResourcePath(path.string());
+    const auto fullPath = FileManager::getResourcePath(path.string(), true);
 
     auto* templateSound = new ma_sound();
     const ma_result result = ma_sound_init_from_file(
