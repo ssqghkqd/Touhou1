@@ -81,7 +81,7 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
 
     const auto fullPath = FileManager::getResourcePath(path.string(), true);
 
-    auto* templateSound = new ma_sound();
+    auto* templateSound = (ma_sound*)malloc(sizeof(ma_sound));
     const ma_result result = ma_sound_init_from_file(
         &engine,
         fullPath.c_str(),
@@ -96,7 +96,7 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
         return true;
     }
     spdlog::error("加载{} ,失败: {}", path.string(), ma_result_description(result));
-    delete templateSound;
+    free(templateSound);
     return false;
 }
 
@@ -114,7 +114,7 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
     }
 
     // 复制一个实例
-    auto* sound = new ma_sound();
+    auto* sound = (ma_sound*)malloc(sizeof(ma_sound));
     const ma_result result = ma_sound_init_copy(
         &engine,
         sounds[name],
@@ -130,7 +130,7 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
         activeSounds.push_back(sound);
         return;
     }
-    delete sound;
+    free(sound);
     spdlog::error("播放失败 {}: {}", name, ma_result_description(result));
 }
 
@@ -155,11 +155,8 @@ void AudioManager::cleanSound()
     {
         if (!ma_sound_is_playing(*it))
         {
-            // 1. 先释放miniaudio资源
             ma_sound_uninit(*it);
-            // 2. 再释放内存
-            delete *it;
-            // 3. 从vector中移除
+            free(*it);
             it = activeSounds.erase(it);
         }
         else

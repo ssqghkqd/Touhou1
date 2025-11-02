@@ -19,7 +19,6 @@ namespace th::EnemySys
 {
 
 static float timer = 0.0f;
-static int i = 0;
 entt::entity spawnEnemy(entt::registry& reg, glm::vec2 pos)
 {
     spdlog::info("创建敌人在({},{})", pos.x, pos.y);
@@ -82,7 +81,7 @@ void homing(entt::registry& reg)
                   auto& tfp = reg.get<TransformComp>(m_player);
                   glm::vec dir = glm::normalize(tfp.position - tf.position);
                   BulletSystem::createBullet(reg, tf.position, dir * 200.0f);
-                  spdlog::info("敌人发射弹幕 位置({},{})速度({},{})", tf.position.x, tf.position.y, dir.x * 200.0f, dir.y * 200.0f);
+                  // spdlog::info("敌人发射弹幕 位置({},{})速度({},{})", tf.position.x, tf.position.y, dir.x * 200.0f, dir.y * 200.0f);
               });
 }
 void collision(entt::registry& reg)
@@ -95,10 +94,6 @@ void collision(entt::registry& reg)
                   {
                       reg.destroy(entity);
                       audio.playSound("enemy_death");
-                      for (; i < 5; i++)
-                      {
-                          spawnEnemy(reg, {App::bgoffsetX + 300.0f, App::bgoffsetY + 100.0f});
-                      }
                       return;
                   }
                   const auto bview = reg.view<BulletComp, CollisionComp, TransformComp, BulletTag>();
@@ -110,7 +105,7 @@ void collision(entt::registry& reg)
                                  }
                                  if (CollisionSystem::checkCollision(tf.position, cc.radius, btf.position, bcc.radius))
                                  {
-                                     ec.hp -= 5.0f;
+                                     ec.hp -= 1.0f;
                                      audio.playSound("enemy_shot");
                                      spdlog::info("击中敌人！当前血量{}", ec.hp);
                                      reg.destroy(bentity);
