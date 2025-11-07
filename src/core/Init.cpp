@@ -32,6 +32,7 @@ void loadResources(entt::registry& reg)
     texture.loadTexture("xiaoyu", "textures/xiaoyu.png");
     texture.loadTexture("bg1", "textures/bg1.png");
     texture.loadTexture("enemy", "textures/enemy.png");
+    texture.loadTexture("rice", "textures/rice.png");
     // 音频
     auto& audio = reg.ctx().get<AudioManager>();
     audio.loadSound("miss", "sounds/miss.wav");
@@ -77,6 +78,6 @@ void setStatus(entt::registry& reg)
 void gameSetup(entt::registry& reg)
 {
     PlayerSystem::createPlayer(reg);
-    EnemySys::spawnEnemy(reg, {App::bgoffsetX + 300.0f, App::bgoffsetY + 100.0f});
+    //EnemySys::spawnEnemy(reg, {App::bgoffsetX + 300.0f, App::bgoffsetY + 100.0f});
 }
 }

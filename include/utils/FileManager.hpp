@@ -1,15 +1,9 @@
 #pragma once
 #include <filesystem>
 
-namespace fs = std::filesystem;
-
-namespace th
+namespace th::FileManager
 {
-    class FileManager
-    {
-    public:
-        static std::string readFile(const fs::path &path);
-        static bool fileExists(const fs::path &path);
-        static fs::path getResourcePath(const fs::path& relativePath, bool isAssets = false);
-    };
-}
+std::string readFile(const std::filesystem::path& path);
+bool fileExists(const std::filesystem::path& path);
+std::filesystem::path getResourcePath(const std::filesystem::path& relativePath, bool isAssets = false);
+} // namespace th::FileManager

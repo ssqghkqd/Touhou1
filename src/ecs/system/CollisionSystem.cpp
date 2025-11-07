@@ -46,7 +46,6 @@ void update(entt::registry& registry)
                             // 播放被弹音效
                             auto& audio = registry.ctx().get<AudioManager>();
                             audio.playSound("miss", 0.6f, m_playerPosition);
-                            spdlog::info("播放音效");
                             registry.destroy(bullet);
                         }
                     });

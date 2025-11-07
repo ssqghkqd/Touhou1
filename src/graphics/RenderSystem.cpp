@@ -3,7 +3,6 @@
 #include "core/App.hpp"
 #include "ecs/comp/PlayerComp.hpp"
 #include "ecs/comp/RenderComp.hpp"
-#include "ecs/comp/TagComp.hpp"
 #include "ecs/comp/TransformComp.hpp"
 #include "ecs/system/PlayerSystem.hpp"
 #include "ext.hpp"
@@ -74,8 +73,8 @@ void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, Ren
     // 计算模型矩阵
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(tf.position, 0.0f));
-    model = glm::rotate(model, tf.rotation, glm::vec3(0, 0, 1));    // 新增旋转
-    model = glm::scale(model, glm::vec3(rc.size * tf.scale, 1.0f)); // 新增缩放
+    model = glm::rotate(model, tf.rotation, glm::vec3(0, 0, 1));
+    model = glm::scale(model, glm::vec3(rc.size * tf.scale, 1.0f));
 
     // 设置着色器参数
     m_shader->use();
@@ -95,7 +94,7 @@ void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, Ren
 
     // 渲染
     glBindVertexArray(mesh->vao);
-    gfDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
+    gfDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, nullptr);
 }
 
 #undef gfDrawElements

@@ -49,11 +49,11 @@ void App::mainLoop()
         // 更新所有精灵移动
         SpriteMovementSys::update(registry, Time::getDeltaTime());
         // 生成弹幕
-        BulletSystem::update(registry, Time::getDeltaTime());
-        EnemySys::update(registry, Time::getDeltaTime());
+        BulletSystem::update(registry, Time::getDeltaTime(), Time::getWindowTime());
+        //EnemySys::update(registry, Time::getDeltaTime());
         // BulletInstructionPlayerSys::update(registry, Time::getDeltaTime());
         // 处理碰撞
-        CollisionSystem::update(registry);
+        // CollisionSystem::update(registry);
 
         renderSystem.update(registry);
 

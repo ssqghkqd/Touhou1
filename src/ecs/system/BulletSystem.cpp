@@ -1,5 +1,6 @@
 #include "ecs/system/BulletSystem.hpp"
 
+#include <cmath>
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 
@@ -11,41 +12,48 @@
 #include "ecs/comp/TagComp.hpp"
 #include "ecs/comp/TransformComp.hpp"
 #include "json.hpp"
+#include "spdlog/spdlog.h"
 #include "utils/JsonManager.hpp"
-#include "utils/Random.hpp"
 
 namespace th::BulletSystem
 {
 
 float spawnTimer = 0.0f;
-float spawnInterval = 1.0f;
+float spawnInterval = 0.05f;
+static double base_angle = 0.0f;
+static double angle_velocity = 0.0f;
 
-void update(entt::registry& registry, float dt)
+void update(entt::registry& registry, float dt, float t)
 {
     // 这里是测试的随机弹幕
-    // 更新计时器
     spawnTimer += dt;
+    angle_velocity = 5 * std::sin(t / 2);
+    base_angle += angle_velocity * dt;
+    base_angle = fmod(base_angle, 2.0 * M_PI);
 
-    // 检查是否应该生成新弹幕
     if (spawnTimer >= spawnInterval)
     {
         spawnTimer = 0.0f;
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 12; i++)
         {
-            const float x = Random::range(App::bgoffsetX + 10.0f,
-                                          App::bgoffsetX + App::bgwidth - 10.0f);
-            const float y = Random::range(App::bgoffsetY + 50.0f,
-                                          App::bgoffsetY + 80.0f);
-            const float vx = Random::range(-50.0f, 50.0f);
-            const float vy = Random::range(200.0f, 300.0f);
-            createBullet(registry, {x, y}, {vx, vy});
+            const double angle = base_angle + i * (M_PI / 6);
+            auto v = glm::vec2(std::cos(angle), std::sin(angle)) * 450.0f;
+            constexpr float x = App::bgoffsetX + App::bgwidth * 0.5f;
+            constexpr float y = App::bgoffsetY + App::bgheight * 0.3f;
+            createBullet(registry, {x, y}, v, "xiaoyu");
+
         }
     }
 
     // 这里是测试的随机弹幕
 }
 
-entt::entity createBullet(entt::registry& registry, const glm::vec2& position, const glm::vec2& velocity, bool isPlayerBullet, bool isExistForever)
+entt::entity createBullet(entt::registry& registry,
+                          const glm::vec2& position,
+                          const glm::vec2& velocity,
+                          const std::string& texture_name,
+                          bool isPlayerBullet,
+                          bool isExistForever)
 {
     static nlohmann::json& bulletJ = JsonManager::get("config.bullet");
     static nlohmann::json& bDefault = bulletJ["bullet_default"];
@@ -65,12 +73,8 @@ entt::entity createBullet(entt::registry& registry, const glm::vec2& position, c
 
     // 渲染组件
     auto& render = registry.emplace<RenderComp>(bullet);
-    render.textureName = bDefault["texture_name"];
+    render.textureName = texture_name;
     render.size = {bDefault["width"], bDefault["height"]};
-    // if (isPlayerBullet)
-    // {
-    //     render.color = {1.0f, 0.0f, 0.0f, 1.0f};
-    // }
 
     // 碰撞组件
     auto& cc = registry.emplace<CollisionComp>(bullet);

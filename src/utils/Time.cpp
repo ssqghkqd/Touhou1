@@ -1,38 +1,27 @@
-#include <chrono>
 #include <utils/Time.hpp>
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
-namespace th
+namespace th::Time
 {
-    float Time::lastFrameTime = 0.0f;
-    float Time::deltaTime = 0.016f; // 默认16ms (60FPS)
-    float Time::currentTime = 0.0f;
-    float Time::windowTime = 0.0f;
-    std::time_t Time::timeStamp = 0;
+    static double lastFrameTime = 0.0f;
+    static double deltaTime = 0.016f; // 默认16ms (60FPS)
+    static double currentTime = 0.0f;
+    static double windowTime = 0.0f;
 
-    float Time::getDeltaTime()
+    double getDeltaTime()
     {
         return deltaTime;
     }
 
-    std::string &Time::getTimeStr()
-    {
-        return timestr;
-    }
-
-    float Time::getWindowTime()
+    double getWindowTime()
     {
         return windowTime;
     }
 
-    std::time_t &Time::getTimeStamp()
-    {
-        return timeStamp;
-    }
 
-    void Time::update()
+    void update()
     {
         // 计算dt
         currentTime = glfwGetTime(); // GLFW提供的时间函数
@@ -41,11 +30,6 @@ namespace th
 
         // 获取各种时间并格式化
         windowTime = currentTime;
-        auto now = std::chrono::floor<std::chrono::seconds>( // 关键：截断到秒级
-            std::chrono::system_clock::now());
-        timeStamp = std::chrono::system_clock::to_time_t(now);
-        auto localTime = now + std::chrono::hours(8);  // 假设 Asia/Shanghai (UTC+8)
-        timestr = std::format("{:%H:%M:%S}", localTime);
     }
 
 } // namespace th

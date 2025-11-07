@@ -56,12 +56,21 @@ GLuint TextureManager::loadTexture(const std::string& textureName, const fs::pat
 
     // 确定格式
     GLenum format = GL_RGB;
-    if (nrChannels == 1)
-        format = GL_RED;
-    else if (nrChannels == 3)
-        format = GL_RGB;
-    else if (nrChannels == 4)
-        format = GL_RGBA;
+    switch (nrChannels)
+    {
+        case 1:
+            format = GL_RED;
+            break;
+        case 3:
+            format = GL_RGB;
+            break;
+        case 4:
+            format = GL_RGBA;
+            break;
+        default:
+            format = GL_RGB;
+            break;
+    }
 
     // 上传纹理
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);

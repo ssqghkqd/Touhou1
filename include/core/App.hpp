@@ -17,7 +17,7 @@ class App
 
     static constexpr int width = 1280;
     static constexpr int height = 960;
-    inline static const char* title = "Touhou 1 ~ religious war";
+    static constexpr const char* title = "Touhou 1 ~ religious war";
     static constexpr int bgwidth = 768;
     static constexpr int bgheight = 896;
     static constexpr int bgoffsetX = 64;

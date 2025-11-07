@@ -5,6 +5,9 @@
 
 #include "ext.hpp"
 #include "spdlog/spdlog.h"
+#include "utils/FileManager.hpp"
+
+namespace fs = std::filesystem;
 
 namespace th
 {
@@ -82,6 +85,11 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
     const auto fullPath = FileManager::getResourcePath(path.string(), true);
 
     auto* templateSound = (ma_sound*)malloc(sizeof(ma_sound));
+    if (!templateSound)
+    {
+        spdlog::error("malloc templateSound failed");
+        return false;
+    }
     const ma_result result = ma_sound_init_from_file(
         &engine,
         fullPath.c_str(),
@@ -114,7 +122,13 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
     }
 
     // 复制一个实例
+    /*这里用malloc的原因是智能指针会编译报错 new和malloc在这里都一样 malloc看起来风格更好*/
     auto* sound = (ma_sound*)malloc(sizeof(ma_sound));
+    if (!sound)
+    {
+        spdlog::error("malloc failed");
+        return;
+    }
     const ma_result result = ma_sound_init_copy(
         &engine,
         sounds[name],

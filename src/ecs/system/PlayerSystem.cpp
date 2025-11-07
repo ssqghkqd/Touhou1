@@ -95,7 +95,7 @@ void shot(entt::registry& registry)
     {
         m_lastTime = currentTime;
         auto& tf = registry.get<TransformComp>(m_player);
-        BulletSystem::createBullet(registry, tf.position, {0.0f, -1000.0f}, true);
+        BulletSystem::createBullet(registry, tf.position, {0.0f, -1000.0f}, "xiaoyu", true);
     }
 }
 

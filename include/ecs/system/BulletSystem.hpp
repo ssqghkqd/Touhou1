@@ -4,6 +4,11 @@
 
 namespace th::BulletSystem
 {
-void update(entt::registry& registry, float dt);
-entt::entity createBullet(entt::registry& registry, const glm::vec2& position, const glm::vec2& velocity, bool isPlayerBullet = false, bool isExistForever = true);
-}
+void update(entt::registry& registry, float dt, float t);
+entt::entity createBullet(entt::registry& registry,
+                          const glm::vec2& position,
+                          const glm::vec2& velocity,
+                          const std::string& texture_name = "xiaoyu",
+                          bool isPlayerBullet = false,
+                          bool isExistForever = true);
+} // namespace th::BulletSystem

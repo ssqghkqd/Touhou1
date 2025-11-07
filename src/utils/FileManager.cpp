@@ -7,10 +7,10 @@
 
 namespace fs = std::filesystem;
 
-namespace th
+namespace th::FileManager
 {
     // 读取文件内容为字符串
-    std::string FileManager::readFile(const fs::path &path)
+    std::string readFile(const fs::path &path)
     {
         // 详细路径诊断
         fs::path nativePath = path;
@@ -35,12 +35,12 @@ namespace th
     }
 
     // 检查文件是否存在
-    bool FileManager::fileExists(const fs::path &path)
+    bool fileExists(const fs::path &path)
     {
         return fs::exists(path);
     }
 
-    fs::path FileManager::getResourcePath(const fs::path &relativePath, bool isAssets)
+    fs::path getResourcePath(const fs::path &relativePath, bool isAssets)
     {
         static fs::path basePath;
         if (isAssets)
