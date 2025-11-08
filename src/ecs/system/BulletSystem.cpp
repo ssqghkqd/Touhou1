@@ -27,7 +27,7 @@ void update(entt::registry& registry, float dt, float t)
 {
     // 这里是测试的随机弹幕
     spawnTimer += dt;
-    angle_velocity = 5 * std::cos(t / 2) * std::sqrt(std::abs(std::sin(2 * t))) + std::log(t);
+    angle_velocity = 5 * std::sin(t / 2);
     base_angle += angle_velocity * dt;
     base_angle = fmod(base_angle, 2.0 * M_PI);
 

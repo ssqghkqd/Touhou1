@@ -1,7 +1,3 @@
-// 启用详细错误信息
-#define MA_DEBUG_OUTPUT
-
-
 #define MINIAUDIO_IMPLEMENTATION
 #include "resources/AudioManager.hpp"
 

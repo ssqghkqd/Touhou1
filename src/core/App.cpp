@@ -53,7 +53,7 @@ void App::mainLoop()
         //EnemySys::update(registry, Time::getDeltaTime());
         // BulletInstructionPlayerSys::update(registry, Time::getDeltaTime());
         // 处理碰撞
-        //CollisionSystem::update(registry);
+        CollisionSystem::update(registry);
 
         renderSystem.update(registry);
 

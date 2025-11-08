@@ -1,0 +1,25 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "linux-debug",
+      "displayName": "Linux Debug",
+      "generator": "Ninja",
+      "binaryDir": "build/linux-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+      }
+    },
+    {
+      "name": "windows-release",
+      "displayName": "Windows Release",
+      "generator": "Ninja",
+      "binaryDir": "build/windows-release",
+      "toolchainFile": "${sourceDir}/toolchain/windows-toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ]
+}
