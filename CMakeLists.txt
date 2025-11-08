@@ -48,8 +48,13 @@ file(GLOB GLAD_SOURCES ${THIRDPARTY_DIR}/glad/glad.c)
 add_library(glad STATIC ${GLAD_SOURCES})
 
 add_compile_options(
-        -stdlib=libc++
         -nostdinc++  # 禁止默认的 C++ 头文件搜索路径
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wshadow
+        -Wunused
+        -Wno-unused-parameter
 )
 
 link_libraries(c++ c++abi)
@@ -68,8 +73,6 @@ target_link_libraries(${PROJECT_NAME}
 # 全局宏定义（保留原始配置）
 target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
-
-# SoLoud 静态库定义（保留原始配置）
 
 # GLAD 的 OpenGL 版本（保留原始配置）
 target_compile_definitions(glad PRIVATE

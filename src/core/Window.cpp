@@ -63,7 +63,7 @@ void Window::init(int width, int height, const char* title)
     }
     spdlog::info("GLAD初始化成功");
     glViewport(0, 0, width * App::scale, height * App::scale);
-    glfwSwapInterval(0); // 启用垂直同步（锁定显示器刷新率）
+    glfwSwapInterval(1); // 启用垂直同步（锁定显示器刷新率）
     spdlog::info("window初始化成功");
     inited = true;
 }

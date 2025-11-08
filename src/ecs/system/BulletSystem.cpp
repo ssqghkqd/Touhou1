@@ -27,7 +27,7 @@ void update(entt::registry& registry, float dt, float t)
 {
     // 这里是测试的随机弹幕
     spawnTimer += dt;
-    angle_velocity = 5 * std::sin(t / 2);
+    angle_velocity = 5 * std::cos(t / 2) * std::sqrt(std::abs(std::sin(2 * t))) + std::log(t);
     base_angle += angle_velocity * dt;
     base_angle = fmod(base_angle, 2.0 * M_PI);
 
@@ -37,11 +37,10 @@ void update(entt::registry& registry, float dt, float t)
         for (int i = 0; i < 12; i++)
         {
             const double angle = base_angle + i * (M_PI / 6);
-            auto v = glm::vec2(std::cos(angle), std::sin(angle)) * 450.0f;
+            auto v = glm::vec2(std::cos(angle), std::sin(angle)) * 350.0f;
             constexpr float x = App::bgoffsetX + App::bgwidth * 0.5f;
             constexpr float y = App::bgoffsetY + App::bgheight * 0.3f;
             createBullet(registry, {x, y}, v, "xiaoyu");
-
         }
     }
 

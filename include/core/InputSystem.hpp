@@ -35,9 +35,6 @@ class InputSystem
     bool isKeyReleased(int key) const;
 
   private:
-    int width = App::width;
-    int height = App::height;
-
     struct KeyState
     {
         bool current = false;  // 当前帧状态

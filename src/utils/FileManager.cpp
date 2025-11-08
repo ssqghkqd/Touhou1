@@ -50,6 +50,11 @@ namespace th::FileManager
         }
         // 获取可执行文件路径
         basePath = "../resources";
+        auto finalPath = basePath / relativePath;
+        if (!fs::exists(finalPath))
+        {
+            spdlog::error("文件不存在:{}", finalPath.string());
+        }
 
         return basePath / relativePath;
     }

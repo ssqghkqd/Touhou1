@@ -23,7 +23,6 @@ namespace th
 
 
         const Mesh &GetQuadMesh();
-        const Mesh &GetCircleMesh(int segments = 16);
 
         // 在拷贝和移动操作中禁用
         MeshManager(const MeshManager &) = delete;
@@ -36,9 +35,7 @@ namespace th
 
     private:
 
-        const Mesh &GetOrCreateMesh(const std::string &key, const std::function<Mesh()>& createFunc);
         static Mesh CreateQuadMesh();
-        static Mesh CreateCircleMesh(int segments);
 
         std::unordered_map<std::string, std::unique_ptr<Mesh>> m_meshes;
     };

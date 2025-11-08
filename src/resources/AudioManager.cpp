@@ -1,3 +1,7 @@
+// 启用详细错误信息
+#define MA_DEBUG_OUTPUT
+
+
 #define MINIAUDIO_IMPLEMENTATION
 #include "resources/AudioManager.hpp"
 
@@ -22,7 +26,6 @@ bool AudioManager::init()
         spdlog::error("ma_engine_init failed {}", std::string(ma_result_description(result)));
         return false;
     }
-
     inited = true;
     return true;
 }
@@ -59,7 +62,7 @@ void AudioManager::playMusic(const std::string& name, float volume, bool loop)
     const auto result = ma_sound_init_from_file(
         &engine,
         fullPath.c_str(),
-        MA_SOUND_FLAG_DECODE,
+        MA_SOUND_FLAG_STREAM | MA_SOUND_FLAG_ASYNC,
         nullptr,
         nullptr,
         &music);
@@ -85,7 +88,7 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
     const auto fullPath = FileManager::getResourcePath(path.string(), true);
 
     auto* templateSound = (ma_sound*)malloc(sizeof(ma_sound));
-    if (!templateSound)
+    if (templateSound == nullptr)
     {
         spdlog::error("malloc templateSound failed");
         return false;
@@ -124,7 +127,7 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
     // 复制一个实例
     /*这里用malloc的原因是智能指针会编译报错 new和malloc在这里都一样 malloc看起来风格更好*/
     auto* sound = (ma_sound*)malloc(sizeof(ma_sound));
-    if (!sound)
+    if (sound == nullptr)
     {
         spdlog::error("malloc failed");
         return;

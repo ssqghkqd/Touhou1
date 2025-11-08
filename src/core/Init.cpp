@@ -38,9 +38,9 @@ void loadResources(entt::registry& reg)
     audio.loadSound("miss", "sounds/miss.wav");
     audio.loadSound("enemy_shot", "sounds/enemy_shot.wav");
     audio.loadSound("enemy_death", "sounds/enemy_death.wav");
-    audio.loadMusic("satori", "music/th11_09.wav");
+    audio.loadMusic("satori", "music/th11_09.mp3");
 
-    audio.playMusic("satori");
+    //audio.playMusic("satori");
 
     JsonManager::load("json/config/player.json", "config.player");
     JsonManager::load("json/stage/stage1.json", "stage1");
@@ -71,7 +71,7 @@ void setStatus(entt::registry& reg)
     // 纹理系统
     reg.ctx().emplace<TextureManager>();
     // 音频系统
-    auto& audio = reg.ctx().emplace<AudioManager>();
+    reg.ctx().emplace<AudioManager>();
 
 }
 

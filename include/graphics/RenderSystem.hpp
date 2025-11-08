@@ -45,6 +45,5 @@ class RenderSystem
 
     const Shader* m_shader = nullptr;
     const MeshManager::Mesh* m_quadMesh = nullptr;
-    const MeshManager::Mesh* m_circleMesh = nullptr;
 };
 } // namespace th
