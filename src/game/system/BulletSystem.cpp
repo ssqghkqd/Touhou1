@@ -1,50 +1,24 @@
-#include "ecs/system/BulletSystem.hpp"
+#include "game/system/BulletSystem.hpp"
 
 #include <cmath>
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 
 #include "core/App.hpp"
-#include "ecs/comp/BulletComp.hpp"
-#include "ecs/comp/CollisionComp.hpp"
-#include "ecs/comp/RenderComp.hpp"
-#include "ecs/comp/SpriteComp.hpp"
-#include "ecs/comp/TagComp.hpp"
-#include "ecs/comp/TransformComp.hpp"
+#include "game/comp/BulletComp.hpp"
+#include "game/comp/CollisionComp.hpp"
+#include "game/comp/RenderComp.hpp"
+#include "game/comp/SpriteComp.hpp"
+#include "game/comp/TagComp.hpp"
+#include "game/comp/TransformComp.hpp"
 #include "json.hpp"
-#include "spdlog/spdlog.h"
 #include "utils/JsonManager.hpp"
 
 namespace th::BulletSystem
 {
 
-float spawnTimer = 0.0f;
-float spawnInterval = 0.05f;
-static double base_angle = 0.0f;
-static double angle_velocity = 0.0f;
-
 void update(entt::registry& registry, float dt, float t)
 {
-    // 这里是测试的随机弹幕
-    spawnTimer += dt;
-    angle_velocity = 5 * std::sin(t / 2);
-    base_angle += angle_velocity * dt;
-    base_angle = fmod(base_angle, 2.0 * M_PI);
-
-    if (spawnTimer >= spawnInterval)
-    {
-        spawnTimer = 0.0f;
-        for (int i = 0; i < 12; i++)
-        {
-            const double angle = base_angle + i * (M_PI / 6);
-            auto v = glm::vec2(std::cos(angle), std::sin(angle)) * 350.0f;
-            constexpr float x = App::bgoffsetX + App::bgwidth * 0.5f;
-            constexpr float y = App::bgoffsetY + App::bgheight * 0.3f;
-            createBullet(registry, {x, y}, v, "xiaoyu");
-        }
-    }
-
-    // 这里是测试的随机弹幕
 }
 
 entt::entity createBullet(entt::registry& registry,

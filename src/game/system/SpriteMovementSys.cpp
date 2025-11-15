@@ -3,10 +3,10 @@
 #include <entt/entt.hpp>
 
 #include "core/App.hpp"
-#include "ecs/comp/RenderComp.hpp"
-#include "ecs/comp/SpriteComp.hpp"
-#include "ecs/comp/TagComp.hpp"
-#include "ecs/comp/TransformComp.hpp"
+#include "game/comp/RenderComp.hpp"
+#include "game/comp/SpriteComp.hpp"
+#include "game/comp/TagComp.hpp"
+#include "game/comp/TransformComp.hpp"
 #include "spdlog/spdlog.h"
 
 namespace th::SpriteMovementSys

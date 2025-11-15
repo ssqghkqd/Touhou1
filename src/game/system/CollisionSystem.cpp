@@ -1,14 +1,14 @@
-#include "ecs/system/CollisionSystem.hpp"
+#include "game/system/CollisionSystem.hpp"
 
 #include <entt/entt.hpp>
 #include <glm.hpp>
 
-#include "ecs/comp/BulletComp.hpp"
-#include "ecs/comp/CollisionComp.hpp"
-#include "ecs/comp/PlayerComp.hpp"
-#include "ecs/comp/SpriteComp.hpp"
-#include "ecs/comp/TransformComp.hpp"
-#include "ecs/system/PlayerSystem.hpp"
+#include "game/comp/BulletComp.hpp"
+#include "game/comp/CollisionComp.hpp"
+#include "game/comp/PlayerComp.hpp"
+#include "game/comp/SpriteComp.hpp"
+#include "game/comp/TransformComp.hpp"
+#include "game/system/PlayerSystem.hpp"
 #include "resources/AudioManager.hpp"
 #include "spdlog/spdlog.h"
 
@@ -53,7 +53,11 @@ void update(entt::registry& registry)
 
 bool checkCollision(const glm::vec2& posA, const float radiusA, const glm::vec2& posB, const float radiusB)
 {
-    // 正交圆判定 当距离的平方小于二者半价平方之和的时候判定 即两条半径 和圆心连线构成直角三角形的时候判定
+    /*
+     * 正交圆判定 与东方原作相同
+     * 不是相切时判定 当圆心连线与两个半径形成直角三角形时判定 相比相切可容忍范围增大了sqrt(2)r
+     * 直接按照数学上的判定会导致手感很差，这种比较合适，性能也很合适
+     */
     const float dx = posB.x - posA.x;
     const float dy = posB.y - posA.y;
 

@@ -120,8 +120,14 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
         return;
     }
 
-    // 复制一个实例
-    /*这里用malloc的原因是智能指针会编译报错 new和malloc在这里都一样 malloc看起来风格更好*/
+    /*
+     * 【内存管理经验】（亲身经历都是）
+     * 智能指针在这里是不好的实现
+     * 直接使用智能指针：编译错误 使用自定义删除器：你需要尤其注意用move移动所有权，
+     *   否则自动析构释放音频内存会直接导致内核音频驱动段错误，并且智能指针会尝试调用构造析构函数 这里是无效的浪费的开销
+     * new和malloc在这里等效 但对于一个没有构造函数的c结构体 并且是c库 malloc更合适
+     * 成功路径不需要释放 因为有清理函数每帧检查
+     */
     auto* sound = (ma_sound*)malloc(sizeof(ma_sound));
     if (sound == nullptr)
     {
@@ -137,7 +143,7 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
 
     if (result == MA_SUCCESS)
     {
-        ma_sound_set_volume(sound, volume);
+        ma_sound_set_volume(sound, volume * masterVolume * sfxVolume);
         ma_sound_set_looping(sound, loop);
         ma_sound_start(sound);
         activeSounds.push_back(sound);
@@ -164,6 +170,9 @@ AudioManager::AudioManager()
 
 void AudioManager::cleanSound()
 {
+    /*
+     * 将会被每帧调用 注意这里播放完的音频将被清理！不要手动管理
+     */
     for (auto it = activeSounds.begin(); it != activeSounds.end();)
     {
         if (!ma_sound_is_playing(*it))

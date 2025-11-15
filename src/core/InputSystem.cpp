@@ -5,7 +5,7 @@
 
 #include "GLFW/glfw3.h"
 #include "core/Window.hpp"
-#include "ecs/system/PlayerSystem.hpp"
+#include "game/system/PlayerSystem.hpp"
 #include "resources/AudioManager.hpp"
 #include "utils/Time.hpp"
 

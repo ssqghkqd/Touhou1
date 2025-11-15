@@ -1,11 +1,12 @@
 #include "graphics/RenderSystem.hpp"
 
+#define gfDrawElements glDrawElements
 #include "core/App.hpp"
-#include "ecs/comp/PlayerComp.hpp"
-#include "ecs/comp/RenderComp.hpp"
-#include "ecs/comp/TransformComp.hpp"
-#include "ecs/system/PlayerSystem.hpp"
 #include "ext.hpp"
+#include "game/comp/PlayerComp.hpp"
+#include "game/comp/RenderComp.hpp"
+#include "game/comp/TransformComp.hpp"
+#include "game/system/PlayerSystem.hpp"
 #include "glad.h"
 #include "graphics/MeshManager.hpp"
 #include "graphics/ShaderManager.hpp"
@@ -63,8 +64,6 @@ void RenderSystem::setProjection(int width, int height)
     m_shader->set("projection", m_projection);
 }
 
-#define gfDrawElements glDrawElements
-
 void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, RenderComp& rc) const
 {
     // 不可见的直接返回
@@ -84,7 +83,10 @@ void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, Ren
     // 选择网格（现在不选了
     const MeshManager::Mesh* mesh = m_quadMesh;
 
-    // 绑定纹理 // TODO 优化批处理
+    // TODO 优化批处理
+    /*
+     * 这里目前暂时无需优化 但是一个性能热点 目前帧率2000的情况下不管
+     */
     if (!rc.textureName.empty())
     {
         m_shader->set("thTexture", 0);
@@ -97,14 +99,12 @@ void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, Ren
     gfDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, nullptr);
 }
 
-#undef gfDrawElements
-
 void RenderSystem::renderHitbox(entt::registry& registry, const TransformComp& playerTF, bool isSlowMode, const PlayerComp& pc) const
 {
     if (!isSlowMode)
         return; // 只在低速模式显示
     // 计算判定点位置
-    glm::vec2 hitboxPos = playerTF.position + pc.hitboxOffset;
+    const glm::vec2 hitboxPos = playerTF.position + pc.hitboxOffset;
 
     // 创建临时渲染组件
     RenderComp rc;

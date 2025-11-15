@@ -8,13 +8,14 @@ set(CORE_SOURCES
         core/Window.cpp
 )
 
-set(ECS_SYSTEM_SOURCES
-        ecs/system/BulletInstructionPlayerSys.cpp
-        ecs/system/BulletSystem.cpp
-        ecs/system/CollisionSystem.cpp
-        ecs/system/EnemySys.cpp
-        ecs/system/PlayerSystem.cpp
-        ecs/system/SpriteMovementSys.cpp
+set(GAME_SOURCES
+        game/system/BulletSystem.cpp
+        game/system/CollisionSystem.cpp
+        game/system/EnemySys.cpp
+        game/system/PlayerSystem.cpp
+        game/system/SpriteMovementSys.cpp
+        game/cmd/impl/SinBullet.cpp
+        game/cmd/CmdPlayer.cpp
 )
 
 set(GRAPHICS_SOURCES
@@ -40,7 +41,7 @@ set(RESOURCES_SOURCES
 set(SOURCES
         main.cpp
         ${CORE_SOURCES}
-        ${ECS_SYSTEM_SOURCES}
+        ${GAME_SOURCES}
         ${GRAPHICS_SOURCES}
         ${UTILS_SOURCES}
         ${RESOURCES_SOURCES}
@@ -51,7 +52,6 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 # 包含目录 - 确保头文件能被找到
 target_include_directories(${PROJECT_NAME} PRIVATE
-        $<BUILD_INTERFACE:/usr/lib/llvm-21/include/c++/v1>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/glm>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/entt/src>
@@ -79,10 +79,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         $<$<BOOL:${APPLE}>:GL_SILENCE_DEPRECATION>
 )
 
-# 特殊编译选项
-target_compile_options(${PROJECT_NAME} PRIVATE
-        $<$<CXX_COMPILER_ID:Clang>:-nostdinc++>
-)
 
 # 可选：为每个模块设置源码组（在IDE中更好看）
 source_group("Core" FILES ${CORE_SOURCES})

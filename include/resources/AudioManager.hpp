@@ -21,7 +21,7 @@ class AudioManager
     std::unordered_map<std::string, ma_sound*> sounds{}; // 音效
     std::vector<ma_sound*> activeSounds{};
 
-    float masterVolume = 0.6f;
+    float masterVolume = 0.2f;
     float musicVolume = 1.0f;
     float sfxVolume = 1.0f;
     bool inited = false;

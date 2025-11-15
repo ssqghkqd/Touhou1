@@ -1,4 +1,4 @@
-#include "ecs/system/PlayerSystem.hpp"
+#include "game/system/PlayerSystem.hpp"
 
 #include <entt/entt.hpp>
 #include <glm.hpp>
@@ -9,14 +9,14 @@
 #include "GLFW/glfw3.h"
 #include "core/App.hpp"
 #include "core/Window.hpp"
-#include "ecs/comp/CollisionComp.hpp"
-#include "ecs/comp/DragComp.hpp"
-#include "ecs/comp/PlayerComp.hpp"
-#include "ecs/comp/RenderComp.hpp"
-#include "ecs/comp/SpriteComp.hpp"
-#include "ecs/comp/TagComp.hpp"
-#include "ecs/comp/TransformComp.hpp"
-#include "ecs/system/BulletSystem.hpp"
+#include "game/comp/CollisionComp.hpp"
+#include "game/comp/DragComp.hpp"
+#include "game/comp/PlayerComp.hpp"
+#include "game/comp/RenderComp.hpp"
+#include "game/comp/SpriteComp.hpp"
+#include "game/comp/TagComp.hpp"
+#include "game/comp/TransformComp.hpp"
+#include "game/system/BulletSystem.hpp"
 #include "utils/JsonManager.hpp"
 #include "utils/Time.hpp"
 

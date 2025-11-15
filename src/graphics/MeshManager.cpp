@@ -43,7 +43,6 @@ MeshManager::Mesh MeshManager::CreateQuadMesh()
         0 // 第二个三角形
     };
 
-    // 创建OpenGL对象
     glGenVertexArrays(1, &mesh.vao);
     glGenBuffers(1, &mesh.vbo);
     glGenBuffers(1, &mesh.ebo);

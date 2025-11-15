@@ -2,9 +2,9 @@
 
 #include "core/InputSystem.hpp"
 #include "core/Window.hpp"
-#include "ecs/system/BulletInstructionPlayerSys.hpp"
-#include "ecs/system/EnemySys.hpp"
-#include "ecs/system/PlayerSystem.hpp"
+#include "game/cmd/CmdPlayer.hpp"
+#include "game/system/EnemySys.hpp"
+#include "game/system/PlayerSystem.hpp"
 #include "graphics/MeshManager.hpp"
 #include "graphics/RenderSystem.hpp"
 #include "graphics/ShaderManager.hpp"
@@ -40,14 +40,13 @@ void loadResources(entt::registry& reg)
     audio.loadSound("enemy_death", "sounds/enemy_death.wav");
     audio.loadMusic("satori", "music/th11_09.mp3");
 
-    audio.playMusic("satori");
-
     JsonManager::load("json/config/player.json", "config.player");
     JsonManager::load("json/stage/stage1.json", "stage1");
     JsonManager::load("json/config/bullet.json", "config.bullet");
     auto& j = JsonManager::get("stage1");
 
-    BulletInstructionPlayerSys::load(j);
+    auto& c = reg.ctx().get<cmd::CmdPlayer>();
+    c.load(j);
 }
 
 void setStatus(entt::registry& reg)
@@ -66,18 +65,24 @@ void setStatus(entt::registry& reg)
     auto& shaderManager = reg.ctx().emplace<ShaderManager>();
     auto& shader = shaderManager.loadShader("default", "default.vs", "default.fs");
     spdlog::info("加载着色器{}", shader.getID());
-    // 初始化渲染系统
+    // 初始化渲染系统 （必须放在此处，依赖shader管理器和mesh管理器）
     reg.ctx().emplace<RenderSystem>(reg);
     // 纹理系统
     reg.ctx().emplace<TextureManager>();
     // 音频系统
-    reg.ctx().emplace<AudioManager>();
+    auto& audio = reg.ctx().emplace<AudioManager>();
+
+    // 游戏播放器
+    reg.ctx().emplace<cmd::CmdPlayer>();
 
 }
 
 void gameSetup(entt::registry& reg)
 {
+    auto& audio = reg.ctx().get<AudioManager>();
     PlayerSystem::createPlayer(reg);
     //EnemySys::spawnEnemy(reg, {App::bgoffsetX + 300.0f, App::bgoffsetY + 100.0f});
+    audio.playMusic("satori");
+
 }
 }
