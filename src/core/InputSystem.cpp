@@ -7,6 +7,7 @@
 #include "core/Window.hpp"
 #include "game/system/PlayerSystem.hpp"
 #include "resources/AudioManager.hpp"
+#include "spdlog/spdlog.h"
 #include "utils/Time.hpp"
 
 namespace th
@@ -19,6 +20,7 @@ void InputSystem::processInput(entt::registry& registry)
     PlayerSystem::updatePlayerMovement(registry);
     shot(registry);
     update(registry);
+    segmations(registry);
 }
 
 void InputSystem::checkExit(entt::registry& reg) const
@@ -38,6 +40,17 @@ void InputSystem::shot(entt::registry& registry)
         PlayerSystem::shot(registry);
     }
 }
+
+void InputSystem::segmations(entt::registry& registry)
+{
+    if (isKeyJustPressed(GLFW_KEY_Y))
+    {
+        spdlog::warn("你使用了灵梦专属武器！segmentation fault!");
+        int* p = nullptr;
+        *p = 42;
+    }
+}
+
 
 void InputSystem::update(entt::registry& reg)
 {

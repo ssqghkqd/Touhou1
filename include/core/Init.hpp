@@ -7,6 +7,6 @@ void init(entt::registry& reg);
 
 void loadResources(entt::registry& reg);
 
-void setStatus(entt::registry& reg);
-void gameSetup(entt::registry& reg);
+void loadCore(entt::registry& reg);
+void gameStatusSet(entt::registry& reg);
 } // namespace th::Init

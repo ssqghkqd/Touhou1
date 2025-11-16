@@ -34,13 +34,14 @@ void App::mainLoop()
     auto& audio = registry.ctx().get<AudioManager>();
     auto& cmdp = registry.ctx().get<cmd::CmdPlayer>();
 
+    Time::gameStart();
+    spdlog::info("游戏开始");
+    double lastStatTime = 0.0f;
     while (!window.shouldClose())
     {
         Time::update();
+        const double currentTime = Time::getTime();
         window.pollEvents();
-
-        // 更新FPS
-        window.updateFPS();
         // 处理输入
         inputSystem.processInput(registry);
         // 更新玩家移动
@@ -48,16 +49,28 @@ void App::mainLoop()
         // 更新所有精灵移动
         SpriteMovementSys::update(registry, Time::getDeltaTime());
         // 生成弹幕
-        BulletSystem::update(registry, Time::getDeltaTime(), Time::getWindowTime());
+        BulletSystem::update(registry, Time::getDeltaTime(), Time::getTime());
         cmdp.update(registry);
         // 处理碰撞
         CollisionSystem::update(registry);
 
         renderSystem.update(registry);
 
-        audio.cleanSound();
+        if (currentTime - lastStatTime >= STAT_INTERVAL) {
+            update(currentTime, audio);
+            lastStatTime = currentTime; // 重置计时器
+        }
 
         window.swapBuffers();
     }
+}
+
+void App::update(double currentTime, AudioManager& audioManager)
+{
+    const double fps = 1.0 / Time::getDeltaTime(); // 计算实时FPS
+    spdlog::info("fps: {}, t: {}, dt: {}", fps, currentTime, Time::getDeltaTime());
+
+    audioManager.cleanSound();
+
 }
 } // namespace th

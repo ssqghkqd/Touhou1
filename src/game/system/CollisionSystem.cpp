@@ -42,7 +42,7 @@ void update(entt::registry& registry)
                         // 弹幕使用点碰撞
                         if (checkCollision(m_playerPosition, m_playerRadius, transform.position, collision.radius))
                         {
-                            spdlog::info("玩家碰撞弹幕");
+                            spdlog::debug("玩家碰撞弹幕");
                             // 播放被弹音效
                             auto& audio = registry.ctx().get<AudioManager>();
                             audio.playSound("miss", 0.6f, m_playerPosition);

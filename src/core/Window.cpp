@@ -3,6 +3,7 @@
 #include "core/App.hpp"
 #include "glad.h"
 #include "spdlog/spdlog.h"
+#include "utils/Time.hpp"
 
 namespace th
 {
@@ -112,19 +113,5 @@ bool Window::isKeyPressed(int key) const
 bool Window::isKeyRelease(int key) const
 {
     return glfwGetKey(m_window, key) == GLFW_RELEASE;
-}
-
-void Window::updateFPS()
-{
-    const double currentTime = glfwGetTime();
-    m_frameCount++;
-
-    if (currentTime - m_lastTime >= 1.0)
-    {
-        m_fps = m_frameCount;
-        m_frameCount = 0;
-        m_lastTime = currentTime;
-        spdlog::info("fps:{}", m_fps);
-    }
 }
 } // namespace th

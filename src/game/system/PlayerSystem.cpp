@@ -89,7 +89,7 @@ entt::entity createPlayer(entt::registry& registry)
 
 void shot(entt::registry& registry)
 {
-    const float currentTime = Time::getWindowTime();
+    const float currentTime = Time::getTime();
 
     if (currentTime - m_lastTime >= shotInterval)
     {

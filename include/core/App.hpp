@@ -2,6 +2,7 @@
 #include <../../thirdparty/entt/src/entt/entt.hpp>
 
 #include "entt/entity/registry.hpp"
+#include "resources/AudioManager.hpp"
 #include "vec2.hpp"
 
 namespace th
@@ -24,8 +25,11 @@ class App
     static constexpr int bgoffsetY = 32;
     static constexpr glm::vec2 bgCenter = {bgoffsetX + 0.5 * bgwidth, bgoffsetY + 0.5 * bgheight};
     inline static int scale = 1;
+    static constexpr double STAT_INTERVAL = 1.0f;
+    static constexpr int ESTIMATE_BULLET = 500;
 
   private:
     entt::registry registry;
+    void update(double currentTime, AudioManager& audioManager);
 };
 } // namespace th

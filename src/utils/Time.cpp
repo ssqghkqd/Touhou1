@@ -1,35 +1,44 @@
+#include <chrono>
 #include <utils/Time.hpp>
-
-#define GLFW_INCLUDE_NONE
-#include "GLFW/glfw3.h"
 
 namespace th::Time
 {
-    static double lastFrameTime = 0.0f;
-    static double deltaTime = 0.016f; // 默认16ms (60FPS)
-    static double currentTime = 0.0f;
-    static double windowTime = 0.0f;
+using Clock = std::chrono::steady_clock; // 使用单调时钟，不受系统时间调整影响
+using Seconds = std::chrono::duration<double>;
 
-    double getDeltaTime()
-    {
-        return deltaTime;
-    }
+static Clock::time_point appStartTime; // 程序启动的绝对时间
+static Clock::time_point gameStartTime; // 游戏开始的时间
+static Clock::time_point lastFrameTime;
+static double dt = 0.0f;
+static double t = 0.0f;
 
-    double getWindowTime()
-    {
-        return windowTime;
-    }
+void init()
+{
+    appStartTime = Clock::now();
+}
+void gameStart()
+{
+    gameStartTime = Clock::now();
+    lastFrameTime = gameStartTime;
+}
 
 
-    void update()
-    {
-        // 计算dt
-        currentTime = glfwGetTime(); // GLFW提供的时间函数
-        deltaTime = currentTime - lastFrameTime;
-        lastFrameTime = currentTime;
+double getDeltaTime()
+{
+    return dt;
+}
 
-        // 获取各种时间并格式化
-        windowTime = currentTime;
-    }
+double getTime()
+{
+    return t;
+}
 
-} // namespace th
+void update()
+{
+    const auto now = Clock::now();
+    dt = std::chrono::duration_cast<std::chrono::duration<double>>(now - lastFrameTime).count();
+    t = std::chrono::duration_cast<std::chrono::duration<double>>(now - gameStartTime).count();
+    lastFrameTime = now;
+}
+
+} // namespace th::Time

@@ -28,7 +28,6 @@ namespace th
         // 判断一个键是否按下
         bool isKeyPressed(int key) const;
         bool isKeyRelease(int key) const;
-        void updateFPS();
 
     private:
         bool glfwInitialized = false;

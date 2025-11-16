@@ -16,7 +16,7 @@ void exec(entt::registry& reg, SinBullet& cmd)
     const float interval = cmd.config.spawnInterval;
     const int seg = cmd.config.segments;
     const float dt = Time::getDeltaTime();
-    const float t = Time::getWindowTime();
+    const float t = Time::getTime();
 
     timer += dt;
     const float angleVel = A * std::sin(w * t); // 角速度是正弦变化
@@ -28,7 +28,7 @@ void exec(entt::registry& reg, SinBullet& cmd)
         timer = 0.0f;
         for (int i = 0; i < seg; i++)
         {
-            const double angle = baseAngle + i * (M_PI / (seg / 2));
+            const double angle = baseAngle + i * (M_PI * 2 / seg);
             auto v = glm::vec2(std::cos(angle), std::sin(angle)) * cmd.config.velocity;
             BulletSystem::createBullet(reg, cmd.config.position, v, "xiaoyu");
         }

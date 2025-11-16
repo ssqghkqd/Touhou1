@@ -18,9 +18,9 @@ namespace th::Init
 {
 void init(entt::registry& reg)
 {
-    setStatus(reg);
+    loadCore(reg);
     loadResources(reg);
-    gameSetup(reg);
+    gameStatusSet(reg);
 }
 
 void loadResources(entt::registry& reg)
@@ -49,11 +49,12 @@ void loadResources(entt::registry& reg)
     c.load(j);
 }
 
-void setStatus(entt::registry& reg)
+void loadCore(entt::registry& reg)
 {
     // 更新时间
-    Time::update();
+    Time::init();
     spdlog::set_pattern("[%H:%M:%S][%l] - %v");
+    spdlog::info("游戏开始初始化");
     // 初始化并存入注册表
     reg.ctx().emplace<Window>();
     // 输入系统不初始化
@@ -77,7 +78,7 @@ void setStatus(entt::registry& reg)
 
 }
 
-void gameSetup(entt::registry& reg)
+void gameStatusSet(entt::registry& reg)
 {
     auto& audio = reg.ctx().get<AudioManager>();
     PlayerSystem::createPlayer(reg);

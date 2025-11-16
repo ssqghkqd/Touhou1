@@ -28,13 +28,15 @@ void CmdPlayer::load(const nlohmann::json& json)
         else
         {
             spdlog::error("未知指令{}", cmdType);
+            continue;
         }
         cmds.push_back(entry);
+        spdlog::info("存储指令， 指令名{}, 开始时间{} 结束时间{} 持续{}s",
+                     cmdType,
+                     entry.startTime,
+                     entry.endTime,
+                     entry.duration);
     }
-    std::ranges::sort(cmds, [](const cmd& a, const cmd& b)
-                      {
-                          return a.startTime < b.startTime;
-                      });
 }
 
 void CmdPlayer::update(entt::registry& reg)
@@ -42,7 +44,6 @@ void CmdPlayer::update(entt::registry& reg)
     const float dt = Time::getDeltaTime();
     t += dt;
 
-    /*阶段1 2 检查已经结束的指令 和准备要开始执行的指令*/
     for (auto& item : cmds)
     {
         if (item.isFinished)
@@ -55,29 +56,22 @@ void CmdPlayer::update(entt::registry& reg)
             item.isActive = false;
             continue;
         }
-        if (item.startTime >= t && !item.isActive)
+        if (item.startTime < t && !item.isActive)
         {
             item.isActive = true;
-            activeCmds.push_back(item);
         }
-    }
-
-    /*阶段3 执行指令*/
-    for (auto& item : activeCmds)
-    {
-        if (item.isFinished)
+        if (item.isActive)
         {
-            continue;
-        }
-        std::visit([&reg](auto&& arg)
-                   {
-                       using T = std::decay_t<decltype(arg)>;
-                       if constexpr (std::is_same_v<T, impl::SinBullet>)
+            std::visit([&reg](auto&& arg)
                        {
-                           impl::exec(reg, arg); // 调用 SinBullet 的 exec 函数
-                       }
-                   },
-                   item.cmdVariant);
+                           using T = std::decay_t<decltype(arg)>;
+                           if constexpr (std::is_same_v<T, impl::SinBullet>)
+                           {
+                               impl::exec(reg, arg); // 调用 SinBullet 的 exec 函数
+                           }
+                       },
+                       item.cmdVariant);
+        }
     }
 }
 } // namespace th::cmd

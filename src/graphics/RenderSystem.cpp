@@ -132,6 +132,7 @@ void RenderSystem::renderBackground(entt::registry& registry) const
     renderEntity(registry, bgtf, bgRender);
 }
 
+#undef gfDrawElements
 void RenderSystem::update(entt::registry& registry) const
 {
     // 清除屏幕
