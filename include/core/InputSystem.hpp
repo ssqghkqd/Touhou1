@@ -10,7 +10,7 @@ class InputSystem
     void processInput(entt::registry& registry);
     void checkExit(entt::registry& reg) const;
     void shot(entt::registry& registry);
-    void segmations();
+    void segmations(entt::registry& registry);
 
     // 删除拷贝构造和赋值操作符
     InputSystem(const InputSystem&) = delete;

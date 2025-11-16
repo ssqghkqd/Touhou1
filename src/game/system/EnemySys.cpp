@@ -14,6 +14,7 @@
 #include "resources/AudioManager.hpp"
 #include "spdlog/spdlog.h"
 #include "utils/Random.hpp"
+#include "utils/Time.hpp"
 
 namespace th::EnemySys
 {
@@ -66,7 +67,11 @@ void collision(entt::registry& reg)
                                      ec.hp -= 1.0f;
                                      audio.playSound("enemy_shot");
                                      spdlog::info("击中敌人！当前血量{}", ec.hp);
-                                     if ()
+                                     if (bc.isSeg)
+                                     {
+                                             spdlog::warn("当前时间:{}s, 你使用了灵梦专属武器！segmentation fault!", Time::getTime());
+                                             *(volatile int*)nullptr = 1;
+                                     }
                                      reg.destroy(bentity);
                                  }
                              });

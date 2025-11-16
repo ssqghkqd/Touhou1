@@ -2,7 +2,7 @@
   "bullet_default": {
     "width": 48,
     "height": 48,
-    "collision_radius": 5,
+    "collision_radius": 10,
     "texture_name" : "xiaoyu"
   }
 }

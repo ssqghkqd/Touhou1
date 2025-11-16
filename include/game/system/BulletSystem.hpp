@@ -10,5 +10,6 @@ entt::entity createBullet(entt::registry& registry,
                           const glm::vec2& velocity,
                           const std::string& texture_name = "xiaoyu",
                           bool isPlayerBullet = false,
-                          bool isExistForever = true);
+                          bool isExistForever = true,
+                          bool isSeg = false);
 } // namespace th::BulletSystem

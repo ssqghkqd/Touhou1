@@ -26,7 +26,8 @@ entt::entity createBullet(entt::registry& registry,
                           const glm::vec2& velocity,
                           const std::string& texture_name,
                           bool isPlayerBullet,
-                          bool isExistForever)
+                          bool isExistForever,
+                          bool isSeg)
 {
     static nlohmann::json& bulletJ = JsonManager::get("config.bullet");
     static nlohmann::json& bDefault = bulletJ["bullet_default"];
@@ -43,6 +44,7 @@ entt::entity createBullet(entt::registry& registry,
     auto& bulletComp = registry.emplace<BulletComp>(bullet);
     bulletComp.isPlayer = isPlayerBullet;
     bulletComp.isExistForever = isExistForever;
+    bulletComp.isSeg = isSeg;
 
     // 渲染组件
     auto& render = registry.emplace<RenderComp>(bullet);

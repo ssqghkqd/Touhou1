@@ -7,6 +7,7 @@
 #include "game/cmd/CmdPlayer.hpp"
 #include "game/system/BulletSystem.hpp"
 #include "game/system/CollisionSystem.hpp"
+#include "game/system/EnemySys.hpp"
 #include "game/system/PlayerSystem.hpp"
 #include "game/system/SpriteMovementSys.hpp"
 #include "graphics/RenderSystem.hpp"
@@ -51,6 +52,7 @@ void App::mainLoop()
         // 生成弹幕
         BulletSystem::update(registry, Time::getDeltaTime(), Time::getTime());
         cmdp.update(registry);
+        EnemySys::update(registry, Time::getDeltaTime());
         // 处理碰撞
         CollisionSystem::update(registry);
 

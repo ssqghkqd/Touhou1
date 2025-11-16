@@ -6,6 +6,7 @@ namespace th::PlayerSystem
 void update(entt::registry& registry, float dt);
 entt::entity createPlayer(entt::registry& registry);
 void shot(entt::registry& registry);
+void segShot(entt::registry& reg);
 entt::entity& getPlayer();
 void updatePlayerMovement(entt::registry& registry);
 

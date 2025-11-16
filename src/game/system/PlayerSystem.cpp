@@ -94,9 +94,21 @@ void shot(entt::registry& registry)
     if (currentTime - m_lastTime >= shotInterval)
     {
         m_lastTime = currentTime;
-        auto& tf = registry.get<TransformComp>(m_player);
+        const auto& tf = registry.get<TransformComp>(m_player);
         BulletSystem::createBullet(registry, tf.position, {0.0f, -1000.0f}, "xiaoyu", true);
     }
+}
+
+void segShot(entt::registry& reg)
+{
+    const auto& tf = reg.get<TransformComp>(m_player);
+    BulletSystem::createBullet(reg,
+                               tf.position,
+                               {0.0f, -300.0f},
+                               "seg",
+                               true,
+                               true,
+                               true);
 }
 
 entt::entity& getPlayer()

@@ -20,7 +20,7 @@ void InputSystem::processInput(entt::registry& registry)
     PlayerSystem::updatePlayerMovement(registry);
     shot(registry);
     update(registry);
-    segmations();
+    segmations(registry);
 }
 
 void InputSystem::checkExit(entt::registry& reg) const
@@ -41,12 +41,11 @@ void InputSystem::shot(entt::registry& registry)
     }
 }
 
-void InputSystem::segmations()
+void InputSystem::segmations(entt::registry& registry)
 {
     if (isKeyJustPressed(GLFW_KEY_Y))
     {
-        spdlog::warn("当前时间:{}s, 你使用了灵梦专属武器！segmentation fault!", Time::getTime());
-        *(volatile int*)nullptr = 1;
+        PlayerSystem::segShot(registry);
     }
 }
 
