@@ -18,7 +18,6 @@
 namespace th::EnemySys
 {
 
-static float timer = 0.0f;
 entt::entity spawnEnemy(entt::registry& reg, glm::vec2 pos)
 {
     spdlog::info("创建敌人在({},{})", pos.x, pos.y);
@@ -40,50 +39,9 @@ entt::entity spawnEnemy(entt::registry& reg, glm::vec2 pos)
 
 void update(entt::registry& reg, float dt)
 {
-    // 随机测试功能
-
     collision(reg);
-    timer += dt;
-    const auto view = reg.view<EnemyComp, SpriteComp, TransformComp, EnemyTag>();
-    view.each([&](auto entity, EnemyComp& ec, SpriteComp& sc, TransformComp& tf)
-              {
-                  if (glm::length(ec.target_pos - tf.position) < 40.0f)
-                  {
-                      sc.velocity = glm::vec2(0.0f);
-                  }
-                  if (timer < ec.move_cd)
-                  {
-                      if (timer < 1.0f)
-                      {
-                          return;
-                      }
-                      homing(reg);
-                  }
-                  timer = 0.0f;
-                  const float x = Random::range(App::bgoffsetX + 10.0f,
-                                                App::bgoffsetX + App::bgwidth - 10.0f);
-                  const float y = Random::range(App::bgoffsetY + 50.0f,
-                                                App::bgoffsetY + 100.0f);
-                  ec.target_pos = {x, y};
-                  glm::vec dir = glm::normalize(glm::vec2(x, y) - tf.position);
-                  sc.velocity = dir * 50.0f;
-              });
-
-    // 随机测试功能
 }
 
-void homing(entt::registry& reg)
-{
-    static const auto m_player = PlayerSystem::getPlayer();
-    const auto view = reg.view<TransformComp, EnemyTag>();
-    view.each([&](auto entity, auto& tf)
-              {
-                  auto& tfp = reg.get<TransformComp>(m_player);
-                  glm::vec dir = glm::normalize(tfp.position - tf.position);
-                  BulletSystem::createBullet(reg, tf.position, dir * 200.0f);
-                  // spdlog::info("敌人发射弹幕 位置({},{})速度({},{})", tf.position.x, tf.position.y, dir.x * 200.0f, dir.y * 200.0f);
-              });
-}
 void collision(entt::registry& reg)
 {
     auto& audio = reg.ctx().get<AudioManager>();
@@ -97,7 +55,7 @@ void collision(entt::registry& reg)
                       return;
                   }
                   const auto bview = reg.view<BulletComp, CollisionComp, TransformComp, BulletTag>();
-                  bview.each([&](auto bentity, auto& bc, auto& bcc, auto& btf)
+                  bview.each([&](auto bentity, BulletComp& bc, CollisionComp& bcc, TransformComp& btf)
                              {
                                  if (!bc.isPlayer)
                                  {
@@ -108,6 +66,7 @@ void collision(entt::registry& reg)
                                      ec.hp -= 1.0f;
                                      audio.playSound("enemy_shot");
                                      spdlog::info("击中敌人！当前血量{}", ec.hp);
+                                     if ()
                                      reg.destroy(bentity);
                                  }
                              });

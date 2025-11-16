@@ -68,7 +68,7 @@ void App::mainLoop()
 void App::update(double currentTime, AudioManager& audioManager)
 {
     const double fps = 1.0 / Time::getDeltaTime(); // 计算实时FPS
-    spdlog::info("fps: {}, t: {}, dt: {}", fps, currentTime, Time::getDeltaTime());
+    spdlog::info("fps: {:.1f}, t: {:.2f}, dt: {}", fps, currentTime, Time::getDeltaTime());
 
     audioManager.cleanSound();
 
