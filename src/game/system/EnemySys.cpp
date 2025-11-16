@@ -66,7 +66,6 @@ void collision(entt::registry& reg)
                                      ec.hp -= 1.0f;
                                      audio.playSound("enemy_shot");
                                      spdlog::info("击中敌人！当前血量{}", ec.hp);
-                                     if ()
                                      reg.destroy(bentity);
                                  }
                              });
