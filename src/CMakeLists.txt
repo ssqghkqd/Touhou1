@@ -6,6 +6,7 @@ set(CORE_SOURCES
         core/Init.cpp
         core/InputSystem.cpp
         core/Window.cpp
+        core/ConfigManager.cpp
 )
 
 set(GAME_SOURCES

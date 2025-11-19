@@ -41,6 +41,7 @@ void App::mainLoop()
     {
         Time::update();
         const double currentTime = Time::getTime();
+        window.updateFPS();
         window.pollEvents();
         // 处理输入
         inputSystem.processInput(registry);
@@ -57,7 +58,7 @@ void App::mainLoop()
         renderSystem.update(registry);
 
         if (currentTime - lastStatTime >= STAT_INTERVAL) {
-            update(currentTime, audio);
+            update(audio);
             lastStatTime = currentTime; // 重置计时器
         }
 
@@ -65,11 +66,8 @@ void App::mainLoop()
     }
 }
 
-void App::update(double currentTime, AudioManager& audioManager)
+void App::update(AudioManager& audioManager)
 {
-    const double fps = 1.0 / Time::getDeltaTime(); // 计算实时FPS
-    spdlog::info("fps: {:.1f}, t: {:.2f}, dt: {}", fps, currentTime, Time::getDeltaTime());
-
     audioManager.cleanSound();
 
 }

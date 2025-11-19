@@ -73,6 +73,12 @@ void AudioManager::playMusic(const std::string& name, float volume, bool loop)
     spdlog::error("音乐播放失败 名称{}，原因:{}", name, ma_result_description(result));
 }
 
+/*
+ * sounds哈希表里存储的是模板masound对象，几乎静态
+ * 播放时将会分配一块内存通过ma提供的复制播放来播放，存入activesound向量 所有权归他所有并且由cleansound定时检查清理
+ * 一些踩坑实录：ma没有提供什么一次加载直接播放什么的 搞了半天最后看到了原来是这样实现的
+ */
+
 bool AudioManager::loadSound(const std::string& name, const fs::path& path)
 {
     if (!inited)
@@ -122,12 +128,13 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
 
     /*
      * 【内存管理经验】（亲身经历都是）
-     * 智能指针在这里是不好的实现
-     * 直接使用智能指针：编译错误 使用自定义删除器：你需要尤其注意用move移动所有权，
-     *   否则自动析构释放音频内存会直接导致内核音频驱动段错误，并且智能指针会尝试调用构造析构函数 这里是无效的浪费的开销
-     * new和malloc在这里等效 但对于一个没有构造函数的c结构体 并且是c库 malloc更合适
-     * 成功路径不需要释放 因为有清理函数每帧检查
+     * 1.第一反应是使用智能指针 但这里不能使用
+     *  如果你直接使用 会导致编译失败
+     *  如果你套用自定义删除器 你需要尤其注意move出去移动所有权 否则自动析构 音频驱动将会段错误
+     * 2.为什么不用new？ 因为new会尝试调用构造函数 但masound没有，并且还有异常开销
+     * 提示：成功路径不需要释放 因为有清理函数检查 失败路径一定要free（malloc成功之后）
      */
+    // TODO 可以用对象池 这里malloc可能内存碎片 但目前不用
     auto* sound = (ma_sound*)malloc(sizeof(ma_sound));
     if (sound == nullptr)
     {
@@ -141,16 +148,17 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
         nullptr,
         sound);
 
-    if (result == MA_SUCCESS)
+    if (result != MA_SUCCESS)
     {
-        ma_sound_set_volume(sound, volume * masterVolume * sfxVolume);
-        ma_sound_set_looping(sound, loop);
-        ma_sound_start(sound);
-        activeSounds.push_back(sound);
+        free(sound);
+        spdlog::error("播放失败 {}: {}", name, ma_result_description(result));
         return;
     }
-    free(sound);
-    spdlog::error("播放失败 {}: {}", name, ma_result_description(result));
+
+    ma_sound_set_volume(sound, volume * masterVolume * sfxVolume);
+    ma_sound_set_looping(sound, loop);
+    ma_sound_start(sound);
+    activeSounds.push_back(sound);
 }
 
 AudioManager::~AudioManager()

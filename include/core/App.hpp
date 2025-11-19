@@ -30,6 +30,6 @@ class App
 
   private:
     entt::registry registry;
-    void update(double currentTime, AudioManager& audioManager);
+    void update(AudioManager& audioManager);
 };
 } // namespace th

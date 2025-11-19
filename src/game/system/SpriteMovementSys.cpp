@@ -20,8 +20,8 @@ void update(entt::registry& registry, float dt)
               {
                   tf.position += sprite.velocity * dt;
 
-                  float halfWidth = render.size.x * 0.5f;
-                  float halfHeight = render.size.y * 0.5f;
+                  const float halfWidth = render.size.x * 0.5f;
+                  const float halfHeight = render.size.y * 0.5f;
 
                   // 超出边界的删除
                   if (tf.position.x + halfWidth > App::bgoffsetX + App::bgwidth || tf.position.x - halfWidth < App::bgoffsetX ||

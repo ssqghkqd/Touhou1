@@ -66,21 +66,17 @@ void RenderSystem::setProjection(int width, int height)
 
 void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, RenderComp& rc) const
 {
-    // 不可见的直接返回
     if (!rc.isVisible)
         return;
-    // 计算模型矩阵
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(tf.position, 0.0f));
     model = glm::rotate(model, tf.rotation, glm::vec3(0, 0, 1));
     model = glm::scale(model, glm::vec3(rc.size * tf.scale, 1.0f));
 
-    // 设置着色器参数
     m_shader->use();
     m_shader->set("model", model);
     m_shader->set("entityColor", rc.color);
 
-    // 选择网格（现在不选了
     const MeshManager::Mesh* mesh = m_quadMesh;
 
     // TODO 优化批处理
@@ -94,7 +90,7 @@ void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, Ren
         registry.ctx().get<TextureManager>().bind(rc.textureName);
     }
 
-    // 渲染
+    // TODO 这里可以用实例化渲染 但目前还是不用并且我不知道实例化渲染需要准备什么（
     glBindVertexArray(mesh->vao);
     gfDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, nullptr);
 }

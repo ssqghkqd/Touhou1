@@ -67,7 +67,7 @@ void CmdPlayer::update(entt::registry& reg)
                            using T = std::decay_t<decltype(arg)>;
                            if constexpr (std::is_same_v<T, impl::SinBullet>)
                            {
-                               impl::exec(reg, arg); // 调用 SinBullet 的 exec 函数
+                               impl::exec(reg, arg);
                            }
                        },
                        item.cmdVariant);

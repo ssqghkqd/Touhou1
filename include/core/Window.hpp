@@ -22,6 +22,7 @@ namespace th
         void swapBuffers() const;
         void pollEvents() const;
         void close() const;
+        void updateFPS();
 
         Window();
 
