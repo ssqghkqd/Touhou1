@@ -3,7 +3,6 @@
 #include "core/InputSystem.hpp"
 #include "core/Window.hpp"
 #include "game/cmd/CmdPlayer.hpp"
-#include "game/system/EnemySys.hpp"
 #include "game/system/PlayerSystem.hpp"
 #include "graphics/MeshManager.hpp"
 #include "graphics/RenderSystem.hpp"

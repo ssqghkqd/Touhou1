@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 4.00)
 project(Touhou1 VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -9,6 +9,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
 
 if(NOT DEFINED CMAKE_C_COMPILE_OBJECT)
     set(CMAKE_C_COMPILE_OBJECT "<CMAKE_C_COMPILER> <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -c <SOURCE>")
@@ -36,5 +37,15 @@ include(CCacheConfig)
 add_subdirectory(thirdparty/GLFW)
 add_subdirectory(thirdparty/glad)
 
+
+add_executable(${PROJECT_NAME})
+
 # 主项目
+# add_subdirectory(module)
+target_sources(${PROJECT_NAME}
+        PUBLIC
+        FILE_SET cxx_modules TYPE CXX_MODULES
+        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        FILES module/utils/Random.ixx
+)
 add_subdirectory(src)

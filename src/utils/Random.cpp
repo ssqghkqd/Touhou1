@@ -1,7 +1,9 @@
-#include "utils/Random.hpp"
-
-#include <ctime>
+module;
 #include <random>
+#include <ctime>
+
+module utils.Random;
+
 
 namespace th::Random
 {

@@ -6,13 +6,12 @@ set(CORE_SOURCES
         core/Init.cpp
         core/InputSystem.cpp
         core/Window.cpp
-        core/ConfigManager.cpp
+        #core/ConfigManager.cpp
 )
 
 set(GAME_SOURCES
         game/system/BulletSystem.cpp
         game/system/CollisionSystem.cpp
-        game/system/EnemySys.cpp
         game/system/PlayerSystem.cpp
         game/system/SpriteMovementSys.cpp
         game/cmd/impl/SinBullet.cpp
@@ -46,10 +45,14 @@ set(SOURCES
         ${GRAPHICS_SOURCES}
         ${UTILS_SOURCES}
         ${RESOURCES_SOURCES}
+        ${UTILS_MODULES}
 )
 
-# 创建可执行文件
-add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_sources(${PROJECT_NAME}
+        PRIVATE
+    ${SOURCES}
+)
 
 # 包含目录 - 确保头文件能被找到
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -83,7 +86,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 
 # 可选：为每个模块设置源码组（在IDE中更好看）
 source_group("Core" FILES ${CORE_SOURCES})
-source_group("ECS Systems" FILES ${ECS_SYSTEM_SOURCES})
+source_group("Game Systems" FILES ${GAME_SOURCES})
 source_group("Graphics" FILES ${GRAPHICS_SOURCES})
 source_group("Utils" FILES ${UTILS_SOURCES})
 source_group("Resources" FILES ${RESOURCES_SOURCES})

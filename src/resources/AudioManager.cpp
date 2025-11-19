@@ -134,7 +134,7 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
      * 2.为什么不用new？ 因为new会尝试调用构造函数 但masound没有，并且还有异常开销
      * 提示：成功路径不需要释放 因为有清理函数检查 失败路径一定要free（malloc成功之后）
      */
-    // TODO 可以用对象池 这里malloc可能内存碎片 但目前不用
+    // TODO 可以用对象池 这里malloc可能内存碎片 但目前性能不用
     auto* sound = (ma_sound*)malloc(sizeof(ma_sound));
     if (sound == nullptr)
     {
