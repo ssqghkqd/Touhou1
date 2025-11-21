@@ -1,18 +1,16 @@
 #include "game/system/BulletSystem.hpp"
 
-#include <cmath>
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 
-#include "core/App.hpp"
+#include "core/ConfigManager.hpp"
 #include "game/comp/BulletComp.hpp"
 #include "game/comp/CollisionComp.hpp"
 #include "game/comp/RenderComp.hpp"
 #include "game/comp/SpriteComp.hpp"
 #include "game/comp/TagComp.hpp"
 #include "game/comp/TransformComp.hpp"
-#include "json.hpp"
-#include "utils/JsonManager.hpp"
+#include "spdlog/spdlog.h"
 
 namespace th::BulletSystem
 {
@@ -28,8 +26,8 @@ entt::entity createBullet(entt::registry& registry,
                           bool isPlayerBullet,
                           bool isExistForever)
 {
-    static nlohmann::json& bulletJ = JsonManager::get("config.bullet");
-    static nlohmann::json& bDefault = bulletJ["bullet_default"];
+    static auto& cm = registry.ctx().get<ConfigManager>();
+    static auto bDefault = cm.getBulletConfig("bullet_default");
     auto bullet = registry.create();
 
     // 变换组件
@@ -47,11 +45,11 @@ entt::entity createBullet(entt::registry& registry,
     // 渲染组件
     auto& render = registry.emplace<RenderComp>(bullet);
     render.textureName = texture_name;
-    render.size = {bDefault["width"], bDefault["height"]};
+    render.size = bDefault.size;
 
     // 碰撞组件
     auto& cc = registry.emplace<CollisionComp>(bullet);
-    cc.radius = bDefault["collision_radius"];
+    cc.radius = bDefault.radius;
 
     // 标签
     registry.emplace<BulletTag>(bullet);

@@ -1,5 +1,6 @@
 #include "core/Init.hpp"
 
+#include "core/ConfigManager.hpp"
 #include "core/InputSystem.hpp"
 #include "core/Window.hpp"
 #include "game/cmd/CmdPlayer.hpp"
@@ -45,6 +46,9 @@ void loadResources(entt::registry& reg)
 
     auto& c = reg.ctx().get<cmd::CmdPlayer>();
     c.load(j);
+
+    auto& cm = reg.ctx().get<ConfigManager>();
+    cm.loadBullet("config.bullet", "bullet_default");
 }
 
 void loadCore(entt::registry& reg)
@@ -73,6 +77,8 @@ void loadCore(entt::registry& reg)
 
     // 游戏播放器
     reg.ctx().emplace<cmd::CmdPlayer>();
+
+    reg.ctx().emplace<ConfigManager>();
 
 }
 

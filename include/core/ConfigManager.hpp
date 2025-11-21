@@ -29,6 +29,7 @@ class ConfigManager
 {
     public:
     void loadBullet(const std::string& jsonName, const std::string& patternName);
+    bulletConfig getBulletConfig(const std::string& patternName);
 private:
     std::unordered_map<std::string, bulletConfig> m_BulletConfig;
     playerConfig m_PlayerConfig;

@@ -41,11 +41,5 @@ add_subdirectory(thirdparty/glad)
 add_executable(${PROJECT_NAME})
 
 # 主项目
-# add_subdirectory(module)
-target_sources(${PROJECT_NAME}
-        PUBLIC
-        FILE_SET cxx_modules TYPE CXX_MODULES
-        BASE_DIRS ${CMAKE_SOURCE_DIR}
-        FILES module/utils/Random.ixx
-)
+add_subdirectory(module)
 add_subdirectory(src)
