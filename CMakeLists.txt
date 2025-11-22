@@ -34,8 +34,8 @@ include(CompilerConfig)
 include(CCacheConfig)
 
 # 添加子目录
-add_subdirectory(thirdparty/GLFW)
-add_subdirectory(thirdparty/glad)
+add_subdirectory(third_party/GLFW)
+add_subdirectory(third_party/glad)
 
 
 add_executable(${PROJECT_NAME})

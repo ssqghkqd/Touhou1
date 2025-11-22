@@ -1,5 +1,5 @@
 #pragma once
-#include <../../thirdparty/entt/src/entt/entt.hpp>
+#include <../../third_party/entt/src/entt/entt.hpp>
 
 #include "entt/entity/registry.hpp"
 #include "resources/AudioManager.hpp"

@@ -3,6 +3,7 @@ cmake-build-debug/
 gfg_temp/
 .idea
 project-backup.zip
-thirdparty/
+third_party/
 .gitignore
 assets/
+开发日志/

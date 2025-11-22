@@ -63,13 +63,13 @@ target_sources(${PROJECT_NAME}
 # 包含目录 - 确保头文件能被找到
 target_include_directories(${PROJECT_NAME} PRIVATE
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/glm>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/entt/src>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/stb>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/spdlog/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/nlohmann_json>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/glad>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/miniaudio>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/glm>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/entt/src>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/stb>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/spdlog/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/nlohmann_json>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/glad>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/miniaudio>
 )
 
 # 编译器配置
