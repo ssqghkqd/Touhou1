@@ -5,6 +5,7 @@
 #include "spdlog/spdlog.h"
 #include "utils/Time.hpp"
 
+
 namespace th
 {
 
@@ -21,7 +22,6 @@ void Window::init(int width, int height, const char* title)
         spdlog::warn("window已经初始化");
         return;
     }
-    App::scale = 1;
 
     if (!glfwInitialized)
     {

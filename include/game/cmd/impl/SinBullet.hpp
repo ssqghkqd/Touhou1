@@ -1,7 +1,7 @@
 #pragma once
 #include "entt/entity/registry.hpp"
-#include "json.hpp"
-#include "vec2.hpp"
+#include "nlohmann_json/json.hpp"
+#include "glm/vec2.hpp"
 
 namespace th::cmd::impl
 {
@@ -17,7 +17,7 @@ struct SinBulletConfig
     float angleFrequency = 0.0f;
     float amplitude = 0.0f;
     int segments = 0;
-    float spawnInterval = 0.0f;
+    float spawnInterval = 1.0f;
 
 };
 

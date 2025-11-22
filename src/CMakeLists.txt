@@ -7,6 +7,7 @@ set(CORE_SOURCES
         core/InputSystem.cpp
         core/Window.cpp
         core/ConfigManager.cpp
+        core/test.cpp
 )
 
 set(GAME_SOURCES
@@ -37,6 +38,11 @@ set(RESOURCES_SOURCES
         resources/AudioManager.cpp
 )
 
+set(THIRDPARTY_SOURCES
+        thirdparty/stb_image.cpp
+        thirdparty/miniaudio.cpp
+)
+
 # 合并所有源文件
 set(SOURCES
         main.cpp
@@ -45,13 +51,13 @@ set(SOURCES
         ${GRAPHICS_SOURCES}
         ${UTILS_SOURCES}
         ${RESOURCES_SOURCES}
-        ${UTILS_MODULES}
+        ${THIRDPARTY_SOUCES}
 )
 
 
 target_sources(${PROJECT_NAME}
         PRIVATE
-    ${SOURCES}
+        ${SOURCES}
 )
 
 # 包含目录 - 确保头文件能被找到

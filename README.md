@@ -28,8 +28,8 @@ I don't know the exact command line build process as I usually use IDE, just che
 **链接** / **Link**: [两个高中生的东方同人游戏](https://www.bilibili.com/video/BV1391vBAEuz)
 
 ## 一些碎碎念 / Notes
-有问题问我，别太去打扰美术妹子 / Ask me if you have questions, please don't bother the art girl too much
-如果你发现了一些问题，你可以给我提issue当然我不一定会看，不太想接受贡献，如果你想玩可以拉取下来变成你的项目，遵守gplv3即可
+有问题问我，别太去打扰美术妹子 / Ask me if you have questions, please don't bother the art girl too much  
+如果你发现了一些问题，你可以给我提issue当然我不一定会看，不太想接受贡献，如果你想玩可以拉取下来变成你的项目，遵守gplv3即可  
 只是一个普通外行的代码，质量很差，没有什么架构 /
 Just an amateur's code with poor quality and no architecture, you can learn from it but don't copy directly, issues may not be checked
 

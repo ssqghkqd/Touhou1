@@ -32,4 +32,4 @@ void update(entt::registry& registry, float dt)
                   }
               });
 }
-} // namespace th
+} // namespace th::SpriteMovementSys

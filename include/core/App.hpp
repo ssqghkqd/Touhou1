@@ -24,7 +24,7 @@ class App
     static constexpr int bgoffsetX = 64;
     static constexpr int bgoffsetY = 32;
     static constexpr glm::vec2 bgCenter = {bgoffsetX + 0.5f * bgwidth, bgoffsetY + 0.5f * bgheight};
-    inline static int scale = 1;
+    static constexpr int scale = 1;
     static constexpr float STAT_INTERVAL = 1.0f;
     static constexpr int ESTIMATE_BULLET = 500;
 

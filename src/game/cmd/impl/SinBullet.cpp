@@ -39,12 +39,12 @@ SinBullet parseSinBullet(const nlohmann::json& json)
 {
     auto& params = json["params"];
     SinBullet cmd;
-    cmd.config.position.x = params.value("posX", 400.0f);
-    cmd.config.position.y = params.value("posY", 400.0f);
-    cmd.config.segments = params.value("seg", 8);
-    cmd.config.amplitude = params.value("amplitude", 1.0f);
-    cmd.config.angleFrequency = params.value("w", 1.0f);
-    cmd.config.velocity = params.value("v", 1.0f);
+    cmd.config.position.x = params.value("posX", 0.0f);
+    cmd.config.position.y = params.value("posY", 0.0f);
+    cmd.config.segments = params.value("seg", 0);
+    cmd.config.amplitude = params.value("amplitude", 0.0f);
+    cmd.config.angleFrequency = params.value("w", 0.0f);
+    cmd.config.velocity = params.value("v", 0.0f);
     cmd.config.spawnInterval = params.value("interval", 1.0f);
     return cmd;
 }
