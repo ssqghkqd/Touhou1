@@ -185,7 +185,7 @@ void AudioManager::cleanSound()
 {
     /*
      * 将会被每秒调用 注意这里播放完的音频将被清理！不要手动管理
-     * 频率不要太高（目前1hz） vector的擦除操作需要移动数据
+     * 频率不要太高（目前1hz） 一开始我用是vector 现在是链表 但仍然保持低频清理
      */
     for (auto it = activeSounds.begin(); it != activeSounds.end();)
     {

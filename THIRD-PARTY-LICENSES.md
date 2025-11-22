@@ -40,9 +40,8 @@
 - **许可证**：MIT/Public Domain
 - **版权声明**：Copyright (c) 2018-2024 David Reid
 
-## [GLAD](https://github.com/Dav1dde/glad)
-- **用途**：OpenGL 加载器生成器
-- **许可证**：MIT (生成器)
-- **版权声明**：Copyright (c) 2013-2024 David Herberth
+## [OpenGL API Bindings]
+• 生成工具：GLAD (https://glad.dav1d.de/)
+• 状态：自动生成的API绑定代码，通常视为公有领域
 
 ---
