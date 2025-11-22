@@ -1,33 +1,33 @@
-#include "game/system/PlayerSystem.hpp"
-
+module;
 #include <entt/entt.hpp>
-#include <glm.hpp>
+#include <glm/ext.hpp>
+module game.system.PlayerSys;
+import nlohmann_json;
+import utils.JsonManager;
+import Config;
+import game.system.BulletSys;
+import utils.Time;
+import core.Window;
+import glfw;
+import game.comp.PlayerComp;
+import game.comp.SpriteComp;
+import game.comp.DragComp;
+import game.comp.RenderComp;
+import game.comp.TransformComp;
+import game.comp.CollisionComp;
+import game.comp.TagComp;
 
-#define GLFW_INCLUDE_NONE
-#include <nlohmann_json/json.hpp>
-
-#include "GLFW/glfw3.h"
-#include "core/App.hpp"
-#include "core/Window.hpp"
-#include "game/comp/CollisionComp.hpp"
-#include "game/comp/DragComp.hpp"
-#include "game/comp/PlayerComp.hpp"
-#include "game/comp/RenderComp.hpp"
-#include "game/comp/SpriteComp.hpp"
-#include "game/comp/TagComp.hpp"
-#include "game/comp/TransformComp.hpp"
-#include "game/system/BulletSystem.hpp"
-#include "utils/JsonManager.hpp"
-#include "utils/Time.hpp"
-
-namespace th::PlayerSystem
+namespace th::PlayerSys
 {
 
+static entt::entity m_player;
+static float shotInterval = 0.1f;
+static float m_lastTime = 0.0f;
 void update(entt::registry& registry, float dt)
 {
-    static json& playerJ = JsonManager::get("config.player");
-    constexpr int width = App::bgoffsetX + App::bgwidth;
-    constexpr int height = App::bgoffsetY + App::bgheight;
+    static nlohmann::json& playerJ = JsonManager::get("config.player");
+    constexpr int width = bg_offset_x + bg_width;
+    constexpr int height = bg_offset_y + bg_height;
     static float slowMoveSpeed = playerJ["slow_speed"];
     static float moveSpeed = playerJ["speed"];
 
@@ -52,13 +52,13 @@ void update(entt::registry& registry, float dt)
     const float halfWidth = render.size.x / 2.0f;
     const float halfHeight = render.size.y / 2.0f;
 
-    tf.position.x = glm::clamp(tf.position.x, App::bgoffsetX + halfWidth, (float)width - halfWidth);
-    tf.position.y = glm::clamp(tf.position.y, App::bgoffsetY + halfHeight, (float)height - halfHeight);
+    tf.position.x = glm::clamp(tf.position.x, bg_offset_x + halfWidth, (float)width - halfWidth);
+    tf.position.y = glm::clamp(tf.position.y, bg_offset_y + halfHeight, (float)height - halfHeight);
 }
 
 entt::entity createPlayer(entt::registry& registry)
 {
-    static json& playerJ = JsonManager::get("config.player");
+    static nlohmann::json& playerJ = JsonManager::get("config.player");
     const auto player = registry.create();
 
     auto& tf = registry.emplace<TransformComp>(player);
@@ -75,7 +75,7 @@ entt::entity createPlayer(entt::registry& registry)
     // 玩家标签
     registry.emplace<PlayerTag>(player);
 
-    tf.position = {App::bgwidth / 2.0f, App::bgheight / 2.0f}; // 屏幕中心
+    tf.position = {bg_width / 2.0f, bg_height / 2.0f}; // 屏幕中心
     float width = playerJ["width"];
     float height = playerJ["height"];
     auto textureName = playerJ["texture_name"];
@@ -95,7 +95,7 @@ void shot(entt::registry& registry)
     {
         m_lastTime = currentTime;
         auto& tf = registry.get<TransformComp>(m_player);
-        BulletSystem::createBullet(registry, tf.position, {0.0f, -1000.0f}, "xiaoyu", true);
+        BulletSys::createBullet(registry, tf.position, {0.0f, -1000.0f}, "xiaoyu", true);
     }
 }
 
@@ -110,18 +110,18 @@ void updatePlayerMovement(entt::registry& registry)
     auto& pc = registry.get<PlayerComp>(m_player);
     // 检测低速模式
     static const auto& window = registry.ctx().get<Window>();
-    pc.isSlow = window.isKeyPressed(GLFW_KEY_LEFT_SHIFT);
+    pc.isSlow = window.isKeyPressed(glfw::KEY_LEFT_SHIFT);
 
     pc.targetDir = glm::vec2(0.0f); // 重置为零向量
 
     // 移动方向
-    if (window.isKeyPressed(GLFW_KEY_UP))
+    if (window.isKeyPressed(glfw::KEY_UP))
         pc.targetDir.y = -1.0f;
-    if (window.isKeyPressed(GLFW_KEY_DOWN))
+    if (window.isKeyPressed(glfw::KEY_DOWN))
         pc.targetDir.y = 1.0f;
-    if (window.isKeyPressed(GLFW_KEY_LEFT))
+    if (window.isKeyPressed(glfw::KEY_LEFT))
         pc.targetDir.x = -1.0f;
-    if (window.isKeyPressed(GLFW_KEY_RIGHT))
+    if (window.isKeyPressed(glfw::KEY_RIGHT))
         pc.targetDir.x = 1.0f;
 
     // 标准化方向

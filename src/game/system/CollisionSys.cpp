@@ -1,23 +1,22 @@
-#include "game/system/CollisionSystem.hpp"
-
+module;
+#include <glm/ext.hpp>
 #include <entt/entt.hpp>
-#include <glm.hpp>
+module game.system.CollisionSys;
+import spdlog;
+import game.system.PlayerSys;
+import game.comp.PlayerComp;
+import game.comp.TransformComp;
+import game.comp.CollisionComp;
+import game.comp.BulletComp;
+import resources.AudioManager;
+import game.comp.SpriteComp;
 
-#include "game/comp/BulletComp.hpp"
-#include "game/comp/CollisionComp.hpp"
-#include "game/comp/PlayerComp.hpp"
-#include "game/comp/SpriteComp.hpp"
-#include "game/comp/TransformComp.hpp"
-#include "game/system/PlayerSystem.hpp"
-#include "resources/AudioManager.hpp"
-#include "spdlog/spdlog.h"
-
-namespace th::CollisionSystem
+namespace th::CollisionSys
 {
 
 void update(entt::registry& registry)
 {
-    const auto m_player = PlayerSystem::getPlayer();
+    const auto m_player = PlayerSys::getPlayer();
 
     // 获取玩家碰撞数据
     auto& sprite = registry.get<SpriteComp>(m_player);

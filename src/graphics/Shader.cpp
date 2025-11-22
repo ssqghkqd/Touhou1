@@ -1,8 +1,9 @@
-#include "graphics/Shader.hpp"
-
-#include "ext.hpp"
-#include "spdlog/spdlog.h"
-#include "utils/FileManager.hpp"
+module;
+#include <filesystem>
+#include <glm/ext.hpp>
+module graphics.Shader;
+import utils.FileManager;
+import spdlog;
 
 namespace fs = std::filesystem;
 
@@ -13,7 +14,7 @@ bool Shader::use() const
 {
     if (m_id)
     {
-        glUseProgram(m_id);
+        gl::useProgram(m_id);
         return true;
     }
     return false;
@@ -44,8 +45,8 @@ bool Shader::load(const std::string& vertPath, const std::string& fragPath)
     }
 
     // 创建着色器并检查
-    vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSource);
-    fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+    vertexShader = createShader(gl::VERTEX_SHADER, vertexShaderSource);
+    fragmentShader = createShader(gl::FRAGMENT_SHADER, fragmentShaderSource);
     shaders.push_back(vertexShader);
     shaders.push_back(fragmentShader);
     // 创建链接着色器程序并检查 删除着色器
@@ -54,34 +55,34 @@ bool Shader::load(const std::string& vertPath, const std::string& fragPath)
 }
 
 // 创建着色器并检查
-GLuint Shader::createShader(GLenum type, std::string& shaderSource)
+gl::uint Shader::createShader(gl::glenum type, std::string& shaderSource)
 {
     const char* shaderSource_c = shaderSource.c_str();
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &shaderSource_c, NULL);
-    glCompileShader(shader);
+    gl::uint shader = gl::createShader(type);
+    gl::shaderSource(shader, 1, &shaderSource_c, nullptr);
+    gl::compileShader(shader);
     checkCompileShader(shader, type);
     return shader;
 }
 
 // 检查着色器是否编译成功
-void Shader::checkCompileShader(GLuint shader, GLenum type)
+void Shader::checkCompileShader(gl::uint shader, gl::glenum type)
 {
     int length = 0;
     int success;
     std::string typeName;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+    gl::getShaderiv(shader, gl::COMPILE_STATUS, &success);
+    gl::getShaderiv(shader, gl::INFO_LOG_LENGTH, &length);
     std::string shaderLog(length, '\0');
     switch (type)
     {
-        case GL_VERTEX_SHADER:
+        case gl::VERTEX_SHADER:
             typeName = "顶点";
             break;
-        case GL_FRAGMENT_SHADER:
+        case gl::FRAGMENT_SHADER:
             typeName = "片段";
             break;
-        case GL_GEOMETRY_SHADER:
+        case gl::GEOMETRY_SHADER:
             typeName = "几何";
             break;
         default:
@@ -90,43 +91,38 @@ void Shader::checkCompileShader(GLuint shader, GLenum type)
 
     if (!success)
     {
-        glGetShaderInfoLog(shader, length, NULL, shaderLog.data());
+        gl::getShaderInfoLog(shader, length, nullptr, shaderLog.data());
         shaderLog.pop_back();
         spdlog::error("着色器编译失败:{}", shaderLog);
     }
 }
 
-// 创建 链接着色器程序并检查
-void Shader::createShaderProgram(const std::vector<GLuint>& shaderList)
+void Shader::createShaderProgram(const std::vector<gl::uint>& shaderList)
 {
-    // 创建着色器程序
-    m_id = glCreateProgram();
+    m_id = gl::createProgram();
     for (const auto& shader : shaderList)
     {
-        glAttachShader(m_id, shader);
+        gl::attachShader(m_id, shader);
     }
-    glLinkProgram(m_id);
-    // 检查成功
+    gl::linkProgram(m_id);
     checkShaderProgram(m_id);
-    // 删除着色器
     for (const auto& shader : shaderList)
     {
-        glDeleteShader(shader);
+        gl::deleteShader(shader);
     }
 }
 
-// 检查着色器程序链接是否成功
-void Shader::checkShaderProgram(GLuint shaderProgram)
+void Shader::checkShaderProgram(gl::uint shaderProgram)
 {
     int length = 0;
     int success = 0;
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &length);
+    gl::getProgramiv(shaderProgram, gl::LINK_STATUS, &success);
+    gl::getProgramiv(shaderProgram, gl::INFO_LOG_LENGTH, &length);
     std::string programLog(length, '\0');
     if (!success)
     {
-        glGetProgramInfoLog(shaderProgram, length, NULL, programLog.data());
-        programLog.pop_back(); // 移除末尾的null终止符
+        gl::getProgramInfoLog(shaderProgram, length, nullptr, programLog.data());
+        programLog.pop_back();
         spdlog::critical("着色器链接失败:{}", programLog);
         throw;
     }
@@ -136,10 +132,10 @@ bool Shader::set(const std::string& name, const glm::mat4& mat) const
 {
     if (m_id)
     {
-        GLint location = glGetUniformLocation(m_id, name.c_str());
-        if (location >= 0) // 如果找不到，返回-1
+        gl::glint location = gl::getUniformLocation(m_id, name.c_str());
+        if (location >= 0)
         {
-            glUniformMatrix4fv(location, 1.0f, GL_FALSE, glm::value_ptr(mat));
+            gl::uniformMatrix4fv(location, 1, gl::FALSE, glm::value_ptr(mat));
             return true;
         }
         spdlog::error("找不到:{}", location);
@@ -153,10 +149,10 @@ bool Shader::set(const std::string& name, const int num) const
 {
     if (m_id)
     {
-        GLint location = glGetUniformLocation(m_id, name.c_str());
-        if (location >= 0) // 如果找不到，返回-1
+        gl::glint location = gl::getUniformLocation(m_id, name.c_str());
+        if (location >= 0)
         {
-            glUniform1i(location, num);
+            gl::uniform1i(location, num);
             return true;
         }
         spdlog::error("找不到:{}", location);
@@ -170,10 +166,10 @@ bool Shader::set(const std::string& name, const glm::vec4& vec4) const
 {
     if (m_id)
     {
-        GLint location = glGetUniformLocation(m_id, name.c_str());
-        if (location >= 0) // 如果找不到，返回-1
+        gl::glint location = gl::getUniformLocation(m_id, name.c_str());
+        if (location >= 0)
         {
-            glUniform4f(location,vec4.x,vec4.y,vec4.z,vec4.t);
+            gl::uniform4f(location,vec4.x,vec4.y,vec4.z,vec4.t);
             return true;
         }
         spdlog::error("找不到:{}", location);

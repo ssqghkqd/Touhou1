@@ -1,24 +1,23 @@
-#include "graphics/RenderSystem.hpp"
-
-#define gfDrawElements glDrawElements
-#include "core/App.hpp"
-#include "ext.hpp"
-#include "game/comp/PlayerComp.hpp"
-#include "game/comp/RenderComp.hpp"
-#include "game/comp/TransformComp.hpp"
-#include "game/system/PlayerSystem.hpp"
-#include "glad.h"
-#include "graphics/MeshManager.hpp"
-#include "graphics/ShaderManager.hpp"
-#include "graphics/TextureManager.hpp"
-#include "spdlog/spdlog.h"
+module;
+#include <entt/entt.hpp>
+#include <glm/ext.hpp>
+module graphics.RenderSystem;
+import Config;
+import spdlog;
+import opengl;
+import game.system.PlayerSys;
+import game.comp.TransformComp;
+import game.comp.RenderComp;
+import game.comp.PlayerComp;
+import graphics.ShaderManager;
+import graphics.TextureManager;
 
 namespace th
 {
 
 RenderSystem::RenderSystem(entt::registry& registry)
 {
-    init(registry, App::width, App::height);
+    init(registry, window_width, window_width);
 }
 
 
@@ -40,16 +39,16 @@ void RenderSystem::init(entt::registry& registry, const int screenWidth, const i
     m_quadMesh = &meshManager.GetQuadMesh();
 
     // 设置OpenGL状态
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST); // 2D不需要深度测试
+    gl::enable(gl::BLEND);
+    gl::blendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+    gl::disable(gl::DEPTH_TEST); // 2D不需要深度测试
     spdlog::debug("OPENGL 状态设置完成");
 
     // 创建投影矩阵
     setProjection(screenWidth, screenHeight);
 
     // 设置初始清屏颜色
-    glClearColor(0.53f, 0.81f, 0.98f, 1.0f);
+    gl::clearColor(0.53f, 0.81f, 0.98f, 1.0f);
     spdlog::info("渲染系统初始化完成");
     inited = true;
 }
@@ -86,13 +85,13 @@ void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, Ren
     if (!rc.textureName.empty())
     {
         m_shader->set("thTexture", 0);
-        glActiveTexture(GL_TEXTURE0);
+        gl::activeTexture(gl::TEXTURE0);
         registry.ctx().get<TextureManager>().bind(rc.textureName);
     }
 
     // TODO 这里可以用实例化渲染 但目前还是不用并且我不知道实例化渲染需要准备什么（
-    glBindVertexArray(mesh->vao);
-    gfDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, nullptr);
+    gl::bindVertexArray(mesh->vao);
+    gf::drawElements(gl::TRIANGLES, mesh->indexCount, gl::UNSIGNED_INT, nullptr);
 }
 
 void RenderSystem::renderHitbox(entt::registry& registry, const TransformComp& playerTF, bool isSlowMode, const PlayerComp& pc) const
@@ -121,9 +120,9 @@ void RenderSystem::renderBackground(entt::registry& registry) const
     static TransformComp bgtf;
     static RenderComp bgRender;
 
-    bgtf.position = glm::vec2(App::width / 2, App::height / 2);
+    bgtf.position = glm::vec2(window_width / 2, window_height / 2);
     bgRender.textureName = "bg1";
-    bgRender.size = glm::vec2(App::width, App::height);
+    bgRender.size = glm::vec2(window_width, window_height);
 
     renderEntity(registry, bgtf, bgRender);
 }
@@ -132,7 +131,7 @@ void RenderSystem::renderBackground(entt::registry& registry) const
 void RenderSystem::update(entt::registry& registry) const
 {
     // 清除屏幕
-    glClear(GL_COLOR_BUFFER_BIT);
+    gl::clear(gl::COLOR_BUFFER_BIT);
     // thLogger::debug("rendersystem: 清屏");
 
     // 注意先渲染背景
@@ -147,7 +146,7 @@ void RenderSystem::update(entt::registry& registry) const
                     });
 
     // 3. 玩家
-    static auto& m_player = PlayerSystem::getPlayer();
+    static auto& m_player = PlayerSys::getPlayer();
     auto& tf = registry.get<TransformComp>(m_player);
     auto& rc = registry.get<RenderComp>(m_player);
     const auto& pc = registry.get<PlayerComp>(m_player);

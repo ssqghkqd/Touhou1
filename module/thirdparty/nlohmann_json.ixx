@@ -6,7 +6,7 @@ module;
 
 export module nlohmann_json;
 
-export namespace json
+export namespace nlohmann
 {
-
+    using nlohmann::json;
 }

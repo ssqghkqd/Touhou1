@@ -7,3 +7,4 @@ third_party/
 .gitignore
 assets/
 开发日志/
+third_party/spdlog/

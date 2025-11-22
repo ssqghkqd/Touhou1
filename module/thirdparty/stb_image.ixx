@@ -8,5 +8,7 @@ export module stb_image;
 
 export namespace stbi
 {
-
+    auto load = stbi_load;
+auto failure_reason = stbi_failure_reason;
+auto image_free = stbi_image_free;
 }

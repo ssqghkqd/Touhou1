@@ -1,7 +1,12 @@
-#pragma once
+//
+// Created by ss on 2025/11/22.
+//
+module;
+#include <unordered_map>
+#include <entt/entt.hpp>
+export module core.InputSystem;
 
-
-namespace th
+export namespace th
 {
 class InputSystem
 {

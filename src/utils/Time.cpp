@@ -1,5 +1,6 @@
+module;
 #include <chrono>
-#include <utils/Time.hpp>
+module utils.Time;
 
 namespace th::Time
 {

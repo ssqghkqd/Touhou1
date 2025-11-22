@@ -1,13 +1,14 @@
 // ecs/system/SpriteMovementSys.cpp
-
+module;
 #include <entt/entt.hpp>
+module game.system.SpriteMovementSys;
+import spdlog;
+import Config;
+import game.comp.TransformComp;
+import game.comp.SpriteComp;
+import game.comp.RenderComp;
+import game.comp.TagComp;
 
-#include "core/App.hpp"
-#include "game/comp/RenderComp.hpp"
-#include "game/comp/SpriteComp.hpp"
-#include "game/comp/TagComp.hpp"
-#include "game/comp/TransformComp.hpp"
-#include "spdlog/spdlog.h"
 
 namespace th::SpriteMovementSys
 {
@@ -24,8 +25,8 @@ void update(entt::registry& registry, float dt)
                   const float halfHeight = render.size.y * 0.5f;
 
                   // 超出边界的删除
-                  if (tf.position.x + halfWidth > App::bgoffsetX + App::bgwidth || tf.position.x - halfWidth < App::bgoffsetX ||
-                      tf.position.y + halfHeight > App::bgoffsetY + App::bgheight || tf.position.y - halfHeight < App::bgoffsetY)
+                  if (tf.position.x + halfWidth > bg_offset_x + bg_width || tf.position.x - halfWidth < bg_offset_x ||
+                      tf.position.y + halfHeight > bg_offset_y + bg_height || tf.position.y - halfHeight < bg_offset_y)
                   {
                       spdlog::debug("删除实体在({},{})", tf.position.x, tf.position.y);
                       registry.destroy(entity);

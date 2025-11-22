@@ -1,18 +1,21 @@
-#include "core/Init.hpp"
+module;
+#include <entt/entt.hpp>
 
-#include "core/ConfigManager.hpp"
-#include "core/InputSystem.hpp"
-#include "core/Window.hpp"
-#include "game/cmd/CmdPlayer.hpp"
-#include "game/system/PlayerSystem.hpp"
-#include "graphics/MeshManager.hpp"
-#include "graphics/RenderSystem.hpp"
-#include "graphics/ShaderManager.hpp"
-#include "graphics/TextureManager.hpp"
-#include "resources/AudioManager.hpp"
-#include "spdlog/spdlog.h"
-#include "utils/JsonManager.hpp"
-#include "utils/Time.hpp"
+module core.Init;
+
+import spdlog;
+import utils.Time;
+import utils.JsonManager;
+import core.ConfigManager;
+import graphics.TextureManager;
+import resources.AudioManager;
+import core.Window;
+import core.InputSystem;
+import graphics.MeshManager;
+import graphics.ShaderManager;
+import graphics.RenderSystem;
+import game.cmd.CmdPlayer;
+import game.system.PlayerSys;
 
 namespace th::Init
 {
@@ -84,7 +87,7 @@ void gameStatusSet(entt::registry& reg)
     cm.loadBullet("config.bullet", "bullet_default");
 
     auto& audio = reg.ctx().get<AudioManager>();
-    PlayerSystem::createPlayer(reg);
+    PlayerSys::createPlayer(reg);
     audio.playMusic("satori");
 
 }

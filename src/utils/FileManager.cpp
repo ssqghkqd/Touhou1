@@ -1,9 +1,11 @@
+module;
+
 #include <filesystem>
 #include <fstream>
 #include <sstream>
-#include <utils/FileManager.hpp>
 
-#include "spdlog/spdlog.h"
+module utils.FileManager;
+import spdlog;
 
 namespace fs = std::filesystem;
 

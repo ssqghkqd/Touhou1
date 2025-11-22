@@ -1,8 +1,11 @@
-#include "game/cmd/impl/SinBullet.hpp"
-
-#include "game/system/BulletSystem.hpp"
-#include "spdlog/spdlog.h"
-#include "utils/Time.hpp"
+module;
+#include <cmath>
+#include <string>
+#include <glm/ext.hpp>
+#include <entt/entt.hpp>
+module game.cmd.impl.SinBullet;
+import utils.Time;
+import game.system.BulletSys;
 
 namespace th::cmd::impl
 {
@@ -30,7 +33,7 @@ void exec(entt::registry& reg, SinBullet& cmd)
         {
             const double angle = baseAngle + i * (M_PI * 2 / seg);
             auto v = glm::vec2(std::cos(angle), std::sin(angle)) * cmd.config.velocity;
-            BulletSystem::createBullet(reg, cmd.config.position, v, "xiaoyu");
+            BulletSys::createBullet(reg, cmd.config.position, v, "xiaoyu");
         }
     }
 }

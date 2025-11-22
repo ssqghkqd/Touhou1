@@ -1,7 +1,8 @@
-#include "graphics/ShaderManager.hpp"
-
-#include "graphics/Shader.hpp"
-#include "spdlog/spdlog.h"
+module;
+#include <memory>
+module graphics.ShaderManager;
+import spdlog;
+import graphics.Shader;
 
 namespace th
 {

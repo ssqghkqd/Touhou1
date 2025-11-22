@@ -1,13 +1,8 @@
-#include "graphics/MeshManager.hpp"
-
-#include <functional>
-#include <string>
-#include <unordered_map>
+module;
 #include <vector>
+module graphics.MeshManager;
+import opengl;
 
-#include "ext.hpp"
-#include "glad.h"
-#include "spdlog/spdlog.h"
 
 namespace th
 {
@@ -43,29 +38,29 @@ MeshManager::Mesh MeshManager::CreateQuadMesh()
         0 // 第二个三角形
     };
 
-    glGenVertexArrays(1, &mesh.vao);
-    glGenBuffers(1, &mesh.vbo);
-    glGenBuffers(1, &mesh.ebo);
+    gl::genVertexArrays(1, &mesh.vao);
+    gl::genBuffers(1, &mesh.vbo);
+    gl::genBuffers(1, &mesh.ebo);
 
-    glBindVertexArray(mesh.vao);
+    gl::bindVertexArray(mesh.vao);
 
     // 顶点缓冲区 (使用Vertex结构)
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+    gl::bindBuffer(gl::ARRAY_BUFFER, mesh.vbo);
+    gl::bufferData(gl::ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), gl::STATIC_DRAW);
 
     // 索引缓冲区
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    gl::bindBuffer(gl::ELEMENT_ARRAY_BUFFER, mesh.ebo);
+    gl::bufferData(gl::ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), gl::STATIC_DRAW);
 
     // 位置属性 (属性索引0)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
-    glEnableVertexAttribArray(0);
+    gl::vertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+    gl::enableVertexAttribArray(0);
 
     // UV属性 (属性索引1)
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
-    glEnableVertexAttribArray(1);
+    gl::vertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
+    gl::enableVertexAttribArray(1);
 
-    glBindVertexArray(0);
+    gl::bindVertexArray(0);
     mesh.indexCount = static_cast<int>(indices.size());
 
     return mesh;
@@ -77,11 +72,11 @@ MeshManager::~MeshManager()
     for (auto& [key, meshPtr] : m_meshes)
     {
         if (meshPtr->vao)
-            glDeleteVertexArrays(1, &meshPtr->vao);
+            gl::deleteVertexArrays(1, &meshPtr->vao);
         if (meshPtr->vbo)
-            glDeleteBuffers(1, &meshPtr->vbo);
+            gl::deleteBuffers(1, &meshPtr->vbo);
         if (meshPtr->ebo)
-            glDeleteBuffers(1, &meshPtr->ebo);
+            gl::deleteBuffers(1, &meshPtr->ebo);
     }
 }
 } // namespace th

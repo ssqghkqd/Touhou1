@@ -1,11 +1,11 @@
-#define MINIAUDIO_IMPLEMENTATION
-#include "resources/AudioManager.hpp"
-
-#include <miniaudio.h>
-
-#include "ext.hpp"
-#include "spdlog/spdlog.h"
-#include "utils/FileManager.hpp"
+module;
+#include <cstdlib>
+#include <filesystem>
+#include <string>
+#include <glm/ext.hpp>
+module resources.AudioManager;
+import spdlog;
+import utils.FileManager;
 
 namespace fs = std::filesystem;
 
@@ -16,10 +16,10 @@ bool AudioManager::init()
     if (inited)
         return true;
 
-    const ma_result result = ma_engine_init(nullptr, &engine);
-    if (result != MA_SUCCESS)
+    const ma::result result = ma::engine_init(nullptr, &engine);
+    if (result != ma::SUCCESS)
     {
-        spdlog::error("ma_engine_init failed {}", std::string(ma_result_description(result)));
+        spdlog::error("ma_engine_init failed {}", std::string(ma::result_description(result)));
         return false;
     }
     inited = true;
@@ -51,26 +51,26 @@ void AudioManager::playMusic(const std::string& name, float volume, bool loop)
         return;
     }
 
-    ma_sound_uninit(&music);
+    ma::sound_uninit(&music);
     const auto fullPath = FileManager::getResourcePath(musicPaths[name], true);
 
     // 数星星
-    const auto result = ma_sound_init_from_file(
+    const auto result = ma::sound_init_from_file(
         &engine,
         fullPath.c_str(),
-        MA_SOUND_FLAG_STREAM | MA_SOUND_FLAG_ASYNC,
+        ma::SOUND_FLAG_STREAM | ma::SOUND_FLAG_ASYNC,
         nullptr,
         nullptr,
         &music);
 
-    if (result == MA_SUCCESS)
+    if (result == ma::SUCCESS)
     {
-        ma_sound_set_volume(&music, volume * musicVolume * masterVolume);
-        ma_sound_set_looping(&music, loop);
-        ma_sound_start(&music);
+        ma::sound_set_volume(&music, volume * musicVolume * masterVolume);
+        ma::sound_set_looping(&music, loop);
+        ma::sound_start(&music);
         return;
     }
-    spdlog::error("音乐播放失败 名称{}，原因:{}", name, ma_result_description(result));
+    spdlog::error("音乐播放失败 名称{}，原因:{}", name, ma::result_description(result));
 }
 
 /*
@@ -94,26 +94,26 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
 
     const auto fullPath = FileManager::getResourcePath(path.string(), true);
 
-    auto* templateSound = (ma_sound*)malloc(sizeof(ma_sound));
+    auto* templateSound = (ma::sound*)malloc(sizeof(ma::sound));
     if (templateSound == nullptr)
     {
         spdlog::error("malloc templateSound failed");
         return false;
     }
-    const ma_result result = ma_sound_init_from_file(
+    const ma::result result = ma::sound_init_from_file(
         &engine,
         fullPath.c_str(),
-        MA_SOUND_FLAG_DECODE,
+        ma::SOUND_FLAG_DECODE,
         nullptr,
         nullptr,
         templateSound);
 
-    if (result == MA_SUCCESS)
+    if (result == ma::SUCCESS)
     {
         sounds[name] = templateSound; // 存储模板
         return true;
     }
-    spdlog::error("加载{} ,失败: {}", path.string(), ma_result_description(result));
+    spdlog::error("加载{} ,失败: {}", path.string(), ma::result_description(result));
     free(templateSound);
     return false;
 }
@@ -140,40 +140,40 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
      * 提示：成功路径不需要释放 因为有清理函数检查 失败路径一定要free（malloc成功之后）
      */
     // TODO 可以用对象池 这里malloc可能内存碎片 但目前性能好不用
-    auto* sound = (ma_sound*)malloc(sizeof(ma_sound));
+    auto* sound = (ma::sound*)malloc(sizeof(ma::sound));
     if (sound == nullptr)
     {
         spdlog::error("malloc failed");
         return;
     }
-    const ma_result result = ma_sound_init_copy(
+    const ma::result result = ma::sound_init_copy(
         &engine,
         sounds[name],
-        MA_SOUND_FLAG_DECODE,
+        ma::SOUND_FLAG_DECODE,
         nullptr,
         sound);
 
-    if (result != MA_SUCCESS)
+    if (result != ma::SUCCESS)
     {
         free(sound);
-        spdlog::error("播放失败 {}: {}", name, ma_result_description(result));
+        spdlog::error("播放失败 {}: {}", name, ma::result_description(result));
         return;
     }
 
-    ma_sound_set_volume(sound, volume * masterVolume * sfxVolume);
-    ma_sound_set_looping(sound, loop);
-    ma_sound_start(sound);
+    ma::sound_set_volume(sound, volume * masterVolume * sfxVolume);
+    ma::sound_set_looping(sound, loop);
+    ma::sound_start(sound);
     activeSounds.push_back(sound);
 }
 
 AudioManager::~AudioManager()
 {
-    ma_sound_uninit(&music);
+    ma::sound_uninit(&music);
     for (auto& [name, sound] : sounds)
     {
-        ma_sound_uninit(sound);
+        ma::sound_uninit(sound);
     }
-    ma_engine_uninit(&engine);
+    ma::engine_uninit(&engine);
 }
 
 AudioManager::AudioManager()
@@ -189,9 +189,9 @@ void AudioManager::cleanSound()
      */
     for (auto it = activeSounds.begin(); it != activeSounds.end();)
     {
-        if (!ma_sound_is_playing(*it))
+        if (!ma::sound_is_playing(*it))
         {
-            ma_sound_uninit(*it);
+            ma::sound_uninit(*it);
             free(*it);
             it = activeSounds.erase(it);
         }

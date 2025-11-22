@@ -1,18 +1,17 @@
-#include "game/system/BulletSystem.hpp"
-
+module;
+#include <glm/ext.hpp>
 #include <entt/entt.hpp>
-#include <glm/glm.hpp>
+module game.system.BulletSys;
+import core.ConfigManager;
+import game.comp.TransformComp;
+import game.comp.BulletComp;
+import game.comp.SpriteComp;
+import game.comp.RenderComp;
+import game.comp.CollisionComp;
+import game.comp.TagComp;
 
-#include "core/ConfigManager.hpp"
-#include "game/comp/BulletComp.hpp"
-#include "game/comp/CollisionComp.hpp"
-#include "game/comp/RenderComp.hpp"
-#include "game/comp/SpriteComp.hpp"
-#include "game/comp/TagComp.hpp"
-#include "game/comp/TransformComp.hpp"
-#include "spdlog/spdlog.h"
 
-namespace th::BulletSystem
+namespace th::BulletSys
 {
 
 void update(entt::registry& registry, float dt, float t)
@@ -22,12 +21,12 @@ void update(entt::registry& registry, float dt, float t)
 entt::entity createBullet(entt::registry& registry,
                           const glm::vec2& position,
                           const glm::vec2& velocity,
-                          const std::string& texture_name,
+                          const std::string& configName,
                           bool isPlayerBullet,
                           bool isExistForever)
 {
     static auto& cm = registry.ctx().get<ConfigManager>();
-    static auto bDefault = cm.getBulletConfig("bullet_default");
+    static auto bDefault = cm.getBulletConfig(configName);
     auto bullet = registry.create();
 
     // 变换组件
@@ -44,7 +43,7 @@ entt::entity createBullet(entt::registry& registry,
 
     // 渲染组件
     auto& render = registry.emplace<RenderComp>(bullet);
-    render.textureName = texture_name;
+    render.textureName = bDefault.textureName;
     render.size = bDefault.size;
 
     // 碰撞组件

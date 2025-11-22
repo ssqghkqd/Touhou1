@@ -1,14 +1,10 @@
-#include "core/InputSystem.hpp"
+module;
+#include <entt/entt.hpp>
 
-#define GLFW_INCLUDE_NONE
-#include <ext.hpp>
-
-#include "GLFW/glfw3.h"
-#include "core/Window.hpp"
-#include "game/system/PlayerSystem.hpp"
-#include "resources/AudioManager.hpp"
-#include "spdlog/spdlog.h"
-#include "utils/Time.hpp"
+module core.InputSystem;
+import core.Window;
+import glfw;
+import game.system.PlayerSys;
 
 namespace th
 {
@@ -17,7 +13,7 @@ void InputSystem::processInput(entt::registry& registry)
 {
     // 检查是否退出
     checkExit(registry);
-    PlayerSystem::updatePlayerMovement(registry);
+    PlayerSys::updatePlayerMovement(registry);
     shot(registry);
     update(registry);
 }
@@ -25,7 +21,7 @@ void InputSystem::processInput(entt::registry& registry)
 void InputSystem::checkExit(entt::registry& reg) const
 {
     auto& window = reg.ctx().get<Window>();
-    if (window.isKeyPressed(GLFW_KEY_ESCAPE))
+    if (window.isKeyPressed(glfw::KEY_ESCAPE))
     {
         window.close();
     }
@@ -34,9 +30,9 @@ void InputSystem::checkExit(entt::registry& reg) const
 void InputSystem::shot(entt::registry& registry)
 {
     auto& window = registry.ctx().get<Window>();
-    if (window.isKeyPressed(GLFW_KEY_Z))
+    if (window.isKeyPressed(glfw::KEY_Z))
     {
-        PlayerSystem::shot(registry);
+        PlayerSys::shot(registry);
     }
 }
 

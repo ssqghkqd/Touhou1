@@ -1,4 +1,4 @@
-#include <core/App.hpp>
+import core.App;
 
 int main()
 {

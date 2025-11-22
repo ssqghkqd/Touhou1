@@ -1,12 +1,12 @@
-#include "game/cmd/CmdPlayer.hpp"
+module;
+#include <variant>
+#include <string>
+#include <entt/entt.hpp>
+module game.cmd.CmdPlayer;
+import spdlog;
+import utils.Time;
+import game.cmd.impl.SinBullet;
 
-#include <algorithm>
-
-#include "entt/entt.hpp"
-#include "game/cmd/impl/SinBullet.hpp"
-#include "json.hpp"
-#include "spdlog/spdlog.h"
-#include "utils/Time.hpp"
 
 namespace th::cmd
 {

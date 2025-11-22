@@ -1,17 +1,18 @@
-#include <core/App.hpp>
-#include <core/Window.hpp>
-#include <utils/Time.hpp>
+module;
 
-#include "core/Init.hpp"
-#include "core/InputSystem.hpp"
-#include "game/cmd/CmdPlayer.hpp"
-#include "game/system/BulletSystem.hpp"
-#include "game/system/CollisionSystem.hpp"
-#include "game/system/PlayerSystem.hpp"
-#include "game/system/SpriteMovementSys.hpp"
-#include "graphics/RenderSystem.hpp"
-#include "resources/AudioManager.hpp"
-#include "spdlog/spdlog.h"
+module core.App;
+import utils.Time;
+import spdlog;
+import Config;
+import core.Init;
+import core.Window;
+import core.InputSystem;
+import graphics.RenderSystem;
+import game.cmd.CmdPlayer;
+import game.system.PlayerSys;
+import game.system.BulletSys;
+import game.system.CollisionSys;
+import game.system.SpriteMovementSys;
 
 namespace th
 {
@@ -46,18 +47,18 @@ void App::mainLoop()
         // 处理输入
         inputSystem.processInput(registry);
         // 更新玩家移动
-        PlayerSystem::update(registry, Time::getDeltaTime());
+        PlayerSys::update(registry, Time::getDeltaTime());
         // 更新所有精灵移动
         SpriteMovementSys::update(registry, Time::getDeltaTime());
         // 生成弹幕
-        BulletSystem::update(registry, Time::getDeltaTime(), Time::getTime());
+        BulletSys::update(registry, Time::getDeltaTime(), Time::getTime());
         cmdp.update(registry);
         // 处理碰撞
-        CollisionSystem::update(registry);
+        CollisionSys::update(registry);
 
         renderSystem.update(registry);
 
-        if (currentTime - lastStatTime >= STAT_INTERVAL) {
+        if (currentTime - lastStatTime >= stat_interval) {
             update(audio);
             lastStatTime = currentTime; // 重置计时器
         }

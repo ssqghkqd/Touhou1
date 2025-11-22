@@ -1,7 +1,9 @@
-#include <utils/FileManager.hpp>
-#include <utils/JsonManager.hpp>
+module;
+#include <filesystem>
+module utils.JsonManager;
 
-#include "spdlog/spdlog.h"
+import utils.FileManager;
+import spdlog;
 
 namespace th::JsonManager
 {

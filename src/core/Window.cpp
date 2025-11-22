@@ -1,17 +1,16 @@
-#include <core/Window.hpp>
-
-#include "core/App.hpp"
-#include "glad.h"
-#include "spdlog/spdlog.h"
-#include "utils/Time.hpp"
-
+module core.Window;
+import glfw;
+import spdlog;
+import Config;
+import opengl;
+import utils.Time;
 
 namespace th
 {
 
 Window::Window()
 {
-    init(App::width, App::height, App::title);
+    init(window_width, window_height, window_title);
 }
 
 
@@ -25,7 +24,7 @@ void Window::init(int width, int height, const char* title)
 
     if (!glfwInitialized)
     {
-        if (!glfwInit())
+        if (!glfw::init())
         {
             spdlog::critical("GLFW初始化失败");
             throw;
@@ -38,13 +37,13 @@ void Window::init(int width, int height, const char* title)
     {
         spdlog::warn("窗口已经创建");
     }
-    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);  // 禁用系统缩放
-    glfwWindowHint(GLFW_SCALE_FRAMEBUFFER, GLFW_FALSE); // 禁用帧缓冲缩放
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, 0);
-    m_window = glfwCreateWindow(width * App::scale, height * App::scale, title, nullptr, nullptr);
+    glfw::windowHint(glfw::SCALE_TO_MONITOR, glfw::FALSE);  // 禁用系统缩放
+    glfw::windowHint(glfw::SCALE_FRAMEBUFFER, glfw::FALSE); // 禁用帧缓冲缩放
+    glfw::windowHint(glfw::CONTEXT_VERSION_MAJOR, 3);
+    glfw::windowHint(glfw::CONTEXT_VERSION_MINOR, 3);
+    glfw::windowHint(glfw::OPENGL_PROFILE, glfw::OPENGL_CORE_PROFILE);
+    glfw::windowHint(glfw::RESIZABLE, 0);
+    m_window = glfw::createWindow(width * window_scale, height * window_scale, title, nullptr, nullptr);
 
     // 检查是否成功创建窗口
     if (!m_window)
@@ -55,16 +54,16 @@ void Window::init(int width, int height, const char* title)
 
     spdlog::info("窗口创建成功");
 
-    glfwMakeContextCurrent(m_window);
+    glfw::makeContextCurrent(m_window);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if (!gl::loadGLLoader((gl::loadproc)glfw::getProcAddress))
     {
         spdlog::critical("GLAD初始化失败");
         throw;
     }
     spdlog::info("GLAD初始化成功");
-    glViewport(0, 0, width * App::scale, height * App::scale);
-    glfwSwapInterval(0); // 启用垂直同步（锁定显示器刷新率）
+    gl::viewport(0, 0, width * window_scale, height * window_scale);
+    glfw::swapInterval(0); // 启用垂直同步（锁定显示器刷新率）
     spdlog::info("window初始化成功");
     inited = true;
 }
@@ -78,7 +77,7 @@ void Window::shutdown()
 {
     if (m_window)
     {
-        glfwDestroyWindow(m_window);
+        glfw::destroyWindow(m_window);
         m_window = nullptr;
     }
 }
@@ -88,7 +87,7 @@ void Window::updateFPS()
     const double currentTime = Time::getTime();
     m_frameCount++;
 
-    if (currentTime - m_lastTime >= App::STAT_INTERVAL)
+    if (currentTime - m_lastTime >= stat_interval)
     {
         m_lastTime = currentTime;
         m_fps = m_frameCount;
@@ -101,33 +100,33 @@ void Window::updateFPS()
 
 void Window::close() const
 {
-    glfwSetWindowShouldClose(m_window, true);
+    glfw::setWindowShouldClose(m_window, true);
 }
 
 bool Window::shouldClose() const
 {
-    return glfwWindowShouldClose(m_window);
+    return glfw::windowShouldClose(m_window);
 }
 // 交换缓冲区
 void Window::swapBuffers() const
 {
-    glfwSwapBuffers(m_window);
+    glfw::swapBuffers(m_window);
 }
 // 轮询事件
 void Window::pollEvents() const
 {
-    glfwPollEvents();
+    glfw::pollEvents();
 }
 
 // 判断按键函数
 bool Window::isKeyPressed(int key) const
 {
 
-    return glfwGetKey(m_window, key) == GLFW_PRESS;
+    return glfw::getKey(m_window, key) == glfw::PRESS;
 }
 
 bool Window::isKeyRelease(int key) const
 {
-    return glfwGetKey(m_window, key) == GLFW_RELEASE;
+    return glfw::getKey(m_window, key) == glfw::RELEASE;
 }
 } // namespace th

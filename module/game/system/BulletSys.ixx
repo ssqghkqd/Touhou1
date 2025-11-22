@@ -1,14 +1,19 @@
-#pragma once
-#include "entt/entity/registry.hpp"
-#include "vec2.hpp"
+//
+// Created by ss on 2025/11/22.
+//
+module;
+#include <string>
+#include <glm/ext.hpp>
+#include <entt/entt.hpp>
+export module game.system.BulletSys;
 
-namespace th::BulletSystem
+export namespace th::BulletSys
 {
 void update(entt::registry& registry, float dt, float t);
 entt::entity createBullet(entt::registry& registry,
                           const glm::vec2& position,
                           const glm::vec2& velocity,
-                          const std::string& texture_name = "xiaoyu",
+                          const std::string& configName = "bullet_default",
                           bool isPlayerBullet = false,
                           bool isExistForever = true);
 } // namespace th::BulletSystem

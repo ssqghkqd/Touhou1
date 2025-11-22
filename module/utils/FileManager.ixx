@@ -1,7 +1,11 @@
-#pragma once
+//
+// Created by ss on 2025/11/22.
+//
+module;
 #include <filesystem>
+export module utils.FileManager;
 
-namespace th::FileManager
+export namespace th::FileManager
 {
 std::string readFile(const std::filesystem::path& path);
 bool fileExists(const std::filesystem::path& path);

@@ -1,6 +1,8 @@
-#include "core/ConfigManager.hpp"
+module;
+#include <string>
 
-#include "utils/JsonManager.hpp"
+module core.ConfigManager;
+import utils.JsonManager;
 
 namespace th
 {

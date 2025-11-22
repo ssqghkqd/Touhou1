@@ -1,12 +1,10 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
+module;
+#include <string>
 #include <filesystem>
-#include <graphics/TextureManager.hpp>
-#include <utils/FileManager.hpp>
-
-#include "glad.h"
-#include "spdlog/spdlog.h"
+module graphics.TextureManager;
+import utils.FileManager;
+import stb_image;
+import spdlog;
 
 namespace th
 {
@@ -21,7 +19,7 @@ TextureManager::TextureManager()
 }
 
 // path是完整路径（assets下的)
-GLuint TextureManager::loadTexture(const std::string& textureName, const fs::path& path)
+gl::uint TextureManager::loadTexture(const std::string& textureName, const fs::path& path)
 {
     if (textures.contains(textureName))
     {
@@ -31,48 +29,47 @@ GLuint TextureManager::loadTexture(const std::string& textureName, const fs::pat
     const std::filesystem::path fullPath = FileManager::getResourcePath(path, true);
 
     int width, height, nrChannels;
-    unsigned char* data = stbi_load(fullPath.string().c_str(), &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi::load(fullPath.string().c_str(), &width, &height, &nrChannels, 0);
 
     if (!data)
     {
-        const char* r = stbi_failure_reason();
+        const char* r = stbi::failure_reason();
         spdlog::error("加载{}失败 原因{}", textureName, r);
-        return 0; // 0代表无效纹理
+        return 0;
     }
 
-    GLenum format = GL_RGB;
+    gl::glenum format = gl::RGB;
     switch (nrChannels)
     {
         case 1:
-            format = GL_RED;
+            format = gl::RED;
             break;
         case 3:
-            format = GL_RGB;
+            format = gl::RGB;
             break;
         case 4:
-            format = GL_RGBA;
+            format = gl::RGBA;
             break;
         default:
-            stbi_image_free(data); // !!!! attention !!!!
+            stbi::image_free(data);
             spdlog::error("加载{}失败，原因不支持{}通道", fullPath.string(), nrChannels);
             return 0;
     }
 
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    gl::uint textureID;
+    gl::genTextures(1, &textureID);
+    gl::bindTexture(gl::TEXTURE_2D, textureID);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    gl::texParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT);
+    gl::texParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT);
+    gl::texParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
+    gl::texParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glActiveTexture(GL_TEXTURE0);
+    gl::texImage2D(gl::TEXTURE_2D, 0, format, width, height, 0, format, gl::UNSIGNED_BYTE, data);
+    gl::generateMipmap(gl::TEXTURE_2D);
+    gl::activeTexture(gl::TEXTURE0);
 
-    // !
-    stbi_image_free(data);
+    stbi::image_free(data);
 
     textures[textureName] = textureID;
 
@@ -81,7 +78,7 @@ GLuint TextureManager::loadTexture(const std::string& textureName, const fs::pat
     return textureID;
 }
 
-GLuint TextureManager::getTexture(const std::string& name) const
+gl::uint TextureManager::getTexture(const std::string& name) const
 {
     // 查询map
     auto it = textures.find(name);
@@ -97,7 +94,7 @@ void TextureManager::bind(const std::string& name) const
     auto it = textures.find(name);
     if (it != textures.end())
     {
-        glBindTexture(GL_TEXTURE_2D, it->second);
+        gl::bindTexture(gl::TEXTURE_2D, it->second);
     }
 }
 
@@ -105,7 +102,7 @@ void TextureManager::clear()
 {
     for (auto& [name, texture] : textures)
     {
-        glDeleteTextures(1, &texture);
+        gl::deleteTextures(1, &texture);
     }
     textures.clear();
 }
