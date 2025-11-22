@@ -42,13 +42,6 @@ void loadResources(entt::registry& reg)
     JsonManager::load("json/config/player.json", "config.player");
     JsonManager::load("json/stage/stage1.json", "stage1");
     JsonManager::load("json/config/bullet.json", "config.bullet");
-    auto& j = JsonManager::get("stage1");
-
-    auto& c = reg.ctx().get<cmd::CmdPlayer>();
-    c.load(j);
-
-    auto& cm = reg.ctx().get<ConfigManager>();
-    cm.loadBullet("config.bullet", "bullet_default");
 }
 
 void loadCore(entt::registry& reg)
@@ -73,7 +66,7 @@ void loadCore(entt::registry& reg)
     // 纹理系统
     reg.ctx().emplace<TextureManager>();
     // 音频系统
-    auto& audio = reg.ctx().emplace<AudioManager>();
+    reg.ctx().emplace<AudioManager>();
 
     // 游戏播放器
     reg.ctx().emplace<cmd::CmdPlayer>();
@@ -84,9 +77,14 @@ void loadCore(entt::registry& reg)
 
 void gameStatusSet(entt::registry& reg)
 {
+    auto& j = JsonManager::get("stage1");
+    auto& c = reg.ctx().get<cmd::CmdPlayer>();
+    c.load(j);
+    auto& cm = reg.ctx().get<ConfigManager>();
+    cm.loadBullet("config.bullet", "bullet_default");
+
     auto& audio = reg.ctx().get<AudioManager>();
     PlayerSystem::createPlayer(reg);
-    //EnemySys::spawnEnemy(reg, {App::bgoffsetX + 300.0f, App::bgoffsetY + 100.0f});
     audio.playMusic("satori");
 
 }

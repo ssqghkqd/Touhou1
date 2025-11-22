@@ -36,7 +36,7 @@ void App::mainLoop()
 
     Time::gameStart();
     spdlog::info("游戏开始");
-    double lastStatTime = 0.0f;
+    double lastStatTime = 0.0;
     while (!window.shouldClose())
     {
         Time::update();

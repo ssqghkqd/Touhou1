@@ -75,7 +75,7 @@ void AudioManager::playMusic(const std::string& name, float volume, bool loop)
 
 /*
  * sounds哈希表里存储的是模板masound对象，几乎静态
- * 播放时将会分配一块内存通过ma提供的复制播放来播放，存入activesound向量 所有权归他所有并且由cleansound定时检查清理
+ * 播放时将会分配一块内存通过ma提供的复制播放来播放，存入activesound链表 所有权归他所有并且由cleansound定时检查清理
  * 一些踩坑实录：ma没有提供什么一次加载直接播放什么的 搞了半天最后看到了原来是这样实现的
  */
 
@@ -84,6 +84,11 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
     if (!inited)
     {
         spdlog::error("音频系统未初始化");
+        return false;
+    }
+    if (sounds.contains(name))
+    {
+        spdlog::warn("音频已经加载，名：{}", name);
         return false;
     }
 
@@ -134,7 +139,7 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
      * 2.为什么不用new？ 因为new会尝试调用构造函数 但masound没有，并且还有异常开销
      * 提示：成功路径不需要释放 因为有清理函数检查 失败路径一定要free（malloc成功之后）
      */
-    // TODO 可以用对象池 这里malloc可能内存碎片 但目前性能不用
+    // TODO 可以用对象池 这里malloc可能内存碎片 但目前性能好不用
     auto* sound = (ma_sound*)malloc(sizeof(ma_sound));
     if (sound == nullptr)
     {
@@ -179,7 +184,8 @@ AudioManager::AudioManager()
 void AudioManager::cleanSound()
 {
     /*
-     * 将会被每帧调用 注意这里播放完的音频将被清理！不要手动管理
+     * 将会被每秒调用 注意这里播放完的音频将被清理！不要手动管理
+     * 频率不要太高（目前1hz） vector的擦除操作需要移动数据
      */
     for (auto it = activeSounds.begin(); it != activeSounds.end();)
     {

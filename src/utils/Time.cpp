@@ -3,14 +3,14 @@
 
 namespace th::Time
 {
-using Clock = std::chrono::steady_clock; // 使用单调时钟，不受系统时间调整影响
+using Clock = std::chrono::steady_clock;
 using Seconds = std::chrono::duration<double>;
 
 static Clock::time_point appStartTime; // 程序启动的绝对时间
 static Clock::time_point gameStartTime; // 游戏开始的时间
 static Clock::time_point lastFrameTime;
-static double dt = 0.0f;
-static double t = 0.0f;
+static double dt = 0.0;
+static double t = 0.0;
 
 void init()
 {

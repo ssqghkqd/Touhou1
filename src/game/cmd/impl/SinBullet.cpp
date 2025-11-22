@@ -15,13 +15,13 @@ void exec(entt::registry& reg, SinBullet& cmd)
     const float w = cmd.config.angleFrequency; // 角频率 ω
     const float interval = cmd.config.spawnInterval;
     const int seg = cmd.config.segments;
-    const float dt = Time::getDeltaTime();
-    const float t = Time::getTime();
+    const float dt = (float)Time::getDeltaTime();
+    const float t = (float)Time::getTime();
 
     timer += dt;
-    const float angleVel = A * std::sin(w * t); // 角速度是正弦变化
+    const float angleVel = A * std::sin(w * t);
     baseAngle += angleVel * dt;
-    baseAngle = fmod(baseAngle, 2.0 * M_PI);
+    baseAngle = (float)fmod(baseAngle, 2.0 * M_PI);
 
     if (timer >= interval)
     {

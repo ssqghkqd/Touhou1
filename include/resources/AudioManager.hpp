@@ -5,7 +5,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
+#include <list>
 
 #include "vec2.hpp"
 
@@ -19,7 +19,7 @@ class AudioManager
     ma_sound music{};                                            // 音乐专用通道
     std::unordered_map<std::string, std::filesystem::path> musicPaths{};      // 音乐路径表
     std::unordered_map<std::string, ma_sound*> sounds{}; // 音效
-    std::vector<ma_sound*> activeSounds{};
+    std::list<ma_sound*> activeSounds{};
 
     float masterVolume = 0.2f;
     float musicVolume = 1.0f;

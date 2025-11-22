@@ -15,7 +15,7 @@ C++23标准 OpenGL 3.3 / C++23 Standard OpenGL 3.3
 ## 构建方法 / Building Instructions
 cmake>=3.28 clang>=18/gcc>=14  
 具体命令行构建怎么我也不知道 因为我平时用ide点 反正查一下cmake命令help吧 /
-I don't know the exact command line build process as I usually use IDE, just check cmake command help
+I don't know the exact command line build process as I usually use IDE, just check cmake command help lol
 
 ## 使用的库 / Libraries Used
 `glfw` `stb_image` `glm` `entt` `miniaudio` `spdlog` `nlohmann_json`
@@ -25,7 +25,7 @@ I don't know the exact command line build process as I usually use IDE, just che
 - **美术资源**：版权归美术组所有，**不随源码分发** / **Art Assets**: Copyright reserved by art team, **not included in source distribution**
 - **第三方库**：详见 [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) / **Third-party Libraries**: See [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)
 
-**链接** / **Link**: [两个高中生的东方同人游戏](https://www.bilibili.com/video/BV1391vBAEuz) / [Touhou Fan Game by Two High School Students](https://www.bilibili.com/video/BV1391vBAEuz)
+**链接** / **Link**: [两个高中生的东方同人游戏](https://www.bilibili.com/video/BV1391vBAEuz)
 
 ## 一些碎碎念 / Notes
 有问题问我，别太去打扰美术妹子 / Ask me if you have questions, please don't bother the art girl too much  
