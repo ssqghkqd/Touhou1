@@ -9,18 +9,18 @@ export module glfw;
 
 export namespace glfw
 {
-auto init = glfwInit;
-auto windowHint = glfwWindowHint;
-auto createWindow = glfwCreateWindow;
-auto makeContextCurrent = glfwMakeContextCurrent;
-auto getProcAddress = glfwGetProcAddress;
-auto swapInterval = glfwSwapInterval;
-auto destroyWindow = glfwDestroyWindow;
-auto setWindowShouldClose = glfwSetWindowShouldClose;
-auto windowShouldClose = glfwWindowShouldClose;
-auto swapBuffers = glfwSwapBuffers;
-auto pollEvents = glfwPollEvents;
-auto getKey = glfwGetKey;
+auto& init = glfwInit;
+auto& windowHint = glfwWindowHint;
+auto& createWindow = glfwCreateWindow;
+auto& makeContextCurrent = glfwMakeContextCurrent;
+auto& getProcAddress = glfwGetProcAddress;
+auto& swapInterval = glfwSwapInterval;
+auto& destroyWindow = glfwDestroyWindow;
+auto& setWindowShouldClose = glfwSetWindowShouldClose;
+auto& windowShouldClose = glfwWindowShouldClose;
+auto& swapBuffers = glfwSwapBuffers;
+auto& pollEvents = glfwPollEvents;
+auto& getKey = glfwGetKey;
 
 using window = GLFWwindow;
 

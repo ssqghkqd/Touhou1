@@ -90,5 +90,5 @@ constexpr auto UNSIGNED_BYTE = GL_UNSIGNED_BYTE;
 
 export namespace gf
 {
-auto drawElements = glDrawElements;
+auto& drawElements = glDrawElements;
 }

@@ -1,6 +1,8 @@
 module;
 #include <entt/entt.hpp>
 #include <glm/ext.hpp>
+
+#include "glad.h"
 module graphics.RenderSystem;
 import Config;
 import spdlog;
@@ -17,7 +19,7 @@ namespace th
 
 RenderSystem::RenderSystem(entt::registry& registry)
 {
-    init(registry, window_width, window_width);
+    init(registry, window_width, window_height);
 }
 
 
@@ -126,8 +128,6 @@ void RenderSystem::renderBackground(entt::registry& registry) const
 
     renderEntity(registry, bgtf, bgRender);
 }
-
-#undef gfDrawElements
 void RenderSystem::update(entt::registry& registry) const
 {
     // 清除屏幕

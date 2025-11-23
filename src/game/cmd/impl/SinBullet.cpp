@@ -33,7 +33,7 @@ void exec(entt::registry& reg, SinBullet& cmd)
         {
             const double angle = baseAngle + i * (M_PI * 2 / seg);
             auto v = glm::vec2(std::cos(angle), std::sin(angle)) * cmd.config.velocity;
-            BulletSys::createBullet(reg, cmd.config.position, v, "xiaoyu");
+            BulletSys::createBullet(reg, cmd.config.position, v, "bullet_default");
         }
     }
 }
