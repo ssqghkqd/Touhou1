@@ -18,3 +18,7 @@ function(set_cpp_standard target standard)
             CXX_EXTENSIONS OFF
     )
 endfunction()
+
+function(no_rtti target)
+target_compile_options(${target} PRIVATE "-fno-rtti")
+endfunction()

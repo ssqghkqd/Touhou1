@@ -33,13 +33,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CompilerConfig)
 include(CCacheConfig)
 
-# 添加子目录
-add_subdirectory(third_party/GLFW)
-add_subdirectory(third_party/glad)
-
-
 add_executable(${PROJECT_NAME})
 
 # 主项目
-add_subdirectory(module)
 add_subdirectory(src)

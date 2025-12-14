@@ -1,17 +1,43 @@
 module;
 #include <cmath>
-#include <string>
-#include <glm/ext.hpp>
-#include <entt/entt.hpp>
-module game.cmd.impl.SinBullet;
-import utils.Time;
-import game.system.BulletSys;
+module game.cmd.impl:SinBullet;
+import utils;
+import entt;
+import glm;
+import nlohmann_json;
 
 namespace th::cmd::impl
 {
 
+/*
+ * 波与粒的境界
+ * 角速度 w = amplitude * sin(frequency * t)
+ * 弹幕向周围甩出 segments个分段
+ */
+struct SinBulletConfig
+{
+    glm::vec2 position = {0.0f, 0.0f};
+    float velocity = 0.0f;
+    float angleFrequency = 0.0f;
+    float amplitude = 0.0f;
+    int segments = 0;
+    float spawnInterval = 1.0f;
+};
+
+struct SinBulletState
+{
+    float baseAngle = 0.0f;
+    float spawnTimer = 0.0f;
+};
+
+export struct SinBullet
+{
+    SinBulletConfig config;
+    SinBulletState state;
+};
+
 // 原型： 想起「波と粒の境界」（dld五面）
-void exec(entt::registry& reg, SinBullet& cmd)
+export void exec(entt::registry& reg, SinBullet& cmd)
 {
     auto& timer = cmd.state.spawnTimer;
     auto& baseAngle = cmd.state.baseAngle;
@@ -34,12 +60,12 @@ void exec(entt::registry& reg, SinBullet& cmd)
         {
             const double angle = baseAngle + i * (M_PI * 2 / seg);
             auto v = glm::vec2(std::cos(angle), std::sin(angle)) * cmd.config.velocity;
-            BulletSys::createBullet(reg, cmd.config.position, v, "bullet_default");
+            //BulletSys::createBullet(reg, cmd.config.position, v, "bullet_default");
         }
     }
 }
 
-SinBullet parseSinBullet(const nlohmann::json& json)
+export SinBullet parseSinBullet(const nlohmann::json& json)
 {
     auto& params = json["params"];
     SinBullet cmd;
