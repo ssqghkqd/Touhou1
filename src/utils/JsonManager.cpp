@@ -10,9 +10,9 @@ namespace th::JsonManager
 void load(const fs::path& path, const std::string& name)
 {
     // 获取该文件的字符串
-    const std::string json_str = FileManager::readFile(FileManager::getResourcePath(path, false));
-    const json json_data = json::parse(json_str);
-    files[name] = json_data;
+    const std::string jsonStr = FileManager::readFile(FileManager::getResourcePath(path, false));
+    const json jsonData = json::parse(jsonStr);
+    files[name] = jsonData;
 }
 
 json& get(const std::string& name)

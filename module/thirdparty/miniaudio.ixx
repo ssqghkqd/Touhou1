@@ -23,8 +23,8 @@ auto sound_init_copy = ma_sound_init_copy;
 auto engine_uninit = ma_engine_uninit;
 auto sound_is_playing = ma_sound_is_playing;
 
-constexpr auto SUCCESS = MA_SUCCESS;
-constexpr auto SOUND_FLAG_STREAM = MA_SOUND_FLAG_STREAM;
-constexpr auto SOUND_FLAG_ASYNC = MA_SOUND_FLAG_ASYNC;
-constexpr auto SOUND_FLAG_DECODE = MA_SOUND_FLAG_DECODE;
+constexpr auto success = MA_SUCCESS;
+constexpr auto sound_flag_stream = MA_SOUND_FLAG_STREAM;
+constexpr auto sound_flag_async = MA_SOUND_FLAG_ASYNC;
+constexpr auto sound_flag_decode = MA_SOUND_FLAG_DECODE;
 }

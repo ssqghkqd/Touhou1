@@ -18,7 +18,13 @@ cmake>=3.28 clang>=18/gcc>=14
 I don't know the exact command line build process as I usually use IDE, just check cmake command help lol
 
 ## 使用的库 / Libraries Used
-`glfw` `stb_image` `glm` `entt` `miniaudio` `spdlog` `nlohmann_json`
+`glfw`  
+`stb_image`  
+`glm`  
+`EnTT` entt 我的超人！  
+`miniaudio`  
+`spdlog`  
+`nlohmann_json`  
 
 ## 许可证说明 / License Information
 - **代码部分**：GPLv3（详见 [LICENSE.md](LICENSE.md)） / **Code**: GPLv3 (see [LICENSE.md](LICENSE.md))
@@ -30,7 +36,7 @@ I don't know the exact command line build process as I usually use IDE, just che
 ## 一些碎碎念 / Notes
 有问题问我，别太去打扰美术妹子 / Ask me if you have questions, please don't bother the art girl too much  
 如果你发现了一些问题，你可以给我提issue当然我不一定会看，不太想接受贡献，如果你想玩可以拉取下来变成你的项目，遵守gplv3即可  
-只是一个普通外行的代码，质量很差，没有什么架构 /
+只是一个普通外行的代码，质量很差，没有什么架构(咱是7月份才接触c++和opengl的) /
 Just an amateur's code with poor quality and no architecture, you can learn from it but don't copy directly, issues may not be checked
 
 ---

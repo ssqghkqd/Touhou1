@@ -16,20 +16,20 @@ Window::Window()
 
 void Window::init(int width, int height, const char* title)
 {
-    if (inited)
+    if (m_inited)
     {
         spdlog::warn("window已经初始化");
         return;
     }
 
-    if (!glfwInitialized)
+    if (!m_glfwInitialized)
     {
         if (!glfw::init())
         {
             spdlog::critical("GLFW初始化失败");
             throw;
         }
-        glfwInitialized = true;
+        m_glfwInitialized = true;
         spdlog::info("GLFW 初始化成功");
     }
 
@@ -37,12 +37,12 @@ void Window::init(int width, int height, const char* title)
     {
         spdlog::warn("窗口已经创建");
     }
-    glfw::windowHint(glfw::SCALE_TO_MONITOR, glfw::FALSE);  // 禁用系统缩放
-    glfw::windowHint(glfw::SCALE_FRAMEBUFFER, glfw::FALSE); // 禁用帧缓冲缩放
-    glfw::windowHint(glfw::CONTEXT_VERSION_MAJOR, 3);
-    glfw::windowHint(glfw::CONTEXT_VERSION_MINOR, 3);
-    glfw::windowHint(glfw::OPENGL_PROFILE, glfw::OPENGL_CORE_PROFILE);
-    glfw::windowHint(glfw::RESIZABLE, 0);
+    glfw::windowHint(glfw::scale_to_monitor, glfw::FALSE);  // 禁用系统缩放
+    glfw::windowHint(glfw::scale_framebuffer, glfw::FALSE); // 禁用帧缓冲缩放
+    glfw::windowHint(glfw::context_version_major, 3);
+    glfw::windowHint(glfw::context_version_minor, 3);
+    glfw::windowHint(glfw::opengl_profile, glfw::opengl_core_profile);
+    glfw::windowHint(glfw::resizable, 0);
     m_window = glfw::createWindow(width * window_scale, height * window_scale, title, nullptr, nullptr);
 
     // 检查是否成功创建窗口
@@ -65,7 +65,7 @@ void Window::init(int width, int height, const char* title)
     gl::viewport(0, 0, width * window_scale, height * window_scale);
     glfw::swapInterval(1); // 启用垂直同步（锁定显示器刷新率）
     spdlog::info("window初始化成功");
-    inited = true;
+    m_inited = true;
 }
 
 Window::~Window()
@@ -122,11 +122,11 @@ void Window::pollEvents() const
 bool Window::isKeyPressed(int key) const
 {
 
-    return glfw::getKey(m_window, key) == glfw::PRESS;
+    return glfw::getKey(m_window, key) == glfw::press;
 }
 
 bool Window::isKeyRelease(int key) const
 {
-    return glfw::getKey(m_window, key) == glfw::RELEASE;
+    return glfw::getKey(m_window, key) == glfw::release;
 }
 } // namespace th

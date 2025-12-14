@@ -4,7 +4,7 @@
 
 module;
 #include <glm/ext.hpp>
-export module game.comp.TransformComp;
+export module game.comp:transform;
 
 export namespace th
 {

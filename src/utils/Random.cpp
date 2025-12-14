@@ -12,7 +12,7 @@ namespace th::Random
     void init()
     {
         // 使用时间作为种子
-        generator.seed(static_cast<unsigned int>(std::time(nullptr)));
+        generator.seed((unsigned int)std::time(nullptr));
     }
     
     float range(float min, float max)

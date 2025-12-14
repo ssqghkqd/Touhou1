@@ -2,7 +2,6 @@
 // Created by ss on 2025/11/22.
 //
 module;
-#include <glm/ext.hpp>
 export module Config;
 
 export namespace th
@@ -14,7 +13,6 @@ constexpr int bg_width = 768;
 constexpr int bg_height = 896;
 constexpr int bg_offset_x = 64;
 constexpr int bg_offset_y = 32;
-constexpr glm::vec2 bg_center = {bg_offset_x + 0.5f * bg_width, bg_offset_y + 0.5f * bg_height};
 constexpr int window_scale = 1;
 constexpr float stat_interval = 1.0f;
 } // namespace th

@@ -7,9 +7,7 @@ module;
 export module graphics.RenderSystem;
 import graphics.MeshManager;
 import graphics.Shader;
-import game.comp.TransformComp;
-import game.comp.RenderComp;
-import game.comp.PlayerComp;
+import game.comp;
 
 export namespace th
 {
@@ -38,7 +36,7 @@ public:
     RenderSystem(RenderSystem&&) = delete;
     RenderSystem& operator=(RenderSystem&&) = delete;
 
-    RenderSystem(entt::registry& registry);
+    explicit RenderSystem(entt::registry& registry);
 
 private:
     glm::mat4 m_projection{};

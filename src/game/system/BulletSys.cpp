@@ -3,31 +3,21 @@ module;
 #include <entt/entt.hpp>
 module game.system.BulletSys;
 import core.ConfigManager;
-import game.comp.TransformComp;
-import game.comp.BulletComp;
-import game.comp.SpriteComp;
-import game.comp.RenderComp;
-import game.comp.CollisionComp;
-import game.comp.TagComp;
+import game.comp;
 
 
 namespace th::BulletSys
 {
 
-void update(entt::registry& registry, float dt, float t)
-{
-}
-
 entt::entity createBullet(entt::registry& registry,
                           const glm::vec2& position,
                           const glm::vec2& velocity,
                           const std::string& configName,
-                          bool isPlayerBullet,
-                          bool isExistForever)
+                          bool isPlayerBullet)
 {
     static auto& cm = registry.ctx().get<ConfigManager>();
     static auto bDefault = cm.getBulletConfig(configName);
-    auto bullet = registry.create();
+    const auto bullet = registry.create();
 
     // 变换组件
     auto& tf = registry.emplace<TransformComp>(bullet);
@@ -39,7 +29,6 @@ entt::entity createBullet(entt::registry& registry,
     // 弹幕组件
     auto& bulletComp = registry.emplace<BulletComp>(bullet);
     bulletComp.isPlayer = isPlayerBullet;
-    bulletComp.isExistForever = isExistForever;
 
     // 渲染组件
     auto& render = registry.emplace<RenderComp>(bullet);

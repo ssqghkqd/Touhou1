@@ -3,7 +3,7 @@
 //
 module;
 #include <glm/ext.hpp>
-export module game.comp.PlayerComp;
+export module game.comp:player;
 
 export namespace th
 {

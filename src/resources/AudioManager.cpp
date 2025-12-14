@@ -17,7 +17,7 @@ bool AudioManager::init()
         return true;
 
     const ma::result result = ma::engine_init(nullptr, &engine);
-    if (result != ma::SUCCESS)
+    if (result != ma::success)
     {
         spdlog::error("ma_engine_init failed {}", std::string(ma::result_description(result)));
         return false;
@@ -58,12 +58,12 @@ void AudioManager::playMusic(const std::string& name, float volume, bool loop)
     const auto result = ma::sound_init_from_file(
         &engine,
         fullPath.c_str(),
-        ma::SOUND_FLAG_STREAM | ma::SOUND_FLAG_ASYNC,
+        ma::sound_flag_stream | ma::sound_flag_async,
         nullptr,
         nullptr,
         &music);
 
-    if (result == ma::SUCCESS)
+    if (result == ma::success)
     {
         ma::sound_set_volume(&music, volume * musicVolume * masterVolume);
         ma::sound_set_looping(&music, loop);
@@ -94,7 +94,7 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
 
     const auto fullPath = FileManager::getResourcePath(path.string(), true);
 
-    auto* templateSound = (ma::sound*)malloc(sizeof(ma::sound));
+    auto templateSound = (ma::sound*)malloc(sizeof(ma::sound));
     if (templateSound == nullptr)
     {
         spdlog::error("malloc templateSound failed");
@@ -103,12 +103,12 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
     const ma::result result = ma::sound_init_from_file(
         &engine,
         fullPath.c_str(),
-        ma::SOUND_FLAG_DECODE,
+        ma::sound_flag_decode,
         nullptr,
         nullptr,
         templateSound);
 
-    if (result == ma::SUCCESS)
+    if (result == ma::success)
     {
         sounds[name] = templateSound; // 存储模板
         return true;
@@ -118,7 +118,7 @@ bool AudioManager::loadSound(const std::string& name, const fs::path& path)
     return false;
 }
 
-void AudioManager::playSound(const std::string& name, const float volume, const glm::vec2& position, bool loop)
+void AudioManager::playSound(const std::string& name, const float volume, [[maybe_unused]] const glm::vec2& position, bool loop)
 {
     if (!inited)
     {
@@ -140,7 +140,8 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
      * 提示：成功路径不需要释放 因为有清理函数检查 失败路径一定要free（malloc成功之后）
      */
     // TODO 可以用对象池 这里malloc可能内存碎片 但目前性能好不用
-    auto* sound = (ma::sound*)malloc(sizeof(ma::sound));
+    // ReSharper disable once CppCStyleCast
+    auto sound = (ma::sound*)malloc(sizeof(ma::sound));
     if (sound == nullptr)
     {
         spdlog::error("malloc failed");
@@ -149,11 +150,11 @@ void AudioManager::playSound(const std::string& name, const float volume, const 
     const ma::result result = ma::sound_init_copy(
         &engine,
         sounds[name],
-        ma::SOUND_FLAG_DECODE,
+        ma::sound_flag_decode,
         nullptr,
         sound);
 
-    if (result != ma::SUCCESS)
+    if (result != ma::success)
     {
         free(sound);
         spdlog::error("播放失败 {}: {}", name, ma::result_description(result));

@@ -10,14 +10,9 @@ namespace fs = std::filesystem;
 namespace th
 {
 
-bool Shader::use() const
+void Shader::use() const
 {
-    if (m_id)
-    {
-        gl::useProgram(m_id);
-        return true;
-    }
-    return false;
+    gl::useProgram(m_id);
 }
 
 // 在shaders下的相对路径
@@ -26,8 +21,8 @@ bool Shader::load(const std::string& vertPath, const std::string& fragPath)
     m_vertPath = vertPath;
     m_fragPath = fragPath;
     // 获取完整路径
-    fs::path vertFullPath = FileManager::getResourcePath("shaders", false) / vertPath;
-    fs::path fragFullPath = FileManager::getResourcePath("shaders", false) / fragPath;
+    const fs::path vertFullPath = FileManager::getResourcePath("shaders", false) / vertPath;
+    const fs::path fragFullPath = FileManager::getResourcePath("shaders", false) / fragPath;
 
     // 读取着色器源代码
     std::string vertexShaderSource, fragmentShaderSource;
@@ -41,21 +36,20 @@ bool Shader::load(const std::string& vertPath, const std::string& fragPath)
         std::string s = e.what();
         spdlog::critical("着色器代码编译错误:{}", s);
         throw;
-        return false;
     }
 
     // 创建着色器并检查
-    vertexShader = createShader(gl::VERTEX_SHADER, vertexShaderSource);
-    fragmentShader = createShader(gl::FRAGMENT_SHADER, fragmentShaderSource);
-    shaders.push_back(vertexShader);
-    shaders.push_back(fragmentShader);
+    m_vertexShader = createShader(gl::vertex_shader, vertexShaderSource);
+    m_fragmentShader = createShader(gl::fragment_shader, fragmentShaderSource);
+    m_shaders.push_back(m_vertexShader);
+    m_shaders.push_back(m_fragmentShader);
     // 创建链接着色器程序并检查 删除着色器
-    createShaderProgram(shaders);
+    createShaderProgram(m_shaders);
     return true;
 }
 
 // 创建着色器并检查
-gl::uint Shader::createShader(gl::glenum type, std::string& shaderSource)
+gl::uint Shader::createShader(const gl::glenum type, const std::string& shaderSource)
 {
     const char* shaderSource_c = shaderSource.c_str();
     gl::uint shader = gl::createShader(type);
@@ -71,18 +65,18 @@ void Shader::checkCompileShader(gl::uint shader, gl::glenum type)
     int length = 0;
     int success;
     std::string typeName;
-    gl::getShaderiv(shader, gl::COMPILE_STATUS, &success);
-    gl::getShaderiv(shader, gl::INFO_LOG_LENGTH, &length);
+    gl::getShaderiv(shader, gl::compile_status, &success);
+    gl::getShaderiv(shader, gl::info_log_length, &length);
     std::string shaderLog(length, '\0');
     switch (type)
     {
-        case gl::VERTEX_SHADER:
+        case gl::vertex_shader:
             typeName = "顶点";
             break;
-        case gl::FRAGMENT_SHADER:
+        case gl::fragment_shader:
             typeName = "片段";
             break;
-        case gl::GEOMETRY_SHADER:
+        case gl::geometry_shader:
             typeName = "几何";
             break;
         default:
@@ -93,7 +87,7 @@ void Shader::checkCompileShader(gl::uint shader, gl::glenum type)
     {
         gl::getShaderInfoLog(shader, length, nullptr, shaderLog.data());
         shaderLog.pop_back();
-        spdlog::error("着色器编译失败:{}", shaderLog);
+        spdlog::error("{}着色器编译失败:{}", typeName, shaderLog);
     }
 }
 
@@ -116,66 +110,36 @@ void Shader::checkShaderProgram(gl::uint shaderProgram)
 {
     int length = 0;
     int success = 0;
-    gl::getProgramiv(shaderProgram, gl::LINK_STATUS, &success);
-    gl::getProgramiv(shaderProgram, gl::INFO_LOG_LENGTH, &length);
+    gl::getProgramiv(shaderProgram, gl::link_status, &success);
+    gl::getProgramiv(shaderProgram, gl::info_log_length, &length);
     std::string programLog(length, '\0');
     if (!success)
     {
         gl::getProgramInfoLog(shaderProgram, length, nullptr, programLog.data());
         programLog.pop_back();
         spdlog::critical("着色器链接失败:{}", programLog);
-        throw;
+        throw std::runtime_error("着色器链接失败");
     }
 }
 
-bool Shader::set(const std::string& name, const glm::mat4& mat) const
+void Shader::set(const std::string& name, const glm::mat4& mat) const
 {
-    if (m_id)
-    {
-        gl::glint location = gl::getUniformLocation(m_id, name.c_str());
-        if (location >= 0)
-        {
-            gl::uniformMatrix4fv(location, 1, gl::FALSE, glm::value_ptr(mat));
-            return true;
-        }
-        spdlog::error("找不到:{}", location);
-        return false;
-    }
-    spdlog::error("着色器程序未使用:{}", name);
-    return false;
+    const gl::glint location = gl::getUniformLocation(m_id, name.c_str());
+    assert(location >= 0 && "找不到uniform！");
+    gl::uniformMatrix4fv(location, 1, gl::FALSE, glm::value_ptr(mat));
 }
 
-bool Shader::set(const std::string& name, const int num) const
+void Shader::set(const std::string& name, int num) const
 {
-    if (m_id)
-    {
-        gl::glint location = gl::getUniformLocation(m_id, name.c_str());
-        if (location >= 0)
-        {
-            gl::uniform1i(location, num);
-            return true;
-        }
-        spdlog::error("找不到:{}", location);
-        return false;
-    }
-    spdlog::error("着色器程序未使用:{}", name);
-    return false;
+    const gl::glint location = gl::getUniformLocation(m_id, name.c_str());
+    assert(location >= 0 && "找不到uniform！");
+    gl::uniform1i(location, num);
 }
 
-bool Shader::set(const std::string& name, const glm::vec4& vec4) const
+void Shader::set(const std::string& name, const glm::vec4& vec4) const
 {
-    if (m_id)
-    {
-        gl::glint location = gl::getUniformLocation(m_id, name.c_str());
-        if (location >= 0)
-        {
-            gl::uniform4f(location,vec4.x,vec4.y,vec4.z,vec4.t);
-            return true;
-        }
-        spdlog::error("找不到:{}", location);
-        return false;
-    }
-    spdlog::error("着色器程序未使用:{}", name);
-    return false;
+    const gl::glint location = gl::getUniformLocation(m_id, name.c_str());
+    assert(location >= 0 && "找不到uniform！");
+    gl::uniform4f(location, vec4.x, vec4.y, vec4.z, vec4.t);
 }
 } // namespace th

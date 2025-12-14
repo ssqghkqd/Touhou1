@@ -17,6 +17,7 @@ set(GAMES
         game/comp/RenderComp.ixx
         game/comp/SpriteComp.ixx
         game/comp/TagComp.ixx
+        game/comp/Comp.ixx
         game/comp/TransformComp.ixx
         game/system/BulletSys.ixx
         game/system/CollisionSys.ixx

@@ -38,17 +38,17 @@ gl::uint TextureManager::loadTexture(const std::string& textureName, const fs::p
         return 0;
     }
 
-    gl::glenum format = gl::RGB;
+    gl::glenum format = gl::rgb;
     switch (nrChannels)
     {
         case 1:
-            format = gl::RED;
+            format = gl::red;
             break;
         case 3:
-            format = gl::RGB;
+            format = gl::rgb;
             break;
         case 4:
-            format = gl::RGBA;
+            format = gl::rgba;
             break;
         default:
             stbi::image_free(data);
@@ -58,16 +58,16 @@ gl::uint TextureManager::loadTexture(const std::string& textureName, const fs::p
 
     gl::uint textureID;
     gl::genTextures(1, &textureID);
-    gl::bindTexture(gl::TEXTURE_2D, textureID);
+    gl::bindTexture(gl::texture_2d, textureID);
 
-    gl::texParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT);
-    gl::texParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT);
-    gl::texParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
-    gl::texParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
+    gl::texParameteri(gl::texture_2d, gl::texture_wrap_s, gl::repeat);
+    gl::texParameteri(gl::texture_2d, gl::texture_warp_t, gl::repeat);
+    gl::texParameteri(gl::texture_2d, gl::texture_min_filter, gl::linear_mimap_linear);
+    gl::texParameteri(gl::texture_2d, gl::texture_mag_filter, gl::linear);
 
-    gl::texImage2D(gl::TEXTURE_2D, 0, format, width, height, 0, format, gl::UNSIGNED_BYTE, data);
-    gl::generateMipmap(gl::TEXTURE_2D);
-    gl::activeTexture(gl::TEXTURE0);
+    gl::texImage2D(gl::texture_2d, 0, format, width, height, 0, format, gl::unsigned_byte, data);
+    gl::generateMipmap(gl::texture_2d);
+    gl::activeTexture(gl::texture0);
 
     stbi::image_free(data);
 
@@ -94,7 +94,7 @@ void TextureManager::bind(const std::string& name) const
     auto it = textures.find(name);
     if (it != textures.end())
     {
-        gl::bindTexture(gl::TEXTURE_2D, it->second);
+        gl::bindTexture(gl::texture_2d, it->second);
     }
 }
 

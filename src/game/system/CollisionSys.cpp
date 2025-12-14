@@ -4,12 +4,8 @@ module;
 module game.system.CollisionSys;
 import spdlog;
 import game.system.PlayerSys;
-import game.comp.PlayerComp;
-import game.comp.TransformComp;
-import game.comp.CollisionComp;
-import game.comp.BulletComp;
+import game.comp;
 import resources.AudioManager;
-import game.comp.SpriteComp;
 
 namespace th::CollisionSys
 {
@@ -19,8 +15,7 @@ void update(entt::registry& registry)
     const auto m_player = PlayerSys::getPlayer();
 
     // 获取玩家碰撞数据
-    auto& sprite = registry.get<SpriteComp>(m_player);
-    auto& tf = registry.get<TransformComp>(m_player);
+    const auto& tf = registry.get<TransformComp>(m_player);
     auto& playerc = registry.get<PlayerComp>(m_player);
     auto& cs = registry.get<CollisionComp>(m_player);
 

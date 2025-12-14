@@ -45,12 +45,12 @@ MeshManager::Mesh MeshManager::CreateQuadMesh()
     gl::bindVertexArray(mesh.vao);
 
     // 顶点缓冲区 (使用Vertex结构)
-    gl::bindBuffer(gl::ARRAY_BUFFER, mesh.vbo);
-    gl::bufferData(gl::ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), gl::STATIC_DRAW);
+    gl::bindBuffer(gl::array_buffer, mesh.vbo);
+    gl::bufferData(gl::array_buffer, vertices.size() * sizeof(Vertex), vertices.data(), gl::static_draw);
 
     // 索引缓冲区
-    gl::bindBuffer(gl::ELEMENT_ARRAY_BUFFER, mesh.ebo);
-    gl::bufferData(gl::ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), gl::STATIC_DRAW);
+    gl::bindBuffer(gl::element_array_buffer, mesh.ebo);
+    gl::bufferData(gl::element_array_buffer, indices.size() * sizeof(unsigned int), indices.data(), gl::static_draw);
 
     // 位置属性 (属性索引0)
     gl::vertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));

@@ -10,6 +10,7 @@ import game.system.BulletSys;
 namespace th::cmd::impl
 {
 
+// 原型： 想起「波と粒の境界」（dld五面）
 void exec(entt::registry& reg, SinBullet& cmd)
 {
     auto& timer = cmd.state.spawnTimer;
@@ -18,8 +19,8 @@ void exec(entt::registry& reg, SinBullet& cmd)
     const float w = cmd.config.angleFrequency; // 角频率 ω
     const float interval = cmd.config.spawnInterval;
     const int seg = cmd.config.segments;
-    const float dt = (float)Time::getDeltaTime();
-    const float t = (float)Time::getTime();
+    const auto dt = (float)Time::getDeltaTime();
+    const auto t = (float)Time::getTime();
 
     timer += dt;
     const float angleVel = A * std::sin(w * t);

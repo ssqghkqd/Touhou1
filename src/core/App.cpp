@@ -19,7 +19,7 @@ namespace th
 
 App::App()
 {
-    Init::init(registry);
+    Init::init(m_registry);
 }
 
 void App::run()
@@ -29,11 +29,11 @@ void App::run()
 
 void App::mainLoop()
 {
-    auto& window = registry.ctx().get<Window>();
-    auto& inputSystem = registry.ctx().get<InputSystem>();
-    auto& renderSystem = registry.ctx().get<RenderSystem>();
-    auto& audio = registry.ctx().get<AudioManager>();
-    auto& cmdp = registry.ctx().get<cmd::CmdPlayer>();
+    auto& window = m_registry.ctx().get<Window>();
+    auto& inputSystem = m_registry.ctx().get<InputSystem>();
+    const auto& renderSystem = m_registry.ctx().get<RenderSystem>();
+    auto& audio = m_registry.ctx().get<AudioManager>();
+    auto& cmdp = m_registry.ctx().get<cmd::CmdPlayer>();
 
     Time::gameStart();
     spdlog::info("游戏开始");
@@ -45,20 +45,19 @@ void App::mainLoop()
         window.updateFPS();
         window.pollEvents();
         // 处理输入
-        inputSystem.processInput(registry);
+        inputSystem.processInput(m_registry);
         // 更新玩家移动
-        PlayerSys::update(registry, Time::getDeltaTime());
+        PlayerSys::update(m_registry, (float)Time::getDeltaTime());
         // 更新所有精灵移动
-        SpriteMovementSys::update(registry, Time::getDeltaTime());
+        SpriteMovementSys::update(m_registry, (float)Time::getDeltaTime());
         // 生成弹幕
-        BulletSys::update(registry, Time::getDeltaTime(), Time::getTime());
-        cmdp.update(registry);
+        cmdp.update(m_registry);
         // 处理碰撞
-        CollisionSys::update(registry);
+        CollisionSys::update(m_registry);
 
-        renderSystem.update(registry);
-
-        if (currentTime - lastStatTime >= stat_interval) {
+        renderSystem.update(m_registry);
+        if (currentTime - lastStatTime >= stat_interval)
+        {
             update(audio);
             lastStatTime = currentTime; // 重置计时器
         }
@@ -70,6 +69,5 @@ void App::mainLoop()
 void App::update(AudioManager& audioManager)
 {
     audioManager.cleanSound();
-
 }
 } // namespace th

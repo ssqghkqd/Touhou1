@@ -26,8 +26,8 @@ public:
     void load(const nlohmann::json& json);
     void update(entt::registry& reg);
 private:
-    std::vector<cmd> cmds;
-    std::vector<cmd> activeCmds;
+    std::vector<cmd> m_cmds;
+    std::vector<cmd> m_activeCmds;
     float t = 0.0f;
 };
 } // namespace th::cmd

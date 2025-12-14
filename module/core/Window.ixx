@@ -33,8 +33,8 @@ class Window
     bool isKeyRelease(int key) const;
 
   private:
-    bool glfwInitialized = false;
-    bool inited = false;
+    bool m_glfwInitialized = false;
+    bool m_inited = false;
     glfw::window* m_window = nullptr;
     double m_lastTime = 0.0;
     int m_frameCount = 0;

@@ -29,6 +29,9 @@ void init(entt::registry& reg)
 void loadResources(entt::registry& reg)
 {
     auto& texture = reg.ctx().get<TextureManager>();
+    auto& audio = reg.ctx().get<AudioManager>();
+    auto& cmdPlayer = reg.ctx().get<cmd::CmdPlayer>();
+    auto& cfgM = reg.ctx().get<ConfigManager>();
     // 纹理
     texture.loadTexture("player", "textures/player.png");
     texture.loadTexture("hitbox", "textures/hitbox.png");
@@ -36,7 +39,7 @@ void loadResources(entt::registry& reg)
     texture.loadTexture("bg1", "textures/bg1.png");
     texture.loadTexture("enemy", "textures/enemy.png");
     // 音频
-    auto& audio = reg.ctx().get<AudioManager>();
+
     audio.loadSound("miss", "sounds/miss.wav");
     audio.loadSound("enemy_shot", "sounds/enemy_shot.wav");
     audio.loadSound("enemy_death", "sounds/enemy_death.wav");
@@ -45,6 +48,11 @@ void loadResources(entt::registry& reg)
     JsonManager::load("json/config/player.json", "config.player");
     JsonManager::load("json/stage/stage1.json", "stage1");
     JsonManager::load("json/config/bullet.json", "config.bullet");
+
+    auto& j = JsonManager::get("stage1");
+
+    cmdPlayer.load(j);
+    cfgM.loadBullet("config.bullet", "bullet_default");
 }
 
 void loadCore(entt::registry& reg)
@@ -80,15 +88,8 @@ void loadCore(entt::registry& reg)
 
 void gameStatusSet(entt::registry& reg)
 {
-    auto& j = JsonManager::get("stage1");
-    auto& c = reg.ctx().get<cmd::CmdPlayer>();
-    c.load(j);
-    auto& cm = reg.ctx().get<ConfigManager>();
-    cm.loadBullet("config.bullet", "bullet_default");
-
     auto& audio = reg.ctx().get<AudioManager>();
     PlayerSys::createPlayer(reg);
     audio.playMusic("satori");
-
 }
 }

@@ -4,7 +4,7 @@
 
 module;
 #include <glm/ext.hpp>
-export module game.comp.SpriteComp;
+export module game.comp:sprite;
 
 export namespace th
 {

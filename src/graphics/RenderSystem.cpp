@@ -1,16 +1,12 @@
 module;
 #include <entt/entt.hpp>
 #include <glm/ext.hpp>
-
-#include "glad.h"
 module graphics.RenderSystem;
 import Config;
 import spdlog;
 import opengl;
 import game.system.PlayerSys;
-import game.comp.TransformComp;
-import game.comp.RenderComp;
-import game.comp.PlayerComp;
+import game.comp;
 import graphics.ShaderManager;
 import graphics.TextureManager;
 
@@ -31,25 +27,20 @@ void RenderSystem::init(entt::registry& registry, const int screenWidth, const i
         return;
     }
 
-    // 获取纹理管理器
     auto& shaderManager = registry.ctx().get<ShaderManager>();
     m_shader = &shaderManager.getShader("default");
 
-
-    // 初始化网格管理器
     auto& meshManager = registry.ctx().get<MeshManager>();
     m_quadMesh = &meshManager.GetQuadMesh();
 
     // 设置OpenGL状态
-    gl::enable(gl::BLEND);
-    gl::blendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
-    gl::disable(gl::DEPTH_TEST); // 2D不需要深度测试
+    gl::enable(gl::blend);
+    gl::blendFunc(gl::src_alpha, gl::one_minus_src_alpha);
+    gl::disable(gl::depth_test); // 2D不需要深度测试
     spdlog::debug("OPENGL 状态设置完成");
 
-    // 创建投影矩阵
     setProjection(screenWidth, screenHeight);
 
-    // 设置初始清屏颜色
     gl::clearColor(0.53f, 0.81f, 0.98f, 1.0f);
     spdlog::info("渲染系统初始化完成");
     inited = true;
@@ -69,7 +60,7 @@ void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, Ren
 {
     if (!rc.isVisible)
         return;
-    glm::mat4 model = glm::mat4(1.0f);
+    auto model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(tf.position, 0.0f));
     model = glm::rotate(model, tf.rotation, glm::vec3(0, 0, 1));
     model = glm::scale(model, glm::vec3(rc.size * tf.scale, 1.0f));
@@ -87,13 +78,13 @@ void RenderSystem::renderEntity(entt::registry& registry, TransformComp& tf, Ren
     if (!rc.textureName.empty())
     {
         m_shader->set("thTexture", 0);
-        gl::activeTexture(gl::TEXTURE0);
+        gl::activeTexture(gl::texture0);
         registry.ctx().get<TextureManager>().bind(rc.textureName);
     }
 
     // TODO 这里可以用实例化渲染 但目前还是不用并且我不知道实例化渲染需要准备什么（
     gl::bindVertexArray(mesh->vao);
-    gf::drawElements(gl::TRIANGLES, mesh->indexCount, gl::UNSIGNED_INT, nullptr);
+    gf::drawElements(gl::triangles, mesh->indexCount, gl::unsigned_int, nullptr);
 }
 
 void RenderSystem::renderHitbox(entt::registry& registry, const TransformComp& playerTF, bool isSlowMode, const PlayerComp& pc) const
@@ -131,16 +122,15 @@ void RenderSystem::renderBackground(entt::registry& registry) const
 void RenderSystem::update(entt::registry& registry) const
 {
     // 清除屏幕
-    gl::clear(gl::COLOR_BUFFER_BIT);
-    // thLogger::debug("rendersystem: 清屏");
+    gl::clear(gl::color_buffer_bit);
 
     // 注意先渲染背景
 
     renderBackground(registry);
 
     // 2. 弹幕 敌人（应该在玩家前面）
-    auto view = registry.view<TransformComp, RenderComp>();
-    view.each([&](auto entity, auto& tf, auto& rc)
+    auto view = registry.view<TransformComp, RenderComp>(entt::exclude<PlayerTag>);
+    view.each([&registry, this](auto& tf, auto& rc)
                     {
                         renderEntity(registry, tf, rc);
                     });

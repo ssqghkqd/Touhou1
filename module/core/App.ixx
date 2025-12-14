@@ -18,7 +18,7 @@ class App
     void mainLoop();
 
   private:
-    entt::registry registry;
-    void update(AudioManager& audioManager);
+    entt::registry m_registry;
+    static void update(AudioManager& audioManager);
 };
 } // namespace th

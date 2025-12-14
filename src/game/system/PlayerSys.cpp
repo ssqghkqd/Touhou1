@@ -9,13 +9,7 @@ import game.system.BulletSys;
 import utils.Time;
 import core.Window;
 import glfw;
-import game.comp.PlayerComp;
-import game.comp.SpriteComp;
-import game.comp.DragComp;
-import game.comp.RenderComp;
-import game.comp.TransformComp;
-import game.comp.CollisionComp;
-import game.comp.TagComp;
+import game.comp;
 
 namespace th::PlayerSys
 {
@@ -31,7 +25,7 @@ void update(entt::registry& registry, float dt)
     static float slowMoveSpeed = playerJ["slow_speed"];
     static float moveSpeed = playerJ["speed"];
 
-    auto& player = registry.get<PlayerComp>(m_player);
+    const auto& player = registry.get<PlayerComp>(m_player);
     auto& sprite = registry.get<SpriteComp>(m_player);
     auto& drag = registry.get<DragComp>(m_player);
     auto& render = registry.get<RenderComp>(m_player);
@@ -63,13 +57,13 @@ entt::entity createPlayer(entt::registry& registry)
 
     auto& tf = registry.emplace<TransformComp>(player);
     // 精灵组件
-    auto& sprite = registry.emplace<SpriteComp>(player);
+    [[maybe_unused]] auto& sprite = registry.emplace<SpriteComp>(player);
 
     // 玩家控制组件
-    auto& playerComp = registry.emplace<PlayerComp>(player);
+    [[maybe_unused]] auto& playerComp = registry.emplace<PlayerComp>(player);
 
     auto& render = registry.emplace<RenderComp>(player);
-    auto& drag = registry.emplace<DragComp>(player);
+    [[maybe_unused]] auto& drag = registry.emplace<DragComp>(player);
     auto& cs = registry.emplace<CollisionComp>(player);
 
     // 玩家标签
@@ -106,22 +100,21 @@ entt::entity& getPlayer()
 
 void updatePlayerMovement(entt::registry& registry)
 {
-    auto& tf = registry.get<TransformComp>(m_player);
     auto& pc = registry.get<PlayerComp>(m_player);
     // 检测低速模式
     static const auto& window = registry.ctx().get<Window>();
-    pc.isSlow = window.isKeyPressed(glfw::KEY_LEFT_SHIFT);
+    pc.isSlow = window.isKeyPressed(glfw::key_left_shift);
 
     pc.targetDir = glm::vec2(0.0f); // 重置为零向量
 
     // 移动方向
-    if (window.isKeyPressed(glfw::KEY_UP))
+    if (window.isKeyPressed(glfw::key_up))
         pc.targetDir.y = -1.0f;
-    if (window.isKeyPressed(glfw::KEY_DOWN))
+    if (window.isKeyPressed(glfw::key_down))
         pc.targetDir.y = 1.0f;
-    if (window.isKeyPressed(glfw::KEY_LEFT))
+    if (window.isKeyPressed(glfw::key_left))
         pc.targetDir.x = -1.0f;
-    if (window.isKeyPressed(glfw::KEY_RIGHT))
+    if (window.isKeyPressed(glfw::key_right))
         pc.targetDir.x = 1.0f;
 
     // 标准化方向

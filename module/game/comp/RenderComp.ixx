@@ -4,7 +4,7 @@
 module;
 #include <string>
 #include <glm/ext.hpp>
-export module game.comp.RenderComp;
+export module game.comp:render;
 export namespace th
 {
 struct RenderComp

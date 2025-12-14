@@ -13,7 +13,7 @@ namespace th::cmd
 
 void CmdPlayer::load(const nlohmann::json& json)
 {
-    cmds.clear();
+    m_cmds.clear();
     for (const auto& item : json["pattern"])
     {
         cmd entry;
@@ -30,7 +30,7 @@ void CmdPlayer::load(const nlohmann::json& json)
             spdlog::error("未知指令{}", cmdType);
             continue;
         }
-        cmds.push_back(entry);
+        m_cmds.push_back(entry);
         spdlog::info("存储指令， 指令名{}, 开始时间{} 结束时间{} 持续{}s",
                      cmdType,
                      entry.startTime,
@@ -41,10 +41,10 @@ void CmdPlayer::load(const nlohmann::json& json)
 
 void CmdPlayer::update(entt::registry& reg)
 {
-    const float dt = Time::getDeltaTime();
+    const float dt = (float)Time::getDeltaTime();
     t += dt;
 
-    for (auto& item : cmds)
+    for (auto& item : m_cmds)
     {
         if (item.isFinished)
         {
