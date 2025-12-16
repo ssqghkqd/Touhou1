@@ -4,6 +4,7 @@
 module;
 #include <cstdint>
 #include <string>
+#include <thread>
 export module core:App;
 import entt;
 import spdlog;
@@ -32,16 +33,17 @@ export class App
 {
   private:
     entt::registry registry_{};
-    std::string errorInfor_{};
+    const char* errorInfor_{};
     bool initFailed_{false};
 
   public:
-    App()
+    App() =default;
+    void init()
     {
-        const auto initPoss = Init::init(registry_);
-        if (initPoss.has_value())
+        const auto e = Init::init(registry_);
+        if (e.has_value())
         {
-            errorInfor_ = defs::errorStr[(uint32_t)initPoss.value()];
+            errorInfor_ = defs::errorStr[(uint32_t)e.value()];
             initFailed_ = true;
             return;
         }
@@ -73,6 +75,7 @@ export class App
             window.updateFPS(Time::getTime());
 
             InputSystem::update(registry_);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     }
 
@@ -87,4 +90,4 @@ export class App
             .connect<&AppHandler::handleWindowToggleCursorEvent>(appHandler);
     }
 };
-} // namespace mc
+} // namespace th

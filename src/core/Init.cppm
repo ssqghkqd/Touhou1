@@ -33,7 +33,7 @@ void emplaceManager(entt::registry& reg)
     // 1. core
     reg.ctx().emplace<Window>();
     // 2. graphics
-    reg.ctx().emplace<vk::VKContext>();
+    reg.ctx().emplace<vk::vkcore>();
 }
 
 void registerEvents(entt::registry& reg)
@@ -63,7 +63,7 @@ operr initGLFW()
 
 operr initVK(entt::registry& reg)
 {
-    auto& vkc = reg.ctx().get<vk::VKContext>();
+    auto& vkc = reg.ctx().get<vk::vkcore>();
     const auto& window = reg.ctx().get<Window>();
 
     uint32_t glfwExtensionsCount{0};
@@ -82,15 +82,15 @@ init(entt::registry& reg)
     initBasic();
     initGLFW();
     emplaceManager(reg);
-    const auto ew = createWindow(reg);
-    if (ew.has_value())
+    auto e = createWindow(reg);
+    if (e.has_value())
     {
-        return ew;
+        return e;
     }
-    const auto ev = initVK(reg);
-    if (ev.has_value())
+    e = initVK(reg);
+    if (e.has_value())
     {
-        return ev;
+        return e;
     }
 
 

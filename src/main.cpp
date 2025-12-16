@@ -7,6 +7,7 @@ import core;
 int main()
 {
     th::App app;
+    app.init();
     const auto e = app.run();
     return e;
 }

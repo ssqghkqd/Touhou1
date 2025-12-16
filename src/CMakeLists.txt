@@ -65,9 +65,10 @@ set(GAMES
 
 set(GRAPHICS
         graphics/vk/vk.cppm
-        graphics/vk/VKContext.cppm
+        graphics/vk/vkcore.cppm
+        graphics/vk/vkContext.cppm
+        graphics/vk/vkSurface.cppm
         graphics/vk/utils.cppm
-        #graphics/vk/VKPipeline.cppm
 )
 
 target_sources(${PROJECT_NAME}

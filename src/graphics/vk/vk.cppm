@@ -6,4 +6,6 @@ module;
 export module vk;
 
 export import :utils;
-export import :VKContext;
+export import :vkcore;
+export import :vkContext;
+

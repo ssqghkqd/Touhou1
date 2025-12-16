@@ -34,10 +34,11 @@ export const char* errorStr[] = {
     "create window failed",
     "load texture failed",
     "vk validation not suppoeted",
+    "vk instance failed"
 
 };
 
 } // namespace th::defs
 
 export using err = th::defs::ErrorType;
-export using operr = std::optional<th::defs::ErrorType>;
+export using operr = std::optional<err>;

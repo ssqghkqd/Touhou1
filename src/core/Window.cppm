@@ -124,4 +124,4 @@ export class Window
     Window(Window&&) = default;
     Window& operator=(Window&&) = default;
 };
-} // namespace mc
+} // namespace th
