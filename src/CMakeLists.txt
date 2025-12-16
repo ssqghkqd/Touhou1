@@ -67,6 +67,7 @@ set(GRAPHICS
         graphics/vk/vk.cppm
         graphics/vk/VKContext.cppm
         graphics/vk/utils.cppm
+        #graphics/vk/VKPipeline.cppm
 )
 
 target_sources(${PROJECT_NAME}
@@ -80,6 +81,7 @@ target_sources(${PROJECT_NAME}
         BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/third_party/glm
         FILES ${CORES} ${UTILS} ${GAMES} ${GRAPHICS} ${RESOURCES} ${DEFS} ${THIRD_PARTY} ../third_party/glm/glm.cppm
 )
+
 
 # 包含目录 - 确保头文件能被找到
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -100,11 +102,6 @@ find_package(Vulkan REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE
         glfw
         Vulkan::Vulkan
-        -lc++
-        -lc++abi
-)
-
-# 编译定义
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-        $<$<BOOL:${APPLE}>:GL_SILENCE_DEPRECATION>
+        c++
+        c++abi
 )

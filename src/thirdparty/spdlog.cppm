@@ -2,7 +2,7 @@
 // Copyright (C) 2025 ss
 // spdlog包装
 module;
-#include <spdlog/spdlog.h>
+#include "../../third_party/spdlog/include/spdlog/spdlog.h"
 export module spdlog;
 
 export namespace spdlog

@@ -82,7 +82,7 @@ export class VKContext
         if (e.has_value())
             return e;
 
-        return std::nullopt;
+        return {};
     }
 
     ~VKContext()
@@ -160,7 +160,7 @@ export class VKContext
             return err::vk_instance_extensions_failed;
         }
         spdlog::debug("vk:创建实例成功");
-        return std::nullopt;
+        return {};
     }
     // ================================验证层===============================
     void setupDebugMessenger()
@@ -189,13 +189,15 @@ export class VKContext
             spdlog::critical("创建表面失败");
             return err::vk_surface_failed;
         }
-        return std::nullopt;
+        return {};
     }
     // ====================================选取设备==============================
     operr pickPhysicalDevice()
     {
         uint32_t deviceCount{0};
-        vkEnumeratePhysicalDevices(instance_, &deviceCount, nullptr);
+        vkEnumeratePhysicalDevices(instance_,
+                                   &deviceCount,
+                                   nullptr);
         if (deviceCount == 0)
         {
             spdlog::critical("没有物理设备");
@@ -223,7 +225,7 @@ export class VKContext
             spdlog::critical("没有可用的物理设备");
             return err::vk_physical_device_failed;
         }
-        return std::nullopt;
+        return {};
     }
 
     operr createLogicalDevice()
@@ -261,7 +263,7 @@ export class VKContext
 
         vkGetDeviceQueue(device_, indices.graphicsFamily.value(), 0, &graphicsQueue_);
         vkGetDeviceQueue(device_, indices.presentFamily.value(), 0, &presentQueue_);
-        return std::nullopt;
+        return {};
     }
 
     // ========================================交换连===============================
@@ -326,7 +328,7 @@ export class VKContext
 
         swapChainExtent_ = extent;
         swapChainImageFormat_ = surfaceFormat.format;
-        return std::nullopt;
+        return {};
     }
 
     // ==================================工具函数===============================
