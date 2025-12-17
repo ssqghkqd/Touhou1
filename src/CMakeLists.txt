@@ -67,7 +67,10 @@ set(GRAPHICS
         graphics/vk/vk.cppm
         graphics/vk/vkcore.cppm
         graphics/vk/vkSurface.cppm
-        graphics/vk/defs.cppm
+        graphics/vk/common.cppm
+        graphics/vk/vkCommandBuffer.cppm
+        graphics/vk/vkpipeline.cppm
+        graphics/vk/vkRender.cppm
 )
 
 target_sources(${PROJECT_NAME}

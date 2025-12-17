@@ -26,6 +26,15 @@ export enum class ErrorType
     vk_physical_device_failed,
     vk_device_failed,
     vk_swapchain_failed,
+    vk_imageview_failed,
+    vk_renderpass_failed,
+    vk_pipeline_layout_failed,
+    vk_shader_create_failed,
+    vk_pipeline_failed,
+    vk_framebuffer_failed,
+    vk_command_pool_failed,
+    vk_command_buffer_failed,
+    vk_sync_object_failed,
 };
 export const char* errorStr[] = {
     "file not found",

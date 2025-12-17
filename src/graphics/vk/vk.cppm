@@ -5,8 +5,10 @@ module;
 
 export module vk;
 
-export import :vkdefs;
+export import :common;
 export import :vkcore;
 export import :vkSurface;
-
+export import :vkpipeline;
+export import :vkCommandBuffer;
+export import :vkRender;
 

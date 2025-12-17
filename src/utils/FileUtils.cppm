@@ -9,6 +9,7 @@ module;
 #include <string>
 
 export module utils:FileUtils;
+import defs;
 import spdlog;
 
 namespace fs = std::filesystem;
@@ -16,9 +17,8 @@ namespace fs = std::filesystem;
 export namespace th::FileUtils
 {
 // 读取文件内容为字符串 必须保证文件已存在（因为先使用获取完整路径函数）
-std::expected<std::string, std::string> readFileToString(const fs::path &path)
+std::expected<std::string, std::string> readFileToString(const fs::path& path)
 {
-
     fs::path nativePath = path;
     nativePath.make_preferred();
 
@@ -34,12 +34,30 @@ std::expected<std::string, std::string> readFileToString(const fs::path &path)
     return buffer.str();
 }
 
-bool isExist(const fs::path &path)
+bool isExist(const fs::path& path)
 {
     return std::filesystem::exists(path);
 }
 
-std::expected<fs::path, std::string> getResourcePath(const fs::path &relativePath, const bool isAssets)
+std::expected<std::vector<char>, err> readFileToBytes(const fs::path& path)
+{
+    std::ifstream file(path, std::ios::ate | std::ios::binary);
+    if (!file.is_open())
+    {
+        spdlog::error("无法打开文件:{}", path.string());
+        return std::unexpected(err::file_open_failed);
+    }
+
+    const size_t fileSize = (size_t)file.tellg();
+    std::vector<char> buffer(fileSize);
+    file.seekg(0); // 回到开头
+    file.read(buffer.data(), fileSize);
+
+    file.close();
+    return buffer;
+}
+
+std::expected<fs::path, err> getResourcePath(const fs::path& relativePath, const bool isAssets)
 {
     // TODO 目前硬编码了路径
     static fs::path basePath;
@@ -52,9 +70,9 @@ std::expected<fs::path, std::string> getResourcePath(const fs::path &relativePat
     if (!fs::exists(finalPath))
     {
         spdlog::error("文件不存在:{}", finalPath.string());
-        return std::unexpected(finalPath.string() + "不存在");
+        return std::unexpected(err::file_not_found);
     }
 
     return basePath / relativePath;
 }
-}
+} // namespace th::FileUtils

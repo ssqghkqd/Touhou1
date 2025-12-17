@@ -67,6 +67,7 @@ export class App
     void mainloop()
     {
         auto& window = registry_.ctx().get<Window>();
+        auto& vkr = registry_.ctx().get<vkRender>();
 
         while (!window.shouldClose())
         {
@@ -75,7 +76,7 @@ export class App
             window.updateFPS(Time::getTime());
 
             InputSystem::update(registry_);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            vkr.drawFrame();
         }
     }
 

@@ -12,7 +12,7 @@ import spdlog;
 import glfw;
 
 import defs;
-import :vkdefs;
+import :common;
 
 #ifdef NDEBUG
 constexpr bool enableValidation = false;
@@ -89,65 +89,7 @@ bool checkDeviceExtensionsSupport(VkPhysicalDevice physicalDevice,
     return isSubset(availableStr, extensions);
 }
 
-th::QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
-{
-    th::QueueFamilyIndices indices{};
-    uint32_t queueFamilyCount{0};
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
-    for (uint32_t i = 0; i < queueFamilyCount; i++)
-    {
-        // 检查是否支持图形命令
-        if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-        {
-            indices.graphicsFamily = i;
-        }
-
-        VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
-        if (presentSupport)
-        {
-            indices.presentFamily = i;
-        }
-
-        if (indices.isComplete())
-        {
-            break;
-        }
-    }
-
-    return indices;
-}
-th::SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
-{
-    th::SwapChainSupportDetails details;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
-
-    uint32_t formatCount;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
-
-    if (formatCount != 0)
-    {
-        details.formats.resize(formatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
-    }
-
-    // 3. 呈现模式
-    uint32_t presentModeCount = 0;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
-    if (presentModeCount != 0)
-    {
-        details.presentModes.resize(presentModeCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device,
-                                                  surface,
-                                                  &presentModeCount,
-                                                  details.presentModes.data());
-    }
-
-    return details;
-}
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -185,6 +127,8 @@ export class vkcore
     VkDebugUtilsMessengerEXT debugMessenger_{nullptr};
     VkPhysicalDevice physicalDevice_{nullptr};
     VkDevice device_{nullptr};
+    VkQueue graphicsQueue_ = VK_NULL_HANDLE;
+    VkQueue presentQueue_ = VK_NULL_HANDLE;
 
     std::vector<const char*> validationLayers_{"VK_LAYER_KHRONOS_validation"};
     std::vector<const char*> deviceExtensions_{VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -234,6 +178,7 @@ export class vkcore
     vkcore& operator=(const vkcore&) = delete;
 
   private:
+    friend class vkRender;
     operr createInstance(const char* appName, const char* engineName, uint32_t extensionCount, const char** extensions)
     {
         // 1.验证验证层
@@ -376,6 +321,10 @@ export class vkcore
             spdlog::critical("创建逻辑设备失败");
             return err::vk_device_failed;
         }
+
+        vkGetDeviceQueue(device_, indices.graphicsFamily.value(), 0, &graphicsQueue_);
+        vkGetDeviceQueue(device_, indices.presentFamily.value(), 0, &presentQueue_);
+
         spdlog::debug("vk:创建逻辑设备");
         return {};
     }
