@@ -33,7 +33,8 @@ void emplaceManager(entt::registry& reg)
     // 1. core
     reg.ctx().emplace<Window>();
     // 2. graphics
-    reg.ctx().emplace<vk::vkcore>();
+    reg.ctx().emplace<vkcore>();
+    reg.ctx().emplace<vkSurface>();
 }
 
 void registerEvents(entt::registry& reg)
@@ -63,17 +64,23 @@ operr initGLFW()
 
 operr initVK(entt::registry& reg)
 {
-    auto& vkc = reg.ctx().get<vk::vkcore>();
+    auto& vkc = reg.ctx().get<vkcore>();
+    auto& vks = reg.ctx().get<vkSurface>();
     const auto& window = reg.ctx().get<Window>();
 
     uint32_t glfwExtensionsCount{0};
     const char** glfwExtensions = glfw::getRequiredInstanceExtensions(&glfwExtensionsCount);
-    const auto ev = vkc.init(glfwExtensionsCount, glfwExtensions, window.getWindow());
-    if (ev.has_value())
-    {
-        return ev;
-    }
-    return std::nullopt;
+    auto e = vkc.init("game", "ss engine", glfwExtensionsCount, glfwExtensions);
+    if (e.has_value())
+        return e;
+    e = vks.init(vkc.getInstance(), window.getWindow());
+    if (e.has_value())
+        return e;
+    e = vkc.initDevice(vks.getSurface());
+    if (e.has_value())
+        return e;
+
+    return {};
 }
 
 export operr
@@ -92,7 +99,6 @@ init(entt::registry& reg)
     {
         return e;
     }
-
 
     registerEvents(reg);
 

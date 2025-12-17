@@ -5,7 +5,8 @@ module;
 
 export module vk;
 
-export import :utils;
+export import :vkdefs;
 export import :vkcore;
-export import :vkContext;
+export import :vkSurface;
+
 
