@@ -50,7 +50,7 @@ export class Renderer
     operr init(uint32_t extensionCount, const char** extensions, glfw::window* window)
     {
         core_ = std::make_unique<Core>();
-        auto e = core_->createInstance("Touhou1", "ss engine2D", extensionCount, extensions);
+        auto e = core_->createInstance(defs::game_name, defs::engine_name, extensionCount, extensions);
         CHECK(e);
         core_->initDebugMessenger();
 

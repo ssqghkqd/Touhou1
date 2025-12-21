@@ -49,7 +49,7 @@ operr createWindow(entt::registry& reg)
     auto& window = reg.ctx().get<Window>();
     const auto e = window.createWindow(defs::window_width * defs::window_scale,
                                        defs::window_height * defs::window_scale,
-                                       defs::window_title);
+                                       defs::game_name);
     return e;
 }
 
