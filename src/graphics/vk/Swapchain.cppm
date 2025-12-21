@@ -5,14 +5,16 @@ module;
 #include <vulkan/vulkan.h>
 
 #include <algorithm>
-export module vk:vkSurface;
+export module vk:Swapchain;
 import glfw;
 import spdlog;
 import defs;
 
 import :common;
 
-static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+namespace th::vk
+{
+VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
     for (const auto& availableFormat : availableFormats)
     {
@@ -25,7 +27,7 @@ static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFor
     return availableFormats[0];
 }
 
-static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 {
     for (const auto& availablePresentMode : availablePresentModes)
     {
@@ -37,7 +39,7 @@ static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-static VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, glfw::window* window)
+VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, glfw::window* window)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
     {
@@ -59,53 +61,70 @@ static VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
     }
 }
 
-namespace th
-{
-export class vkSurface
+export class Swapchain
 {
   private:
-    friend class vkRender;
-    VkSurfaceKHR surface_{nullptr};
-    VkSwapchainKHR swapChain_{nullptr};
+    VkSwapchainKHR swapchain_{nullptr};
     std::vector<VkImage> swapChainImages_{};
     VkFormat swapChainImageFormat_{};
     VkExtent2D swapChainExtent_{};
     std::vector<VkImageView> swapChainImageViews_{};
+    // 依赖
+    VkSurfaceKHR surface_{nullptr};
+    VkDevice device_{nullptr};
+    VkPhysicalDevice physicalDevice_{nullptr};
 
   public:
-    operr init(VkInstance instance, glfw::window* window, VkPhysicalDevice physicalDevice, VkDevice device)
+    explicit Swapchain(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkDevice device)
+        : surface_(surface), device_(device), physicalDevice_(physicalDevice)
     {
-        auto e = createSurface(instance, window);
-        if (e.has_value())
-            return e;
-        e = createSwapChain(window, physicalDevice, device);
-        if (e.has_value())
-            return e;
-
-        return {};
+    }
+    ~Swapchain()
+    {
+        if (!swapChainImageViews_.empty())
+        {
+            for (const auto imageView : swapChainImageViews_)
+            {
+                vkDestroyImageView(device_, imageView, nullptr);
+            }
+            swapChainImageViews_.clear();
+            spdlog::debug("vk：销毁交换链图像");
+        }
+        if (surface_ != nullptr)
+        {
+            vkDestroySwapchainKHR(device_, swapchain_, nullptr);
+            spdlog::debug("vk：销毁交换链");
+        }
     }
 
-    [[nodiscard]] VkSurfaceKHR getSurface() const
+    uint32_t acquireNextImage(VkSemaphore imageAvailableSemaphore) const
     {
-        return surface_;
+        uint32_t imageIndex{0};
+        vkAcquireNextImageKHR(device_, swapchain_, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+        return imageIndex;
+    }
+
+    void present(VkQueue presentQueue, VkSemaphore renderFinishedSemaphore, const uint32_t* imageIndex) const
+    {
+        const VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = signalSemaphores;
+
+        const VkSwapchainKHR swapChains[] = {swapchain_};
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = swapChains;
+        presentInfo.pImageIndices = imageIndex;
+        presentInfo.pResults = nullptr; // Optional
+        vkQueuePresentKHR(presentQueue, &presentInfo);
     }
 
   private:
-    operr createSurface(VkInstance instance, glfw::window* window)
+    friend class Renderer;
+    operr createSwapChain(glfw::window* window)
     {
-        const VkResult result = glfw::createWindowSurface(instance, window, nullptr, &surface_);
-        if (result != VK_SUCCESS)
-        {
-            spdlog::critical("创建表面失败");
-            return err::vk_surface_failed;
-        }
-        spdlog::debug("vk：创建表面");
-        return {};
-    }
-
-    operr createSwapChain(glfw::window* window, VkPhysicalDevice physicalDevice, VkDevice device)
-    {
-        const SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface_);
+        const SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice_, surface_);
 
         const VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
         const VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -127,7 +146,7 @@ export class vkSurface
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        const QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface_);
+        QueueFamilyIndices indices = findQueueFamilies(physicalDevice_, surface_);
         const uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
         if (indices.graphicsFamily != indices.presentFamily)
@@ -151,25 +170,23 @@ export class vkSurface
         createInfo.oldSwapchain = VK_NULL_HANDLE;
         /*使用 Vulkan，当你的应用程序运行时，你的交换链可能会失效或未优化，例如因为窗口大小已调整。在这种情况下，实际上需要从头开始重新创建交换链，并且必须在此字段中指定对旧交换链的引用。这是一个复杂的主题，我们将在未来的章节中了解更多。现在，我们假设我们只会创建一个交换链。*/
 
-        const VkResult result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain_);
+        const VkResult result = vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapchain_);
         if (result != VK_SUCCESS)
         {
-            spdlog::critical("交换链创建失败");
+            spdlog::critical("vk:交换链创建失败");
             return err::vk_swapchain_failed;
         }
 
-        vkGetSwapchainImagesKHR(device, swapChain_, &imageCount, nullptr);
+        vkGetSwapchainImagesKHR(device_, swapchain_, &imageCount, nullptr);
         swapChainImages_.resize(imageCount);
-        vkGetSwapchainImagesKHR(device, swapChain_, &imageCount, swapChainImages_.data());
+        vkGetSwapchainImagesKHR(device_, swapchain_, &imageCount, swapChainImages_.data());
 
         swapChainExtent_ = extent;
         swapChainImageFormat_ = surfaceFormat.format;
-
         spdlog::debug("vk:创建交换链");
         return {};
     }
-
-    operr createImageViews(VkDevice device)
+    operr createImageViews()
     {
         swapChainImageViews_.resize(swapChainImages_.size());
         for (size_t i = 0; i < swapChainImages_.size(); i++)
@@ -191,14 +208,15 @@ export class vkSurface
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount = 1;
 
-            const VkResult result = vkCreateImageView(device, &createInfo, nullptr, &swapChainImageViews_[i]);
+            const VkResult result = vkCreateImageView(device_, &createInfo, nullptr, &swapChainImageViews_[i]);
             if (result != VK_SUCCESS)
             {
-                spdlog::critical("图像视图创建失败");
+                spdlog::critical("vk:图像视图创建失败");
                 return err::vk_imageview_failed;
             }
         }
+        spdlog::debug("vk：创建交换链图像视图");
         return {};
     }
 };
-} // namespace th
+} // namespace th::vk

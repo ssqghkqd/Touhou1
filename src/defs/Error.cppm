@@ -5,7 +5,6 @@ module;
 #include <optional>
 export module defs:Error;
 
-
 namespace th::defs
 {
 export enum class ErrorType
@@ -37,13 +36,34 @@ export enum class ErrorType
     vk_sync_object_failed,
 };
 export const char* errorStr[] = {
-    "file not found",
-    "file open failed",
-    "init glfw failed",
-    "create window failed",
-    "load texture failed",
-    "vk validation not suppoeted",
-    "vk instance failed"
+    // 文件相关错误
+    "File not found",
+    "Failed to open file",
+
+    // GLFW/窗口相关错误
+    "Failed to initialize GLFW",
+    "Failed to create window",
+
+    // 纹理错误
+    "Failed to load texture",
+
+    // Vulkan 初始化错误
+    "Vulkan validation layers not supported",
+    "Failed to create Vulkan instance",
+    "Required Vulkan instance extensions not available",
+    "Failed to create window surface",
+    "No suitable Vulkan physical device found",
+    "Failed to create Vulkan logical device",
+    "Failed to create swap chain",
+    "Failed to create image views",
+    "Failed to create render pass",
+    "Failed to create pipeline layout",
+    "Failed to create shader module",
+    "Failed to create graphics pipeline",
+    "Failed to create framebuffers",
+    "Failed to create command pool",
+    "Failed to allocate command buffer",
+    "Failed to create synchronization objects"
 
 };
 

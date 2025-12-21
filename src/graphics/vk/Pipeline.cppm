@@ -4,30 +4,19 @@
 module;
 #include <vulkan/vulkan.h>
 
+#include <cassert>
 #include <expected>
 #include <vector>
-export module vk:vkpipeline;
+
+export module vk:Pipeline;
 import spdlog;
 import defs;
+
 import utils;
 
-std::expected<VkShaderModule, err> createShaderModule(const std::vector<char>& code, VkDevice device)
+namespace th::vk
 {
-    VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = code.size();
-    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-    VkShaderModule shaderModule;
-    if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
-    {
-        spdlog::critical("创建着色器模块失败");
-        return std::unexpected(err::vk_shader_create_failed);
-    }
-    return shaderModule;
-}
-
-static VkPipelineVertexInputStateCreateInfo createVertexInputState()
+VkPipelineVertexInputStateCreateInfo createVertexInputState()
 {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -38,8 +27,7 @@ static VkPipelineVertexInputStateCreateInfo createVertexInputState()
 
     return vertexInputInfo;
 }
-
-static VkPipelineInputAssemblyStateCreateInfo createInputAssembly()
+VkPipelineInputAssemblyStateCreateInfo createInputAssembly()
 {
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -48,7 +36,6 @@ static VkPipelineInputAssemblyStateCreateInfo createInputAssembly()
 
     return inputAssembly;
 }
-
 VkViewport createViewport(VkExtent2D swapChainExtent)
 {
     VkViewport viewport{};
@@ -67,7 +54,7 @@ VkRect2D createScissor(VkExtent2D swapChainExtent)
     scissor.extent = swapChainExtent;
     return scissor;
 }
-static VkPipelineViewportStateCreateInfo createViewportInfo(const VkViewport& viewport, const VkRect2D& scissor)
+VkPipelineViewportStateCreateInfo createViewportInfo(const VkViewport& viewport, const VkRect2D& scissor)
 {
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -78,8 +65,7 @@ static VkPipelineViewportStateCreateInfo createViewportInfo(const VkViewport& vi
 
     return viewportState;
 }
-
-static VkPipelineRasterizationStateCreateInfo createRasterizer()
+VkPipelineRasterizationStateCreateInfo createRasterizer()
 {
     VkPipelineRasterizationStateCreateInfo rasterizer{};
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -96,8 +82,7 @@ static VkPipelineRasterizationStateCreateInfo createRasterizer()
 
     return rasterizer;
 }
-
-static VkPipelineMultisampleStateCreateInfo createMultisample()
+VkPipelineMultisampleStateCreateInfo createMultisample()
 {
     VkPipelineMultisampleStateCreateInfo multisampling{};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -109,8 +94,7 @@ static VkPipelineMultisampleStateCreateInfo createMultisample()
     multisampling.alphaToOneEnable = VK_FALSE;      // Optional
     return multisampling;
 }
-
-static VkPipelineColorBlendAttachmentState createColorBlendAttachment()
+VkPipelineColorBlendAttachmentState createColorBlendAttachment()
 {
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
     colorBlendAttachment.colorWriteMask =
@@ -125,9 +109,7 @@ static VkPipelineColorBlendAttachmentState createColorBlendAttachment()
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
     return colorBlendAttachment;
 }
-
-static VkPipelineColorBlendStateCreateInfo
-createColorBlend(const VkPipelineColorBlendAttachmentState& colorBlendAttachment)
+VkPipelineColorBlendStateCreateInfo createColorBlend(const VkPipelineColorBlendAttachmentState& colorBlendAttachment)
 {
     VkPipelineColorBlendStateCreateInfo colorBlending{};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -143,46 +125,57 @@ createColorBlend(const VkPipelineColorBlendAttachmentState& colorBlendAttachment
     return colorBlending;
 }
 
-namespace th
-{
-export class vkPipeline
+export class Pipeline
 {
   private:
-    friend class vkRender;
     std::vector<VkDynamicState> dynamicStates_{
         VK_DYNAMIC_STATE_VIEWPORT,
         VK_DYNAMIC_STATE_SCISSOR};
-
     VkRenderPass renderPass_{nullptr};
     VkPipelineLayout pipelineLayout_{nullptr};
-    VkPipeline graphicsPipeline_{VK_NULL_HANDLE};
-
+    VkPipeline graphicsPipeline_{nullptr};
     std::vector<VkFramebuffer> swapChainFramebuffers_{};
 
-  public:
-    operr init(VkFormat swapChainImageFormat,
-               VkDevice device,
-               VkExtent2D swapChainExtent,
-               const std::vector<VkImageView>& swapChainImageViews)
-    {
-        auto e = createRenderPass(swapChainImageFormat, device);
-        if (e.has_value())
-            return e;
-        e = createPipelineLayout(device);
-        if (e.has_value())
-            return e;
-        e = createGraphicsPipeline(device, swapChainExtent);
-        if (e.has_value())
-            return e;
-        e = createFramebuffers(swapChainExtent, device, swapChainImageViews);
-        if (e.has_value())
-            return e;
+    // 依赖
+    VkDevice device_{nullptr};
 
-        return {};
+  public:
+    explicit Pipeline(VkDevice device)
+        : device_(device)
+    {
+        assert(device != nullptr && "设备为空");
+    }
+    ~Pipeline()
+    {
+        if (!swapChainFramebuffers_.empty())
+        {
+            for (const auto framebuffer : swapChainFramebuffers_)
+            {
+                vkDestroyFramebuffer(device_, framebuffer, nullptr);
+            }
+            swapChainFramebuffers_.clear();
+            spdlog::debug("vk:销毁帧缓冲区");
+        }
+        if (graphicsPipeline_ != nullptr)
+        {
+            vkDestroyPipeline(device_, graphicsPipeline_, nullptr);
+            spdlog::debug("vk:销毁渲染管线");
+        }
+        if (pipelineLayout_ != nullptr)
+        {
+            vkDestroyPipelineLayout(device_, pipelineLayout_, nullptr);
+            spdlog::debug("vk:销毁管线布局");
+        }
+        if (renderPass_ != nullptr)
+        {
+            vkDestroyRenderPass(device_, renderPass_, nullptr);
+            spdlog::debug("vk:销毁渲染流程");
+        }
     }
 
   private:
-    operr createRenderPass(VkFormat swapChainImageFormat, VkDevice device)
+    friend class Renderer;
+    operr createRenderPass(VkFormat swapChainImageFormat)
     {
         VkAttachmentDescription colorAttachment{};
         colorAttachment.format = swapChainImageFormat;
@@ -220,16 +213,15 @@ export class vkPipeline
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-        if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass_) != VK_SUCCESS)
+        if (vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass_) != VK_SUCCESS)
         {
-            spdlog::critical("创建渲染通道失败");
+            spdlog::critical("vk:创建渲染流程失败");
             return err::vk_renderpass_failed;
         }
-        spdlog::debug("vk：创建渲染通道");
+        spdlog::debug("vk：创建渲染流程");
         return {};
     }
-
-    operr createPipelineLayout(VkDevice device)
+    operr createPipelineLayout()
     {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -238,16 +230,17 @@ export class vkPipeline
         pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
-        if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout_) != VK_SUCCESS)
+        if (vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout_) != VK_SUCCESS)
         {
-            spdlog::critical("创建渲染管线布局失败");
-            return err::vk_pipeline_layout_failed;
+            spdlog::critical("vk:创建渲染管线布局失败");
+            return err::vk_renderpass_failed;
         }
-        spdlog::debug("vk:创建渲染管线布局");
+
+        spdlog::debug("vk：创建渲染管线布局");
         return {};
     }
 
-    operr createGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent)
+    operr createGraphicsPipeline(VkExtent2D swapChainExtent)
     {
         const auto vertPathPoss = FileUtils::getResourcePath("shaders/vert.spv", false);
         const auto fragPathPoss = FileUtils::getResourcePath("shaders/frag.spv", false);
@@ -277,8 +270,8 @@ export class vkPipeline
             return fragShaderCodePoss.error();
         }
 
-        const auto vertShaderModulePoss = createShaderModule(vertShaderCodePoss.value(), device);
-        const auto fragShaderModulePoss = createShaderModule(fragShaderCodePoss.value(), device);
+        const auto vertShaderModulePoss = createShaderModule(vertShaderCodePoss.value());
+        const auto fragShaderModulePoss = createShaderModule(fragShaderCodePoss.value());
 
         if (!vertShaderModulePoss.has_value())
         {
@@ -338,42 +331,31 @@ export class vkPipeline
         pipelineInfo.basePipelineIndex = -1;              // Optional
         /*实际上还有两个参数：basePipelineHandle 和 basePipelineIndex。Vulkan 允许您通过派生自现有管线来创建新的图形管线。管线派生的思想是，当它们与现有管线具有许多共同功能时，设置管线的成本较低，并且在同一父级管线之间切换也可以更快地完成。您可以使用 basePipelineHandle 指定现有管线的句柄，也可以使用 basePipelineIndex 引用即将创建的另一个管线的索引。目前只有一个管线，所以我们只需指定一个空句柄和一个无效索引。只有在 VkGraphicsPipelineCreateInfo 的 flags 字段中也指定了 VK_PIPELINE_CREATE_DERIVATIVE_BIT 标志时，才会使用这些值。*/
 
-        if (vkCreateGraphicsPipelines(device,
+        if (vkCreateGraphicsPipelines(device_,
                                       VK_NULL_HANDLE,
                                       1,
                                       &pipelineInfo,
                                       nullptr,
                                       &graphicsPipeline_) != VK_SUCCESS)
         {
-            spdlog::critical("创建渲染管线失败");
+            spdlog::critical("vk:创建渲染管线失败");
             return err::vk_pipeline_failed;
         }
-        vkDestroyShaderModule(device, vertShaderModule, nullptr);
-        vkDestroyShaderModule(device, fragShaderModule, nullptr);
+        vkDestroyShaderModule(device_, vertShaderModule, nullptr);
+        vkDestroyShaderModule(device_, fragShaderModule, nullptr);
 
         spdlog::debug("vk：创建渲染管线");
         return {};
     }
 
-    VkPipelineDynamicStateCreateInfo createDynamicState() const
-    {
-        VkPipelineDynamicStateCreateInfo dynamicState{};
-        dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates_.size());
-        dynamicState.pDynamicStates = dynamicStates_.data();
-
-        return dynamicState;
-    }
-
     operr createFramebuffers(
         VkExtent2D swapChainExtent,
-        VkDevice device,
         const std::vector<VkImageView>& swapChainImageViews)
     {
         swapChainFramebuffers_.resize(swapChainImageViews.size());
         for (size_t i = 0; i < swapChainImageViews.size(); i++)
         {
-            VkImageView attachments[] = {
+            const VkImageView attachments[] = {
                 swapChainImageViews[i]};
 
             VkFramebufferCreateInfo framebufferInfo{};
@@ -385,14 +367,40 @@ export class vkPipeline
             framebufferInfo.height = swapChainExtent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers_[i]) != VK_SUCCESS)
+            if (vkCreateFramebuffer(device_, &framebufferInfo, nullptr, &swapChainFramebuffers_[i]) != VK_SUCCESS)
             {
                 spdlog::critical("vk:创建帧缓冲区失败");
                 return err::vk_framebuffer_failed;
             }
         }
-        spdlog::debug("创建帧缓冲区");
+        spdlog::debug("vk:创建帧缓冲区");
         return {};
     }
+
+    std::expected<VkShaderModule, err> createShaderModule(const std::vector<char>& code) const
+    {
+        VkShaderModuleCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        VkShaderModule shaderModule;
+        if (vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+        {
+            spdlog::critical("vk:创建着色器模块失败");
+            return std::unexpected(err::vk_shader_create_failed);
+        }
+        spdlog::debug("vk：创建着色器模块");
+        return shaderModule;
+    }
+    VkPipelineDynamicStateCreateInfo createDynamicState() const
+    {
+        VkPipelineDynamicStateCreateInfo dynamicState{};
+        dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates_.size());
+        dynamicState.pDynamicStates = dynamicStates_.data();
+
+        return dynamicState;
+    }
 };
-} // namespace th
+} // namespace th::vk

@@ -4,6 +4,7 @@
 module;
 #include <cstdint>
 #include <optional>
+#include "defs/Macro.hpp"
 export module core:Init;
 import entt;
 import spdlog;
@@ -33,7 +34,7 @@ void emplaceManager(entt::registry& reg)
     // 1. core
     reg.ctx().emplace<Window>();
     // 2. graphics
-    reg.ctx().emplace<vkRender>();
+    reg.ctx().emplace<vk::Renderer>();
 }
 
 void registerEvents(entt::registry& reg)
@@ -58,17 +59,18 @@ operr initGLFW()
     {
         return err::init_glfw_failed;
     }
-    return std::nullopt;
+    return {};
 }
 
 operr initVK(entt::registry& reg)
 {
-    auto& vkr = reg.ctx().get<vkRender>();
+    auto& render = reg.ctx().get<vk::Renderer>();
     const auto& window = reg.ctx().get<Window>();
 
     uint32_t glfwExtensionsCount{0};
     const char** glfwExtensions = glfw::getRequiredInstanceExtensions(&glfwExtensionsCount);
-    vkr.init(glfwExtensionsCount, glfwExtensions, window.getWindow());
+    auto e = render.init(glfwExtensionsCount, glfwExtensions, window.getWindow());
+    CHECK(e);
 
     return {};
 }
@@ -80,18 +82,12 @@ init(entt::registry& reg)
     initGLFW();
     emplaceManager(reg);
     auto e = createWindow(reg);
-    if (e.has_value())
-    {
-        return e;
-    }
+    CHECK(e);
     e = initVK(reg);
-    if (e.has_value())
-    {
-        return e;
-    }
+    CHECK(e);
 
     registerEvents(reg);
 
-    return std::nullopt;
+    return {};
 }
 } // namespace th::Init

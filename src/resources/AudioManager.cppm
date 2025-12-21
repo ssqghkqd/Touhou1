@@ -113,7 +113,7 @@ class AudioManager
             spdlog::critical("音效加载失败，文件不存在");
             throw std::runtime_error("音效加载失败");
         }
-        const auto fullPath = fullPathPossible.value();
+        const auto& fullPath = fullPathPossible.value();
 
         const auto templateSound = (ma::sound*)malloc(sizeof(ma::sound));
         if (templateSound == nullptr)

@@ -17,11 +17,11 @@ static Clock::time_point lastFrameTime;
 static double dt = 0.0;
 static double t = 0.0;
 
-export void init()
+export void init() // 程序启动调用
 {
     appStartTime = Clock::now();
 }
-export void gameStart()
+export void gameStart() // 游戏开始调用
 {
     gameStartTime = Clock::now();
     lastFrameTime = gameStartTime;

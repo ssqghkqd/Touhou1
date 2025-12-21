@@ -64,13 +64,16 @@ set(GAMES
 )
 
 set(GRAPHICS
+        graphics/vk/Core.cppm
+        graphics/vk/Renderer.cppm
+        graphics/vk/Common.cppm
         graphics/vk/vk.cppm
-        graphics/vk/vkcore.cppm
-        graphics/vk/vkSurface.cppm
-        graphics/vk/common.cppm
-        graphics/vk/vkCommandBuffer.cppm
-        graphics/vk/vkpipeline.cppm
-        graphics/vk/vkRender.cppm
+        graphics/vk/Surface.cppm
+        graphics/vk/Device.cppm
+        graphics/vk/Swapchain.cppm
+        graphics/vk/Pipeline.cppm
+        graphics/vk/CommandBuffer.cppm
+        graphics/vk/SyncObject.cppm
 )
 
 target_sources(${PROJECT_NAME}
@@ -88,6 +91,7 @@ target_sources(${PROJECT_NAME}
 
 # 包含目录 - 确保头文件能被找到
 target_include_directories(${PROJECT_NAME} PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/entt/src>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/third_party/spdlog/include>

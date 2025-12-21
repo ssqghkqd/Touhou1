@@ -6,9 +6,11 @@ module;
 export module vk;
 
 export import :common;
-export import :vkcore;
-export import :vkSurface;
-export import :vkpipeline;
-export import :vkCommandBuffer;
-export import :vkRender;
-
+export import :Core;
+export import :Renderer;
+export import :Surface;
+export import :Device;
+export import :Swapchain;
+export import :Pipeline;
+export import :CommandBuffer;
+export import :SyncObject;

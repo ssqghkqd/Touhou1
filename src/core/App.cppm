@@ -3,7 +3,6 @@
 // 主类 应用程序的生命周期管理a
 module;
 #include <cstdint>
-#include <string>
 #include <thread>
 export module core:App;
 import entt;
@@ -67,7 +66,7 @@ export class App
     void mainloop()
     {
         auto& window = registry_.ctx().get<Window>();
-        auto& vkr = registry_.ctx().get<vkRender>();
+        auto& render = registry_.ctx().get<vk::Renderer>();
 
         while (!window.shouldClose())
         {
@@ -75,8 +74,9 @@ export class App
             window.pollEvents();
             window.updateFPS(Time::getTime());
 
+            render.render();
+
             InputSystem::update(registry_);
-            vkr.drawFrame();
         }
     }
 
