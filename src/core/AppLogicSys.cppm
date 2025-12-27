@@ -7,9 +7,24 @@ export module core:AppLogicSys;
 import entt;
 import defs;
 import spdlog;
+import :Window;
 
 namespace th::AppLogic
 {
+struct AppHandler
+{
+    Window& window;
+    /*entt要求有这个参数 所以加上maybeunused*/
+    void handleAppShutDownRequestEvent([[maybe_unused]] const defs::AppShutDownRequestEvent& event) const
+    {
+        window.closeWindow();
+    }
+    void handleWindowToggleCursorEvent([[maybe_unused]] const defs::WindowToggleCursorEvent& event) const
+    {
+        window.toggleCursor();
+    };
+};
+
 struct Handler
 {
     entt::dispatcher& dp;
@@ -29,9 +44,16 @@ struct Handler
     }
 };
 
-export void registerHandle(entt::dispatcher& dp)
+export void registerHandle(entt::registry& reg)
 {
+    auto& dp = reg.ctx().get<entt::dispatcher>();
     static Handler handler{dp};
     dp.sink<defs::InputState>().connect<&Handler::handleInput>(handler);
+    auto& window = reg.ctx().get<Window>();
+    static AppHandler appHandler{window};
+    dp.sink<defs::AppShutDownRequestEvent>()
+        .connect<&AppHandler::handleAppShutDownRequestEvent>(appHandler);
+    dp.sink<defs::WindowToggleCursorEvent>()
+        .connect<&AppHandler::handleWindowToggleCursorEvent>(appHandler);
 }
-} // namespace mc::AppLogic
+} // namespace th::AppLogic

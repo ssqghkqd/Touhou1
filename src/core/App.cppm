@@ -15,19 +15,6 @@ import defs;
 
 namespace th
 {
-struct AppHandler
-{
-    Window& window;
-    void handleAppShutDownRequestEvent([[maybe_unused]] const defs::AppShutDownRequestEvent& event) const
-    {
-        window.closeWindow();
-    }
-    void handleWindowToggleCursorEvent([[maybe_unused]] const defs::WindowToggleCursorEvent& event) const
-    {
-        window.toggleCursor();
-    };
-};
-
 export class App
 {
   private:
@@ -36,7 +23,7 @@ export class App
     bool initFailed_{false};
 
   public:
-    App() =default;
+    App() = default;
     void init()
     {
         const auto e = Init::init(registry_);
@@ -46,7 +33,6 @@ export class App
             initFailed_ = true;
             return;
         }
-        registerEvent();
     }
     ~App() = default; // 自动清理资源
 
@@ -78,17 +64,6 @@ export class App
 
             InputSystem::update(registry_);
         }
-    }
-
-    void registerEvent()
-    {
-        auto& dp = registry_.ctx().get<entt::dispatcher>();
-        auto& window = registry_.ctx().get<Window>();
-        static AppHandler appHandler{window};
-        dp.sink<defs::AppShutDownRequestEvent>()
-            .connect<&AppHandler::handleAppShutDownRequestEvent>(appHandler);
-        dp.sink<defs::WindowToggleCursorEvent>()
-            .connect<&AppHandler::handleWindowToggleCursorEvent>(appHandler);
     }
 };
 } // namespace th

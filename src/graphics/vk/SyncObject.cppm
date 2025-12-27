@@ -3,6 +3,8 @@
 //
 module;
 #include <vulkan/vulkan.h>
+
+#include <array>
 export module vk:SyncObject;
 import spdlog;
 import defs;
@@ -35,7 +37,7 @@ struct FrameSyncObject
 export class SyncObject
 {
   private:
-    FrameSyncObject frameSyncObject_{};
+    std::array<FrameSyncObject, defs::max_frames_in_flight> framesSyncs_;
     // 依赖
     VkDevice device_{nullptr};
 
@@ -46,14 +48,17 @@ export class SyncObject
     }
     ~SyncObject()
     {
-        frameSyncObject_.cleanup(device_);
+        for (auto& syncObject : framesSyncs_)
+        {
+            syncObject.cleanup(device_);
+        }
         spdlog::debug("vk：销毁同步对象");
     }
 
-    void waitFence() const
+    void waitFence(size_t frameIndex) const
     {
-        vkWaitForFences(device_, 1, &frameSyncObject_.inFlightFence_, VK_TRUE, UINT64_MAX);
-        vkResetFences(device_, 1, &frameSyncObject_.inFlightFence_);
+        vkWaitForFences(device_, 1, &framesSyncs_[frameIndex].inFlightFence_, VK_TRUE, UINT64_MAX);
+        vkResetFences(device_, 1, &framesSyncs_[frameIndex].inFlightFence_);
     }
 
   private:
@@ -66,13 +71,17 @@ export class SyncObject
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        if (vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &frameSyncObject_.imageAvailableSemaphore_) != VK_SUCCESS ||
-            vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &frameSyncObject_.renderFinishedSemaphore_) != VK_SUCCESS ||
-            vkCreateFence(device_, &fenceInfo, nullptr, &frameSyncObject_.inFlightFence_) != VK_SUCCESS)
+        for (size_t i = 0; i < defs::max_frames_in_flight; i++)
         {
-            spdlog::critical("vk:创建同步对象失败");
-            return err::vk_sync_object_failed;
+            if (vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &framesSyncs_[i].imageAvailableSemaphore_) != VK_SUCCESS ||
+                vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &framesSyncs_[i].renderFinishedSemaphore_) != VK_SUCCESS ||
+                vkCreateFence(device_, &fenceInfo, nullptr, &framesSyncs_[i].inFlightFence_) != VK_SUCCESS)
+            {
+                spdlog::critical("vk:创建同步对象失败");
+                return err::vk_sync_object_failed;
+            }
         }
+
         spdlog::debug("vk:创建同步对象");
         return {};
     }

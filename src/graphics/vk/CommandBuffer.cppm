@@ -3,6 +3,8 @@
 //
 module;
 #include <vulkan/vulkan.h>
+
+#include <array>
 export module vk:CommandBuffer;
 import defs;
 import spdlog;
@@ -15,7 +17,7 @@ export class CommandBuffer
 {
   private:
     VkCommandPool commandPool_{nullptr};
-    VkCommandBuffer commandBuffer_{nullptr};
+    std::array<VkCommandBuffer, defs::max_frames_in_flight> commandBuffers_{};
 
     // 依赖
     VkDevice device_{nullptr};
@@ -29,21 +31,25 @@ export class CommandBuffer
     }
     ~CommandBuffer()
     {
-        if (commandBuffer_ != nullptr)
+        if (!commandBuffers_.empty())
         {
             vkDestroyCommandPool(device_, commandPool_, nullptr);
             spdlog::debug("vk:销毁命令池和命令缓冲");
         }
     }
 
-    void recordCommandBuffer(VkExtent2D extent, VkPipeline pipeline, VkFramebuffer frame, VkRenderPass renderPass) const
+    void recordCommandBuffer(VkExtent2D extent,
+                             VkPipeline pipeline,
+                             VkFramebuffer frame,
+                             VkRenderPass renderPass,
+                             size_t frameIndex) const
     {
-        vkResetCommandBuffer(commandBuffer_, 0);
+        vkResetCommandBuffer(commandBuffers_[frameIndex], 0);
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = 0;                  // Optional
         beginInfo.pInheritanceInfo = nullptr; // Optional
-        vkBeginCommandBuffer(commandBuffer_, &beginInfo);
+        vkBeginCommandBuffer(commandBuffers_[frameIndex], &beginInfo);
 
         {
             VkRenderPassBeginInfo renderPassInfo{};
@@ -57,9 +63,9 @@ export class CommandBuffer
             renderPassInfo.pClearValues = &clearColor;
 
             // =====================开始=========================
-            vkCmdBeginRenderPass(commandBuffer_, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            vkCmdBeginRenderPass(commandBuffers_[frameIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-            vkCmdBindPipeline(commandBuffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+            vkCmdBindPipeline(commandBuffers_[frameIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
             VkViewport viewport{};
             viewport.x = 0.0f;
             viewport.y = 0.0f;
@@ -67,18 +73,18 @@ export class CommandBuffer
             viewport.height = static_cast<float>(extent.height);
             viewport.minDepth = 0.0f;
             viewport.maxDepth = 1.0f;
-            vkCmdSetViewport(commandBuffer_, 0, 1, &viewport);
+            vkCmdSetViewport(commandBuffers_[frameIndex], 0, 1, &viewport);
 
             VkRect2D scissor{};
             scissor.offset = {0, 0};
             scissor.extent = extent;
-            vkCmdSetScissor(commandBuffer_, 0, 1, &scissor);
+            vkCmdSetScissor(commandBuffers_[frameIndex], 0, 1, &scissor);
 
-            vkCmdDraw(commandBuffer_, 3, 1, 0, 0);
-            vkCmdEndRenderPass(commandBuffer_);
+            vkCmdDraw(commandBuffers_[frameIndex], 3, 1, 0, 0);
+            vkCmdEndRenderPass(commandBuffers_[frameIndex]);
         }
 
-        vkEndCommandBuffer(commandBuffer_);
+        vkEndCommandBuffer(commandBuffers_[frameIndex]);
     }
 
   private:
@@ -106,9 +112,9 @@ export class CommandBuffer
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool = commandPool_;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = 1;
+        allocInfo.commandBufferCount = commandBuffers_.size();
 
-        if (vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer_) != VK_SUCCESS)
+        if (vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers_.data()) != VK_SUCCESS)
         {
             spdlog::critical("vk:创建命令缓冲区失败");
             return err::vk_command_buffer_failed;

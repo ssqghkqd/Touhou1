@@ -50,6 +50,7 @@ set(DEFS
         defs/Error.cppm
         defs/Events.cppm
         defs/Input.cppm
+        defs/Type.cppm
 )
 
 set(GAMES

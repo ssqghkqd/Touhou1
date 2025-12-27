@@ -149,17 +149,17 @@ class AudioManager
 
         /*
          * 【内存管理经验】（亲身经历都是）
-         * 1.第一反应是使用智能指针 但这里不能使用
-         *  如果你直接使用 会导致编译失败
-         *  如果你套用自定义删除器 你需要尤其注意move出去移动所有权 否则自动析构 音频驱动将会段错误
-         * 2.为什么不用new？ 因为new会尝试调用构造函数 但masound没有，并且还有异常开销
-         * 提示：成功路径不需要释放 因为有清理函数检查 失败路径一定要free（malloc成功之后）
+         * 1.第一反应当然是智能指针，但实测是不行的：首先 如果你直接使用智能指针，会编译报错 指出无法删除这个masound对象
+         *      如果你手动加上删除器 这里有一个问题 智能指针的析构如果再不正确的时间调用，有可能会导致段错误，因为音频驱动还在用这个堆内存
+         * 2.那智能指针不能用 只有两个了 new malloc 为什么是malloc？
+         * 因为 new会尝试调用构造函数 而masound没有 虽然这其实不会有什么效果 但感觉是是很奇怪的 并且new还会抛出异常 不符合我的理念
+         * 最终使用malloc 首先ma就是一个c库他的示例就是这样做的 并且malloc的开销是最小的
          */
         // TODO 可以用对象池 这里malloc可能内存碎片 但目前性能好不用
         const auto sound = (ma::sound*)malloc(sizeof(ma::sound));
         if (sound == nullptr)
         {
-            spdlog::error("malloc failed");
+            spdlog::error("malloc失败（？）");
             return;
         }
         const ma::result result = ma::soundInitCopy(

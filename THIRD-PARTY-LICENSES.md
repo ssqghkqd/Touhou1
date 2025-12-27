@@ -5,7 +5,7 @@
 
 ---
 
-## [GLFW](https://www.glfw.org/)
+## [GLFW](https://www.glfw.org/)   鸡爱楼废物
 - **用途**：窗口和输入管理
 - **许可证**：zlib/libpng License
 - **版权声明**：Copyright (c) 2002-2006 Marcus Geelnard, Copyright (c) 2006-2019 Camilla Löwy
@@ -17,31 +17,30 @@
 
 ## [GLM](https://github.com/g-truc/glm)
 - **用途**：数学库（OpenGL Mathematics）
-- **许可证**：MIT License (Happy Bunny License)
+  - **许可证**：MIT License
 - **版权声明**：Copyright (c) 2005-2024 G-Truc Creation
 
-## [spdlog](https://github.com/gabime/spdlog)
+## [spdlog](https://github.com/gabime/spdlog)   速度老哥
 - **用途**：日志库
 - **许可证**：MIT License
 - **版权声明**：Copyright (c) 2016 Gabi Melman
 
-## [nlohmann/json](https://github.com/nlohmann/json)
+## [nlohmann/json](https://github.com/nlohmann/json)  诺哈曼鸡森
 - **用途**：JSON 解析/序列化
 - **许可证**：MIT License
 - **版权声明**：Copyright (c) 2013-2024 Niels Lohmann
 
 ## [stb_image](https://github.com/nothings/stb)
 - **用途**：图像加载
-- **许可证**：MIT/Public Domain
+- **许可证**：MIT License
 - **版权声明**：Copyright (c) 2017 Sean Barrett
 
 ## [miniaudio](https://github.com/mackron/miniaudio)
 - **用途**：音频播放
-- **许可证**：MIT/Public Domain
+- **许可证**：MIT License
 - **版权声明**：Copyright (c) 2018-2024 David Reid
 
-## [OpenGL API Bindings]
-• 生成工具：GLAD (https://glad.dav1d.de/)
-• 状态：自动生成的API绑定代码，通常视为公有领域
-
+### VK 分支
+- 本程序：GPLv3
+- Vulkan 头文件：Apache 2.0（从 Vulkan SDK 获取）
 ---

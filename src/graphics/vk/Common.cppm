@@ -72,7 +72,6 @@ SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice physicalDevice, V
         vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, details.formats.data());
     }
 
-    // 3. 呈现模式
     uint32_t presentModeCount = 0;
     vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, nullptr);
     if (presentModeCount != 0)

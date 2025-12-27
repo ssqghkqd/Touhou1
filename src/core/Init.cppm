@@ -39,9 +39,7 @@ void emplaceManager(entt::registry& reg)
 
 void registerEvents(entt::registry& reg)
 {
-    auto& dp = reg.ctx().get<entt::dispatcher>();
-
-    AppLogic::registerHandle(dp);
+    AppLogic::registerHandle(reg);
 }
 
 operr createWindow(entt::registry& reg)

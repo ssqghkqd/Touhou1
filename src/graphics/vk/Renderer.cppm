@@ -33,6 +33,8 @@ export class Renderer
     std::unique_ptr<CommandBuffer> commandBuffer_{};
     std::unique_ptr<SyncObject> syncObject_{};
 
+    ui32 currentFrame_{0};
+
   public:
     Renderer() = default;
     ~Renderer()
@@ -93,24 +95,28 @@ export class Renderer
         return {};
     }
 
-    void render() const
+    void render()
     {
-        syncObject_->waitFence();
-        const auto imageIndex = swapchain_->acquireNextImage(syncObject_->frameSyncObject_.imageAvailableSemaphore_);
+        syncObject_->waitFence(currentFrame_);
+        const auto imageIndex =
+            swapchain_->acquireNextImage(syncObject_->framesSyncs_[currentFrame_].imageAvailableSemaphore_);
 
         commandBuffer_->recordCommandBuffer(swapchain_->swapChainExtent_,
                                             pipeline_->graphicsPipeline_,
                                             pipeline_->swapChainFramebuffers_[imageIndex],
-                                            pipeline_->renderPass_);
+                                            pipeline_->renderPass_,
+                                            currentFrame_);
+
         submitGraphicsQueue(device_->graphicsQueue_,
-                            &commandBuffer_->commandBuffer_,
-                            syncObject_->frameSyncObject_.imageAvailableSemaphore_,
-                            syncObject_->frameSyncObject_.renderFinishedSemaphore_,
-                            syncObject_->frameSyncObject_.inFlightFence_);
+                            &commandBuffer_->commandBuffers_[currentFrame_],
+                            syncObject_->framesSyncs_[currentFrame_].imageAvailableSemaphore_,
+                            syncObject_->framesSyncs_[currentFrame_].renderFinishedSemaphore_,
+                            syncObject_->framesSyncs_[currentFrame_].inFlightFence_);
 
         swapchain_->present(device_->presentQueue_,
-                            syncObject_->frameSyncObject_.renderFinishedSemaphore_,
+                            syncObject_->framesSyncs_[currentFrame_].renderFinishedSemaphore_,
                             &imageIndex);
+        currentFrame_ = (currentFrame_ + 1) % defs::max_frames_in_flight;
     }
 
   private:

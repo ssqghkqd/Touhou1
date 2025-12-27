@@ -9,3 +9,4 @@ export import :Error;
 export import :Events;
 export import :Input;
 export import :Config;
+export import :Type;
